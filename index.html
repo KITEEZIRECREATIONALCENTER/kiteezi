@@ -1,0 +1,358 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kiteezi Recreational Center</title>
+
+    <link rel="stylesheet"href="style.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            color: #222;
+        }
+
+        /* Navigation */
+        nav {
+            background: #063970;
+            padding: 18px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        nav h2 {
+            font-size: 24px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 25px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+
+            background: linear-gradient(
+                rgba(0, 0, 0, 0.55),
+                rgba(0, 0, 0, 0.55)
+            ),
+            url("https://images.unsplash.com/photo-1546484959-fb4c4b96e0f6?auto=format&fit=crop&w=1600&q=80");
+
+            background-size: cover;
+            background-position: center;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 55px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 21px;
+            margin-bottom: 30px;
+        }
+
+        .button {
+            display: inline-block;
+            background: #f4a261;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 5px;
+        }
+
+        .button:hover {
+            background: #e76f51;
+        }
+        
+
+        /* Sections */
+        section {
+            padding: 70px 8%;
+        }
+
+        section h2 {
+            text-align: center;
+            font-size: 35px;
+            margin-bottom: 40px;
+            color: #063970;
+        }
+
+        .about {
+            text-align: center;
+            max-width: 850px;
+            margin: auto;
+            line-height: 1.8;
+            font-size: 18px;
+        }
+
+        /* Facilities */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            color: #063970;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            line-height: 1.6;
+        }
+
+        /* Contact */
+        .contact {
+            background: #063970;
+            color: white;
+            text-align: center;
+        }
+
+        .contact h2 {
+            color: white;
+        }
+
+        .contact p {
+            margin: 12px;
+            font-size: 18px;
+        }
+
+        /* Footer */
+        footer {
+            background: #031f3d;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .hero h1 {
+                font-size: 38px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo-area"> 
+            <img src="images/LOGO.png"alt="Kiteezi recreational center logo">
+            <h2> RECREATIONAL CENTER</h2>
+        </div>    
+
+        <ul>
+            <li><a href="#home">Home</a></li>
+
+            <li><a href="#about">About</a></li>
+
+            <li><a href="#facilities">Facilities</a></li>
+
+            <li><a href="menu.html">Menu</a></li>
+
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+
+    <!-- Home -->
+    <section class="hero" id="home">
+
+        <div>
+            <h1>Welcome to Kiteezi Recreational Center</h1>
+
+            <p>
+                Relax. Play. Connect. Create unforgettable memories.
+            </p>
+
+            <a href="#facilities" class="button">
+                Explore Our Facilities
+            </a>
+
+            <a href="#contact" class="button secondary">
+                Contact Us
+            </a>
+        </div>
+
+    </section>
+
+
+    <!-- About -->
+    <section id="about">
+
+        <h2>About Kiteezi Recreational Center</h2>
+
+        <p class="about">
+
+            <img src="images/full view.jpg" alt="The best place for relaxation and fun">
+           
+            Welcome to Kiteezi Recreational Center, your destination for
+            relaxation, entertainment, sports and unforgettable experiences.
+
+            Whether you are looking for a place to relax with friends,
+            enjoy recreational activities, celebrate special occasions
+            or spend quality time with family, Kiteezi is the place to be.
+            
+            Open from 10am to 10pm
+           Everyday
+        </p>
+
+    </section>
+
+<!-- Facilities -->
+<section id="facilities">
+
+    <h2>Our Facilities & Activities</h2>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>🏊 Swimming</h3>
+
+            <img src="images/sky view.webp"
+                 alt="Swimming area"
+                 onclick="openImage(this.src)">
+
+            <p>
+                Enjoy a refreshing swimming experience in a relaxing
+                environment.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>⚽ Sports</h3>
+
+            <video src="videos/gardens.mp4"
+                   controls
+                   onclick="openVideo(this.src)">
+            </video>
+
+            <p>
+                Enjoy different sporting and recreational activities
+                with friends and family.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>🎉 Events</h3>
+
+            <p>
+                Host birthdays, parties, corporate events and other
+                special occasions.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>🍽️ Restaurant</h3>
+
+            <img src="images/food.webp"
+                 alt="Delicious food"
+                 onclick="openImage(this.src)">
+
+            <img src="unnamed.jpg"
+                 alt="Restaurant area"
+                 onclick="openImage(this.src)">
+
+            <p>
+                Relax and enjoy delicious meals and refreshments.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+    <!-- Contact -->
+    <section class="contact" id="contact">
+
+        <h2>Visit Kiteezi Recreational Center</h2>
+
+        <p>📍 Location: Kiteezi, opposite Shell Kiteezi, Uganda</p>
+
+        <p>📞 Phone:  +256766529086 / +256709763803</p>
+
+        <p>📧 Email: info@kiteezi.com</p>
+
+        <br>
+
+        <a href="tel:+256766529086" class="button">
+            Call Us
+        </a>
+
+        <a href="https://wa.me/+256751478009" class="button">
+            WhatsApp Us
+        </a>
+
+    </section>
+
+
+    <!-- Footer -->
+    <footer>
+
+        <p>
+            © 2026 Kiteezi Recreational Center. All Rights Reserved.
+        </p>
+
+    </footer>
+
+<script src="script.js"></script>
+<!-- Image/Video Lightbox -->
+<div id="lightbox" class="lightbox">
+
+    <span class="close">&times;</span>
+
+    <img id="lightbox-image" src="" alt="Large view">
+
+    <video id="lightbox-video" controls></video>
+
+</div>
+</body>
+</html>

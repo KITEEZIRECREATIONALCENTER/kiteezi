@@ -1,4 +1,3 @@
-
 alert("NEW SCRIPT IS LOADING");
 
 function welcome() {

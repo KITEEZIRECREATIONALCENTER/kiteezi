@@ -517,3 +517,94 @@ if (lightbox) {
         }
     );
 }
+// ==========================================
+// WEBSITE IMAGE MANAGEMENT
+// ==========================================
+
+const IMAGE_STORAGE_URL =
+    "https://pkvctsfdqyzlcryikcox.supabase.co/storage/v1/object/public/website-images";
+
+
+async function loadWebsiteImage(
+    area,
+    position,
+    elementId
+) {
+
+    const element =
+        document.getElementById(elementId);
+
+
+    if (!element) {
+        return;
+    }
+
+
+    const { data, error } =
+        await supabaseClient
+            .from("website_images")
+            .select("file_path")
+            .eq("area", area)
+            .eq("position", position)
+            .maybeSingle();
+
+
+    if (error) {
+
+        console.error(
+            "Image loading error:",
+            error
+        );
+
+        return;
+    }
+
+
+    if (!data) {
+        return;
+    }
+
+
+    element.src =
+        IMAGE_STORAGE_URL +
+        "/" +
+        data.file_path;
+}
+
+
+// ==========================================
+// LOAD MANAGED IMAGES
+// ==========================================
+
+async function loadManagedImages() {
+
+    await loadWebsiteImage(
+        "about",
+        "main",
+        "about-image"
+    );
+
+
+    await loadWebsiteImage(
+        "swimming",
+        "main",
+        "swimming-image"
+    );
+
+
+    await loadWebsiteImage(
+        "restaurant",
+        "main",
+        "restaurant-image"
+    );
+
+
+    await loadWebsiteImage(
+        "food",
+        "main",
+        "food-image"
+    );
+}
+
+
+loadManagedImages();

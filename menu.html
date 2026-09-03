@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,7 +5,8 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Kiteezi Recreational Center - Menu</title>
 
@@ -18,15 +18,21 @@
 <body>
 
 
-    <!-- Navigation -->
+    <!-- ==========================================
+         NAVIGATION
+    =========================================== -->
 
     <nav>
 
         <div class="logo-area">
 
-           <img id="website-logo"
-     src="images/LOGO.png"
-     alt="Kiteezi Recreational Center logo">
+            <img
+                id="website-logo"
+                src="images/LOGO.png"
+                alt="Kiteezi Recreational Center logo"
+                data-media-area="logo"
+                data-media-position="main"
+                data-media-type="image">
 
             <h2>RECREATIONAL CENTER</h2>
 
@@ -61,7 +67,9 @@
 
 
 
-    <!-- Menu Header -->
+    <!-- ==========================================
+         MENU HEADER
+    =========================================== -->
 
     <section class="menu-hero">
 
@@ -76,16 +84,187 @@
 
 
 
-    <!-- =========================
+    <!-- ==========================================
+         SEARCH AND CATEGORY CONTROLS
+    =========================================== -->
+
+    <section class="menu-controls">
+
+        <div class="menu-search">
+
+            <span>🔍</span>
+
+            <input
+                type="search"
+                id="menu-search"
+                placeholder="Search for food... e.g. chicken, pizza, rice"
+                autocomplete="off">
+
+        </div>
+
+
+        <div class="menu-categories">
+
+            <button
+                type="button"
+                class="category-button active"
+                data-category="none">
+
+                Choose Food
+
+            </button>
+
+
+            <button
+                type="button"
+                class="category-button"
+                data-category="breakfast">
+
+                Breakfast
+
+            </button>
+
+
+            <button
+                type="button"
+                class="category-button"
+                data-category="snacks">
+
+                Snacks & Bites
+
+            </button>
+
+
+            <button
+                type="button"
+                class="category-button"
+                data-category="goat">
+
+                Goat
+
+            </button>
+
+
+            <button
+                type="button"
+                class="category-button"
+                data-category="liver">
+
+                Liver
+
+            </button>
+
+
+            <button
+                type="button"
+                class="category-button"
+                data-category="chicken">
+
+                Chicken
+
+            </button>
+
+
+            <button
+                type="button"
+                class="category-button"
+                data-category="burgers">
+
+                Burgers
+
+            </button>
+
+
+            <button
+                type="button"
+                class="category-button"
+                data-category="accompaniments">
+
+                Accompaniments
+
+            </button>
+
+
+            <button
+                type="button"
+                class="category-button"
+                data-category="pizzas">
+
+                Pizza
+
+            </button>
+
+
+            <button
+                type="button"
+                class="category-button"
+                data-category="fish">
+
+                Fish
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==========================================
+         MENU START MESSAGE
+    =========================================== -->
+
+    <div id="menu-start-message"
+         class="menu-start-message">
+
+        <div class="menu-start-icon">
+            🍽️
+        </div>
+
+        <h2>What would you like to eat?</h2>
+
+        <p>
+            Choose a food category above or search
+            for something you would like to order.
+        </p>
+
+    </div>
+
+
+
+    <!-- ==========================================
+         NO SEARCH RESULTS
+    =========================================== -->
+
+    <p
+        id="menu-no-results"
+        class="menu-no-results">
+
+        No food found. Try another search.
+
+    </p>
+
+
+
+    <!-- ==========================================
          BREAKFAST
-    ========================== -->
+    =========================================== -->
 
-    <section id="breakfast" class="menu-section">
+    <section
+        id="breakfast"
+        class="menu-section"
+        data-category="breakfast">
 
-<img id="coffee-image"
-     src="images/coffee.avif"
-     alt="coffee">
-        <h2> Breakfast</h2>
+        <img
+            id="coffee-image"
+            src="images/coffee.avif"
+            alt="Coffee"
+            data-media-area="menu-breakfast"
+            data-media-position="main"
+            data-media-type="image">
+
+        <h2>Breakfast</h2>
+
 
         <div class="menu-grid">
 
@@ -98,8 +277,10 @@
                     UGX 20,000
                 </p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Cup of Coffee / Tea', 20000)">
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Cup of Coffee / Tea', 20000)">
 
                     Order Now
 
@@ -116,8 +297,10 @@
                     UGX 7,000
                 </p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Katogo', 7000)">
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Katogo', 7000)">
 
                     Order Now
 
@@ -132,150 +315,266 @@
 
 
 
-    <!-- =========================
-         SNACKS & BITES
-    ========================== -->
+    <!-- ==========================================
+         SNACKS
+    =========================================== -->
 
-    <section id="snacks" class="menu-section">
+    <section
+        id="snacks"
+        class="menu-section"
+        data-category="snacks">
 
-<img id="snacks-image"
-     src="images/snacks.png"
-     alt="snacks">
+        <img
+            id="snacks-image"
+            src="images/snacks.png"
+            alt="Snacks"
+            data-media-area="menu-snacks"
+            data-media-position="main"
+            data-media-type="image">
 
         <h2>Snacks & Bites</h2>
 
+
         <div class="menu-grid">
 
 
             <div class="menu-item">
+
                 <h3>Beef Samosa (Pair)</h3>
-                <p class="price">UGX 3,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Beef Samosa (Pair)', 3000)">
+                <p class="price">
+                    UGX 3,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Beef Samosa (Pair)', 3000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Beef Sausage (Pair)</h3>
-                <p class="price">UGX 4,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Beef Sausage (Pair)', 4000)">
+                <p class="price">
+                    UGX 4,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Beef Sausage (Pair)', 4000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Doughnuts</h3>
-                <p class="price">UGX 1,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Doughnuts', 1000)">
+                <p class="price">
+                    UGX 1,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Doughnuts', 1000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Kebab</h3>
-                <p class="price">UGX 2,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Kebab', 2000)">
+                <p class="price">
+                    UGX 2,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Kebab', 2000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Cupcake</h3>
-                <p class="price">UGX 1,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Cupcake', 1000)">
+                <p class="price">
+                    UGX 1,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Cupcake', 1000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Chips & Sausages</h3>
-                <p class="price">UGX 13,000 / 15,000</p>
 
-                <button class="button order-button"
-                        onclick="chooseChipsSausage()">
+                <p class="price">
+                    UGX 13,000 / 15,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="chooseChipsSausage()">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Ordinary Rolex</h3>
-                <p class="price">UGX 4,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Ordinary Rolex', 4000)">
+                <p class="price">
+                    UGX 4,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Ordinary Rolex', 4000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Chapati</h3>
-                <p class="price">UGX 2,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Chapati', 2000)">
+                <p class="price">
+                    UGX 2,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Chapati', 2000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Chicken Rolex</h3>
-                <p class="price">UGX 15,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Chicken Rolex', 15000)">
+                <p class="price">
+                    UGX 15,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Chicken Rolex', 15000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Omelette</h3>
-                <p class="price">UGX 4,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Omelette', 4000)">
+                <p class="price">
+                    UGX 4,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Omelette', 4000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Potato Wedges</h3>
-                <p class="price">UGX 10,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Potato Wedges', 10000)">
+                <p class="price">
+                    UGX 10,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Potato Wedges', 10000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
-                <h3>Chips Masala</h3>
-                <p class="price">UGX 12,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Chips Masala', 12000)">
+                <h3>Chips Masala</h3>
+
+                <p class="price">
+                    UGX 12,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Chips Masala', 12000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
@@ -285,55 +584,91 @@
 
 
 
-    <!-- =========================
+    <!-- ==========================================
          GOAT
-    ========================== -->
+    =========================================== -->
 
-    <section id="goat" class="menu-section">
+    <section
+        id="goat"
+        class="menu-section"
+        data-category="goat">
 
-<img id="goat-image"
-     src="images/goat.png"
-     alt="goat">
+        <img
+            id="goat-image"
+            src="images/goat.png"
+            alt="Goat"
+            data-media-area="menu-goat"
+            data-media-position="main"
+            data-media-type="image">
 
-        <h2> Goat</h2>
+        <h2>Goat</h2>
+
 
         <div class="menu-grid">
 
 
             <div class="menu-item">
+
                 <h3>Goat ½ kg</h3>
-                <p class="price">UGX 22,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Goat ½ kg', 22000)">
+                <p class="price">
+                    UGX 22,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Goat ½ kg', 22000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Goat 1 kg</h3>
-                <p class="price">UGX 42,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Goat 1 kg', 42000)">
+                <p class="price">
+                    UGX 42,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Goat 1 kg', 42000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Goat Sizzler ¼</h3>
-                <p class="price">UGX 30,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Goat Sizzler ¼', 30000)">
+                <p class="price">
+                    UGX 30,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Goat Sizzler ¼', 30000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Accompaniments</h3>
 
                 <p>
@@ -345,10 +680,15 @@
                     UGX 5,000 – 10,000
                 </p>
 
-                <button class="button order-button"
-                        onclick="chooseAccompaniment()">
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="chooseAccompaniment()">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
@@ -358,51 +698,86 @@
 
 
 
-    <!-- =========================
+    <!-- ==========================================
          LIVER
-    ========================== -->
+    =========================================== -->
 
-    <section id="liver" class="menu-section">
+    <section
+        id="liver"
+        class="menu-section"
+        data-category="liver">
 
-<img id="liver-image"
-     src="images/liver.png"
-     alt="liver">
+        <img
+            id="liver-image"
+            src="images/liver.png"
+            alt="Liver"
+            data-media-area="menu-liver"
+            data-media-position="main"
+            data-media-type="image">
 
-        <h2> Liver</h2>
+        <h2>Liver</h2>
+
 
         <div class="menu-grid">
 
 
             <div class="menu-item">
+
                 <h3>Pan Fried Liver ¼</h3>
-                <p class="price">UGX 11,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Pan Fried Liver ¼', 11000)">
+                <p class="price">
+                    UGX 11,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Pan Fried Liver ¼', 11000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Pan Fried Liver 1 kg</h3>
-                <p class="price">UGX 40,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Pan Fried Liver 1 kg', 40000)">
+                <p class="price">
+                    UGX 40,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Pan Fried Liver 1 kg', 40000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
-                <h3>Various Accompaniments</h3>
-                <p class="price">UGX 2,000 – 10,000</p>
 
-                <button class="button order-button"
-                        onclick="chooseLiverAccompaniment()">
+                <h3>Various Accompaniments</h3>
+
+                <p class="price">
+                    UGX 2,000 – 10,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="chooseLiverAccompaniment()">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
@@ -412,128 +787,226 @@
 
 
 
-    <!-- =========================
+    <!-- ==========================================
          CHICKEN
-    ========================== -->
+    =========================================== -->
 
-    <section id="chicken" class="menu-section">
+    <section
+        id="chicken"
+        class="menu-section"
+        data-category="chicken">
 
-<img id="chicken-image"
-     src="images/chicken.png"
-     alt="chicken">
+        <img
+            id="chicken-image"
+            src="images/chicken.png"
+            alt="Chicken"
+            data-media-area="menu-chicken"
+            data-media-position="main"
+            data-media-type="image">
 
         <h2>Chicken</h2>
 
+
         <div class="menu-grid">
 
 
             <div class="menu-item">
+
                 <h3>Kiteezi Fried Chicken</h3>
-                <p class="price">UGX 12,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Kiteezi Fried Chicken', 12000)">
+                <p class="price">
+                    UGX 12,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Kiteezi Fried Chicken', 12000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Indian Curry Chicken</h3>
-                <p class="price">UGX 15,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Indian Curry Chicken', 15000)">
+                <p class="price">
+                    UGX 15,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Indian Curry Chicken', 15000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>African Curry Chicken</h3>
-                <p class="price">UGX 13,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('African Curry Chicken', 13000)">
+                <p class="price">
+                    UGX 13,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('African Curry Chicken', 13000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Stir Fried Chicken</h3>
-                <p class="price">UGX 12,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Stir Fried Chicken', 12000)">
+                <p class="price">
+                    UGX 12,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Stir Fried Chicken', 12000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Grilled Chicken</h3>
-                <p class="price">UGX 10,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Grilled Chicken', 10000)">
+                <p class="price">
+                    UGX 10,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Grilled Chicken', 10000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Chicken Wings (6 pcs)</h3>
-                <p class="price">UGX 12,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Chicken Wings (6 pcs)', 12000)">
+                <p class="price">
+                    UGX 12,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Chicken Wings (6 pcs)', 12000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Chicken Drumsticks (4 pcs)</h3>
-                <p class="price">UGX 15,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Chicken Drumsticks (4 pcs)', 15000)">
+                <p class="price">
+                    UGX 15,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Chicken Drumsticks (4 pcs)', 15000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Chicken Sizzler</h3>
-                <p class="price">UGX 17,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Chicken Sizzler', 17000)">
+                <p class="price">
+                    UGX 17,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Chicken Sizzler', 17000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Roasted Chicken</h3>
-                <p class="price">UGX 10,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Roasted Chicken', 10000)">
+                <p class="price">
+                    UGX 10,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Roasted Chicken', 10000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
-                <h3>Chicken Pilawo</h3>
-                <p class="price">UGX 15,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Chicken Pilawo', 15000)">
+                <h3>Chicken Pilawo</h3>
+
+                <p class="price">
+                    UGX 15,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Chicken Pilawo', 15000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
@@ -543,50 +1016,86 @@
 
 
 
-    <!-- =========================
+    <!-- ==========================================
          BURGERS
-    ========================== -->
+    =========================================== -->
 
-    <section id="burgers" class="menu-section">
+    <section
+        id="burgers"
+        class="menu-section"
+        data-category="burgers">
 
-<img id="burger-image"
-     src="images/burger.avif"
-     alt="burger">
-        <h2> Burgers</h2>
+        <img
+            id="burger-image"
+            src="images/burger.avif"
+            alt="Burger"
+            data-media-area="menu-burgers"
+            data-media-position="main"
+            data-media-type="image">
+
+        <h2>Burgers</h2>
+
 
         <div class="menu-grid">
 
 
             <div class="menu-item">
+
                 <h3>Chicken Burger</h3>
-                <p class="price">UGX 14,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Chicken Burger', 14000)">
+                <p class="price">
+                    UGX 14,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Chicken Burger', 14000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Beef Burger</h3>
-                <p class="price">UGX 12,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Beef Burger', 12000)">
+                <p class="price">
+                    UGX 12,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Beef Burger', 12000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
-                <h3>Chips Accompaniment</h3>
-                <p class="price">UGX 8,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Burger Chips Accompaniment', 8000)">
+                <h3>Chips Accompaniment</h3>
+
+                <p class="price">
+                    UGX 8,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Burger Chips Accompaniment', 8000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
@@ -595,225 +1104,316 @@
     </section>
 
 
-<!-- =========================
-     ACCOMPANIMENTS
-========================== -->
 
-<section id="accompaniments" class="menu-section">
+    <!-- ==========================================
+         ACCOMPANIMENTS
+    =========================================== -->
 
-<img id="rice-image"
-     src="images/rice.jpg"
-     alt="accompaniment">
+    <section
+        id="accompaniments"
+        class="menu-section"
+        data-category="accompaniments">
 
-    <h2>Accompaniments</h2>
+        <img
+            id="rice-image"
+            src="images/rice.jpg"
+            alt="Accompaniments"
+            data-media-area="menu-accompaniments"
+            data-media-position="main"
+            data-media-type="image">
 
-    <div class="menu-grid">
+        <h2>Accompaniments</h2>
 
 
-        <div class="menu-item">
+        <div class="menu-grid">
 
-            <h3>White Rice (Brown, White)</h3>
 
-            <p class="price">
-                UGX 5,000
-            </p>
+            <div class="menu-item">
 
-            <button class="button order-button"
+                <h3>White Rice (Brown, White)</h3>
+
+                <p class="price">
+                    UGX 5,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
                     onclick="addToOrder('White Rice (Brown, White)', 5000)">
-                Order Now
-            </button>
 
-        </div>
+                    Order Now
+
+                </button>
+
+            </div>
 
 
-        <div class="menu-item">
+            <div class="menu-item">
 
-            <h3>Vegetable Rice</h3>
+                <h3>Vegetable Rice</h3>
 
-            <p class="price">
-                UGX 8,000
-            </p>
+                <p class="price">
+                    UGX 8,000
+                </p>
 
-            <button class="button order-button"
+                <button
+                    type="button"
+                    class="button order-button"
                     onclick="addToOrder('Vegetable Rice', 8000)">
-                Order Now
-            </button>
 
-        </div>
+                    Order Now
+
+                </button>
+
+            </div>
 
 
-        <div class="menu-item">
+            <div class="menu-item">
 
-            <h3>Egg Fried Rice</h3>
+                <h3>Egg Fried Rice</h3>
 
-            <p class="price">
-                UGX 8,000
-            </p>
+                <p class="price">
+                    UGX 8,000
+                </p>
 
-            <button class="button order-button"
+                <button
+                    type="button"
+                    class="button order-button"
                     onclick="addToOrder('Egg Fried Rice', 8000)">
-                Order Now
-            </button>
 
-        </div>
+                    Order Now
+
+                </button>
+
+            </div>
 
 
-        <div class="menu-item">
+            <div class="menu-item">
 
-            <h3>Chips Big</h3>
+                <h3>Chips Big</h3>
 
-            <p class="price">
-                UGX 10,000
-            </p>
+                <p class="price">
+                    UGX 10,000
+                </p>
 
-            <button class="button order-button"
+                <button
+                    type="button"
+                    class="button order-button"
                     onclick="addToOrder('Chips Big', 10000)">
-                Order Now
-            </button>
 
-        </div>
+                    Order Now
+
+                </button>
+
+            </div>
 
 
-        <div class="menu-item">
+            <div class="menu-item">
 
-            <h3>Chips Small</h3>
+                <h3>Chips Small</h3>
 
-            <p class="price">
-                UGX 8,000
-            </p>
+                <p class="price">
+                    UGX 8,000
+                </p>
 
-            <button class="button order-button"
+                <button
+                    type="button"
+                    class="button order-button"
                     onclick="addToOrder('Chips Small', 8000)">
-                Order Now
-            </button>
 
-        </div>
+                    Order Now
+
+                </button>
+
+            </div>
 
 
-        <div class="menu-item">
+            <div class="menu-item">
 
-            <h3>Potato Wedges</h3>
+                <h3>Potato Wedges</h3>
 
-            <p class="price">
-                UGX 10,000
-            </p>
+                <p class="price">
+                    UGX 10,000
+                </p>
 
-            <button class="button order-button"
+                <button
+                    type="button"
+                    class="button order-button"
                     onclick="addToOrder('Potato Wedges', 10000)">
-                Order Now
-            </button>
 
-        </div>
+                    Order Now
+
+                </button>
+
+            </div>
 
 
-        <div class="menu-item">
+            <div class="menu-item">
 
-            <h3>Posho</h3>
+                <h3>Posho</h3>
 
-            <p class="price">
-                UGX 5,000
-            </p>
+                <p class="price">
+                    UGX 5,000
+                </p>
 
-            <button class="button order-button"
+                <button
+                    type="button"
+                    class="button order-button"
                     onclick="addToOrder('Posho', 5000)">
-                Order Now
-            </button>
 
-        </div>
+                    Order Now
+
+                </button>
+
+            </div>
 
 
-        <div class="menu-item">
+            <div class="menu-item">
 
-            <h3>Mashed Potatoes</h3>
+                <h3>Mashed Potatoes</h3>
 
-            <p class="price">
-                UGX 5,000
-            </p>
+                <p class="price">
+                    UGX 5,000
+                </p>
 
-            <button class="button order-button"
+                <button
+                    type="button"
+                    class="button order-button"
                     onclick="addToOrder('Mashed Potatoes', 5000)">
-                Order Now
-            </button>
 
-        </div>
+                    Order Now
+
+                </button>
+
+            </div>
 
 
-        <div class="menu-item">
+            <div class="menu-item">
 
-            <h3>Boiled Potatoes</h3>
+                <h3>Boiled Potatoes</h3>
 
-            <p class="price">
-                UGX 5,000
-            </p>
+                <p class="price">
+                    UGX 5,000
+                </p>
 
-            <button class="button order-button"
+                <button
+                    type="button"
+                    class="button order-button"
                     onclick="addToOrder('Boiled Potatoes', 5000)">
-                Order Now
-            </button>
+
+                    Order Now
+
+                </button>
+
+            </div>
+
 
         </div>
 
-
-    </div>
-
-</section>
+    </section>
 
 
-    <!-- =========================
+
+    <!-- ==========================================
          PIZZAS
-    ========================== -->
+    =========================================== -->
 
-    <section id="pizzas" class="menu-section">
+    <section
+        id="pizzas"
+        class="menu-section"
+        data-category="pizzas">
 
-<img id="pizza-image"
-     src="images/pizza.jpg"
-     alt="pizza">
+        <img
+            id="pizza-image"
+            src="images/pizza.jpg"
+            alt="Pizza"
+            data-media-area="menu-pizzas"
+            data-media-position="main"
+            data-media-type="image">
+
         <h2>Pizzas</h2>
 
+
         <div class="menu-grid">
 
 
             <div class="menu-item">
+
                 <h3>Chicken Pizza Large</h3>
-                <p class="price">UGX 30,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Chicken Pizza Large', 30000)">
+                <p class="price">
+                    UGX 30,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Chicken Pizza Large', 30000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Chicken Pizza Small</h3>
-                <p class="price">UGX 11,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Chicken Pizza Small', 11000)">
+                <p class="price">
+                    UGX 11,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Chicken Pizza Small', 11000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Beef Pizza Large</h3>
-                <p class="price">UGX 30,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Beef Pizza Large', 30000)">
+                <p class="price">
+                    UGX 30,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Beef Pizza Large', 30000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
-                <h3>Margherita Pizza Large</h3>
-                <p class="price">UGX 30,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Margherita Pizza Large', 30000)">
+                <h3>Margherita Pizza Large</h3>
+
+                <p class="price">
+                    UGX 30,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Margherita Pizza Large', 30000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
@@ -823,105 +1423,186 @@
 
 
 
-    <!-- =========================
+    <!-- ==========================================
          FISH
-    ========================== -->
+    =========================================== -->
 
-    <section id="fish" class="menu-section">
+    <section
+        id="fish"
+        class="menu-section"
+        data-category="fish">
 
-<img id="fish-image"
-     src="images/fish.png"
-     alt="fish">
-        <h2> Fish</h2>
+        <img
+            id="fish-image"
+            src="images/fish.png"
+            alt="Fish"
+            data-media-area="menu-fish"
+            data-media-position="main"
+            data-media-type="image">
+
+        <h2>Fish</h2>
+
 
         <div class="menu-grid">
 
 
             <div class="menu-item">
+
                 <h3>Whole Fish</h3>
-                <p class="price">UGX 35,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Whole Fish', 35000)">
+                <p class="price">
+                    UGX 35,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Whole Fish', 35000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Fish Fillet (Nile Perch)</h3>
-                <p class="price">UGX 15,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Fish Fillet (Nile Perch)', 15000)">
+                <p class="price">
+                    UGX 15,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Fish Fillet (Nile Perch)', 15000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Fish Fillet (Tilapia)</h3>
-                <p class="price">UGX 18,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Fish Fillet (Tilapia)', 18000)">
+                <p class="price">
+                    UGX 18,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Fish Fillet (Tilapia)', 18000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Fish Fingers (Nile Perch)</h3>
-                <p class="price">UGX 15,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Fish Fingers (Nile Perch)', 15000)">
+                <p class="price">
+                    UGX 15,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Fish Fingers (Nile Perch)', 15000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Fish Fingers (Tilapia)</h3>
-                <p class="price">UGX 18,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Fish Fingers (Tilapia)', 18000)">
+                <p class="price">
+                    UGX 18,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Fish Fingers (Tilapia)', 18000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Oven Baked Fish (Whole)</h3>
-                <p class="price">UGX 36,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Oven Baked Fish (Whole)', 36000)">
+                <p class="price">
+                    UGX 36,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Oven Baked Fish (Whole)', 36000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
+
                 <h3>Fish Sizzler (Nile Perch)</h3>
-                <p class="price">UGX 18,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Fish Sizzler (Nile Perch)', 18000)">
+                <p class="price">
+                    UGX 18,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Fish Sizzler (Nile Perch)', 18000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
             <div class="menu-item">
-                <h3>Fish Sizzler (Tilapia)</h3>
-                <p class="price">UGX 21,000</p>
 
-                <button class="button order-button"
-                        onclick="addToOrder('Fish Sizzler (Tilapia)', 21000)">
+                <h3>Fish Sizzler (Tilapia)</h3>
+
+                <p class="price">
+                    UGX 21,000
+                </p>
+
+                <button
+                    type="button"
+                    class="button order-button"
+                    onclick="addToOrder('Fish Sizzler (Tilapia)', 21000)">
+
                     Order Now
+
                 </button>
+
             </div>
 
 
@@ -931,19 +1612,55 @@
 
 
 
-    <!-- =========================
-         ORDER
-    ========================== -->
+    <!-- ==========================================
+         FLOATING ORDER BUTTON
+    =========================================== -->
 
-    <section class="order-section">
+    <button
+        id="floating-order-button"
+        class="floating-order-button"
+        type="button"
+        onclick="openOrder()">
+
+        🛒 Your Order
+
+        <span id="order-count">
+            0
+        </span>
+
+    </button>
+
+
+
+    <!-- ==========================================
+         ORDER PANEL
+    =========================================== -->
+
+    <section
+        class="order-section"
+        id="order-panel">
+
+
+        <button
+            type="button"
+            class="close-order"
+            onclick="closeOrder()">
+
+            ×
+
+        </button>
+
 
         <h2>Your Order</h2>
 
+
         <div id="order-box">
+
 
             <p id="selected-item">
                 No items selected yet.
             </p>
+
 
             <div class="form-group">
 
@@ -954,7 +1671,8 @@
                 <input
                     type="text"
                     id="customerName"
-                    placeholder="Enter your name">
+                    placeholder="Enter your name"
+                    autocomplete="name">
 
             </div>
 
@@ -968,7 +1686,8 @@
                 <input
                     type="tel"
                     id="phone"
-                    placeholder="07XXXXXXXX">
+                    placeholder="07XXXXXXXX"
+                    autocomplete="tel">
 
             </div>
 
@@ -1007,8 +1726,7 @@
                 <textarea
                     id="message"
                     rows="4"
-                    placeholder="Any special instructions?">
-                </textarea>
+                    placeholder="Any special instructions?"></textarea>
 
             </div>
 
@@ -1025,6 +1743,7 @@
 
 
             <button
+                type="button"
                 class="whatsapp-button"
                 onclick="sendOrder()">
 
@@ -1032,13 +1751,16 @@
 
             </button>
 
+
         </div>
 
     </section>
 
 
 
-    <!-- Footer -->
+    <!-- ==========================================
+         FOOTER
+    =========================================== -->
 
     <footer>
 
@@ -1051,22 +1773,49 @@
 
 
 
+    <!-- ==========================================
+         SUPABASE
+    =========================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="script.js"></script>
+
+
+
+    <!-- ==========================================
+         MENU ORDERING JAVASCRIPT
+    =========================================== -->
+
     <script>
+
+        // ==========================================
+        // ORDER
+        // ==========================================
 
         let order = [];
 
 
+
+        // ==========================================
+        // ADD ITEM
+        // ==========================================
+
         function addToOrder(item, price) {
 
             const existingItem =
-                order.find(product => product.name === item);
+                order.find(
+                    product => product.name === item
+                );
 
 
             if (existingItem) {
 
                 existingItem.quantity++;
 
-            } else {
+            }
+
+            else {
 
                 order.push({
 
@@ -1083,23 +1832,34 @@
 
             updateOrder();
 
-            document
-                .getElementById("order-box")
-                .scrollIntoView({
-                    behavior: "smooth"
-                });
+            showAddedMessage(item);
 
         }
 
 
 
+        // ==========================================
+        // UPDATE ORDER
+        // ==========================================
+
         function updateOrder() {
 
             const selectedItem =
-                document.getElementById("selected-item");
+                document.getElementById(
+                    "selected-item"
+                );
+
 
             const totalElement =
-                document.getElementById("total");
+                document.getElementById(
+                    "total"
+                );
+
+
+            const orderCount =
+                document.getElementById(
+                    "order-count"
+                );
 
 
             if (order.length === 0) {
@@ -1110,6 +1870,9 @@
                 totalElement.textContent =
                     "UGX 0";
 
+                orderCount.textContent =
+                    "0";
+
                 return;
 
             }
@@ -1119,51 +1882,62 @@
 
             let total = 0;
 
-
-            order.forEach(function(item, index) {
-
-                const itemTotal =
-                    item.price * item.quantity;
+            let itemCount = 0;
 
 
-                total += itemTotal;
+            order.forEach(
+                function(item, index) {
+
+                    const itemTotal =
+                        item.price *
+                        item.quantity;
 
 
-                orderHTML += `
+                    total += itemTotal;
 
-                    <div class="order-line">
+                    itemCount +=
+                        item.quantity;
 
-                        <strong>
-                            ${item.name}
-                        </strong>
 
-                        <br>
+                    orderHTML += `
 
-                        Quantity:
-                        ${item.quantity}
+                        <div class="order-line">
 
-                        <br>
+                            <strong>
+                                ${item.name}
+                            </strong>
 
-                        UGX
-                        ${itemTotal.toLocaleString()}
+                            <div class="order-line-details">
 
-                        <br>
+                                <span>
+                                    ${item.quantity}
+                                    ×
+                                    UGX
+                                    ${item.price.toLocaleString()}
+                                </span>
 
-                        <button
-                            onclick="removeItem(${index})"
-                            class="remove-button">
+                                <strong>
+                                    UGX
+                                    ${itemTotal.toLocaleString()}
+                                </strong>
 
-                            Remove
+                            </div>
 
-                        </button>
+                            <button
+                                type="button"
+                                onclick="removeItem(${index})"
+                                class="remove-button">
 
-                    </div>
+                                Remove
 
-                    <hr>
+                            </button>
 
-                `;
+                        </div>
 
-            });
+                    `;
+
+                }
+            );
 
 
             selectedItem.innerHTML =
@@ -1174,9 +1948,17 @@
                 "UGX " +
                 total.toLocaleString();
 
+
+            orderCount.textContent =
+                itemCount;
+
         }
 
 
+
+        // ==========================================
+        // REMOVE ITEM
+        // ==========================================
 
         function removeItem(index) {
 
@@ -1188,15 +1970,138 @@
 
 
 
+        // ==========================================
+        // OPEN ORDER
+        // ==========================================
+
+        function openOrder() {
+
+            const orderPanel =
+                document.getElementById(
+                    "order-panel"
+                );
+
+
+            orderPanel.classList.add(
+                "order-open"
+            );
+
+
+            document.body.classList.add(
+                "order-is-open"
+            );
+
+        }
+
+
+
+        // ==========================================
+        // CLOSE ORDER
+        // ==========================================
+
+        function closeOrder() {
+
+            const orderPanel =
+                document.getElementById(
+                    "order-panel"
+                );
+
+
+            orderPanel.classList.remove(
+                "order-open"
+            );
+
+
+            document.body.classList.remove(
+                "order-is-open"
+            );
+
+        }
+
+
+
+        // ==========================================
+        // ADDED MESSAGE
+        // ==========================================
+
+        function showAddedMessage(item) {
+
+            const message =
+                document.createElement(
+                    "div"
+                );
+
+
+            message.className =
+                "added-message";
+
+
+            message.textContent =
+                "✓ " +
+                item +
+                " added to your order";
+
+
+            document.body.appendChild(
+                message
+            );
+
+
+            setTimeout(
+                function() {
+
+                    message.classList.add(
+                        "show"
+                    );
+
+                },
+                10
+            );
+
+
+            setTimeout(
+                function() {
+
+                    message.classList.remove(
+                        "show"
+                    );
+
+
+                    setTimeout(
+                        function() {
+
+                            message.remove();
+
+                        },
+                        300
+                    );
+
+                },
+                1800
+            );
+
+        }
+
+
+
+        // ==========================================
+        // CHIPS & SAUSAGES
+        // ==========================================
+
         function chooseChipsSausage() {
 
             const choice =
                 prompt(
-                    "Enter price: 13000 or 15000"
+                    "Choose your price:\n\n" +
+                    "1. UGX 13,000\n" +
+                    "2. UGX 15,000"
                 );
 
 
-            if (choice === "13000") {
+            if (
+                choice === "13000" ||
+                choice === "1"
+            ) {
 
                 addToOrder(
                     "Chips & Sausages",
@@ -1205,7 +2110,10 @@
 
             }
 
-            else if (choice === "15000") {
+            else if (
+                choice === "15000" ||
+                choice === "2"
+            ) {
 
                 addToOrder(
                     "Chips & Sausages",
@@ -1217,7 +2125,7 @@
             else {
 
                 alert(
-                    "Please enter 13000 or 15000."
+                    "Please choose UGX 13,000 or UGX 15,000."
                 );
 
             }
@@ -1226,11 +2134,16 @@
 
 
 
+        // ==========================================
+        // GOAT ACCOMPANIMENT
+        // ==========================================
+
         function chooseAccompaniment() {
 
             const price =
                 prompt(
-                    "Enter the accompaniment price (5000 - 10000):"
+                    "Enter accompaniment price:\n" +
+                    "UGX 5,000 - UGX 10,000"
                 );
 
 
@@ -1262,11 +2175,16 @@
 
 
 
+        // ==========================================
+        // LIVER ACCOMPANIMENT
+        // ==========================================
+
         function chooseLiverAccompaniment() {
 
             const price =
                 prompt(
-                    "Enter the accompaniment price (2000 - 10000):"
+                    "Enter accompaniment price:\n" +
+                    "UGX 2,000 - UGX 10,000"
                 );
 
 
@@ -1298,9 +2216,337 @@
 
 
 
+        // ==========================================
+        // MENU SEARCH
+        // ==========================================
+
+        const menuSearch =
+            document.getElementById(
+                "menu-search"
+            );
+
+
+        const menuSections =
+            document.querySelectorAll(
+                ".menu-section"
+            );
+
+
+        const categoryButtons =
+            document.querySelectorAll(
+                ".category-button"
+            );
+
+
+        const noResults =
+            document.getElementById(
+                "menu-no-results"
+            );
+
+
+        const startMessage =
+            document.getElementById(
+                "menu-start-message"
+            );
+
+
+        let currentCategory =
+            "none";
+
+
+
+        // ==========================================
+        // FILTER MENU
+        // ==========================================
+
+        function filterMenu() {
+
+            const searchText =
+                menuSearch.value
+                    .trim()
+                    .toLowerCase();
+
+
+            let foundAnything =
+                false;
+
+
+            // --------------------------------------
+            // NOTHING SEARCHED
+            // --------------------------------------
+
+            if (
+                searchText === "" &&
+                currentCategory === "none"
+            ) {
+
+                menuSections.forEach(
+                    function(section) {
+
+                        section.style.display =
+                            "none";
+
+                    }
+                );
+
+
+                startMessage.style.display =
+                    "block";
+
+
+                noResults.style.display =
+                    "none";
+
+
+                return;
+
+            }
+
+
+            startMessage.style.display =
+                "none";
+
+
+            // --------------------------------------
+            // SEARCH MODE
+            // --------------------------------------
+
+            menuSections.forEach(
+                function(section) {
+
+                    const sectionCategory =
+                        section.dataset.category;
+
+
+                    // Category filtering
+
+                    if (
+                        currentCategory !== "none" &&
+                        currentCategory !== "all" &&
+                        searchText === "" &&
+                        sectionCategory !== currentCategory
+                    ) {
+
+                        section.style.display =
+                            "none";
+
+                        return;
+
+                    }
+
+
+                    const foodItems =
+                        section.querySelectorAll(
+                            ".menu-item"
+                        );
+
+
+                    let sectionHasMatch =
+                        false;
+
+
+                    foodItems.forEach(
+                        function(item) {
+
+                            const foodText =
+                                item.textContent
+                                    .toLowerCase();
+
+
+                            const matchesSearch =
+                                searchText === "" ||
+                                foodText.includes(
+                                    searchText
+                                );
+
+
+                            if (
+                                matchesSearch
+                            ) {
+
+                                item.style.display =
+                                    "";
+
+                                sectionHasMatch =
+                                    true;
+
+                                foundAnything =
+                                    true;
+
+                            }
+
+                            else {
+
+                                item.style.display =
+                                    "none";
+
+                            }
+
+                        }
+                    );
+
+
+                    if (
+                        sectionHasMatch
+                    ) {
+
+                        section.style.display =
+                            "";
+
+                    }
+
+                    else {
+
+                        section.style.display =
+                            "none";
+
+                    }
+
+                }
+            );
+
+
+            noResults.style.display =
+                foundAnything
+                    ? "none"
+                    : "block";
+
+        }
+
+
+
+        // ==========================================
+        // SEARCH WHILE TYPING
+        // ==========================================
+
+        menuSearch.addEventListener(
+            "input",
+            function() {
+
+                const searchText =
+                    menuSearch.value.trim();
+
+
+                if (
+                    searchText !== ""
+                ) {
+
+                    // Search through every category
+
+                    currentCategory =
+                        "all";
+
+
+                    categoryButtons.forEach(
+                        function(button) {
+
+                            button.classList.remove(
+                                "active"
+                            );
+
+                        }
+                    );
+
+                }
+
+
+                filterMenu();
+
+            }
+        );
+
+
+
+        // ==========================================
+        // CATEGORY BUTTONS
+        // ==========================================
+
+        categoryButtons.forEach(
+            function(button) {
+
+                button.addEventListener(
+                    "click",
+                    function() {
+
+                        categoryButtons.forEach(
+                            function(btn) {
+
+                                btn.classList.remove(
+                                    "active"
+                                );
+
+                            }
+                        );
+
+
+                        this.classList.add(
+                            "active"
+                        );
+
+
+                        currentCategory =
+                            this.dataset.category;
+
+
+                        // Clear search when
+                        // selecting a category
+
+                        menuSearch.value =
+                            "";
+
+
+                        filterMenu();
+
+
+                        // Scroll only a tiny amount
+                        // to the selected category
+
+                        const selectedSection =
+                            document.querySelector(
+                                `.menu-section[data-category="${currentCategory}"]`
+                            );
+
+
+                        if (
+                            selectedSection
+                        ) {
+
+                            setTimeout(
+                                function() {
+
+                                    selectedSection.scrollIntoView(
+                                        {
+                                            behavior:
+                                                "smooth",
+
+                                            block:
+                                                "start"
+                                        }
+                                    );
+
+                                },
+                                50
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+
+        // ==========================================
+        // SEND ORDER TO WHATSAPP
+        // ==========================================
+
         function sendOrder() {
 
-            if (order.length === 0) {
+            if (
+                order.length === 0
+            ) {
 
                 alert(
                     "Please select at least one item."
@@ -1312,27 +2558,38 @@
 
 
             const customerName =
-                document.getElementById(
-                    "customerName"
-                ).value.trim();
+                document
+                    .getElementById(
+                        "customerName"
+                    )
+                    .value
+                    .trim();
 
 
             const phone =
-                document.getElementById(
-                    "phone"
-                ).value.trim();
+                document
+                    .getElementById(
+                        "phone"
+                    )
+                    .value
+                    .trim();
 
 
             const orderType =
-                document.getElementById(
-                    "location"
-                ).value;
+                document
+                    .getElementById(
+                        "location"
+                    )
+                    .value;
 
 
             const message =
-                document.getElementById(
-                    "message"
-                ).value.trim();
+                document
+                    .getElementById(
+                        "message"
+                    )
+                    .value
+                    .trim();
 
 
             if (
@@ -1351,60 +2608,66 @@
 
 
             let whatsappMessage =
-                "Hello Kiteezi Recreational Center!%0A%0A";
+                "Hello Kiteezi Recreational Center!\n\n";
+
 
             whatsappMessage +=
-                "I would like to place an order.%0A%0A";
+                "I would like to place an order.\n\n";
 
 
             let total = 0;
 
 
-            order.forEach(function(item) {
+            order.forEach(
+                function(item) {
 
-                const itemTotal =
-                    item.price * item.quantity;
+                    const itemTotal =
+                        item.price *
+                        item.quantity;
 
 
-                total += itemTotal;
+                    total += itemTotal;
 
 
-                whatsappMessage +=
-                    item.name +
-                    " x " +
-                    item.quantity +
-                    " = UGX " +
-                    itemTotal.toLocaleString() +
-                    "%0A";
+                    whatsappMessage +=
+                        item.name +
+                        " x " +
+                        item.quantity +
+                        " = UGX " +
+                        itemTotal.toLocaleString() +
+                        "\n";
 
-            });
+                }
+            );
 
 
             whatsappMessage +=
-                "%0ATotal: UGX " +
+                "\nTotal: UGX " +
                 total.toLocaleString();
 
 
             whatsappMessage +=
-                "%0A%0AName: " +
-                encodeURIComponent(customerName);
+                "\n\nName: " +
+                customerName;
 
 
             whatsappMessage +=
-                "%0APhone: " +
-                encodeURIComponent(phone);
+                "\nPhone: " +
+                phone;
 
 
             whatsappMessage +=
-                "%0AOrder Type: " +
-                encodeURIComponent(orderType);
+                "\nOrder Type: " +
+                orderType;
 
 
-            if (message !== "") {
+            if (
+                message !== ""
+            ) {
 
                 whatsappMessage +=
-                    "%0AAdditional Information: " +
-                    encodeURIComponent(message);
+                    "\nAdditional Information: " +
+                    message;
 
             }
 
@@ -1417,7 +2680,9 @@
                 "https://wa.me/" +
                 whatsappNumber +
                 "?text=" +
-                whatsappMessage;
+                encodeURIComponent(
+                    whatsappMessage
+                );
 
 
             window.open(
@@ -1427,9 +2692,39 @@
 
         }
 
+
+
+        // ==========================================
+        // ESCAPE KEY CLOSES ORDER
+        // ==========================================
+
+        document.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key === "Escape"
+                ) {
+
+                    closeOrder();
+
+                }
+
+            }
+        );
+
+
+
+        // ==========================================
+        // INITIAL MENU STATE
+        // ==========================================
+
+        filterMenu();
+
+        updateOrder();
+
     </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js"></script>
+
 
 </body>
 

@@ -25,6 +25,11 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
     "sb_publishable__pq1skdZvbMRm_R67-xYmw_Ogsm4r00";
 
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
 // ==========================================
 // SUBMIT REVIEW

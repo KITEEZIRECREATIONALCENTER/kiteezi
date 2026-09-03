@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta name="viewport"
@@ -10,85 +11,167 @@
     <title>Kiteezi Recreational Center - Admin</title>
 
     <link rel="stylesheet" href="admin.css">
+
 </head>
+
 
 <body>
 
-    <div class="admin-container">
+<div class="admin-container">
 
-        <h1>Kiteezi Recreational Center</h1>
+    <h1>Kiteezi Recreational Center</h1>
 
-        <h2>Admin Image Manager</h2>
-
-        <!-- LOGIN -->
-
-        <div id="login-section">
-
-            <h3>Administrator Login</h3>
-
-            <input
-                type="email"
-                id="admin-email"
-                placeholder="Admin email"
-            >
-
-            <input
-                type="password"
-                id="admin-password"
-                placeholder="Password"
-            >
-
-            <button id="login-button">
-                Login
-            </button>
-
-            <p id="login-message"></p>
-
-        </div>
+    <h2>Admin Image Manager</h2>
 
 
-        <!-- ADMIN PANEL -->
+    <!-- LOGIN -->
 
-        <div id="admin-panel" style="display: none;">
+    <div id="login-section">
 
-            <button id="logout-button">
-                Logout
-            </button>
+        <h3>Administrator Login</h3>
 
-            <hr>
+        <input
+            type="email"
+            id="admin-email"
+            placeholder="Admin email"
+        >
 
-            <h3>Upload Image</h3>
+        <input
+            type="password"
+            id="admin-password"
+            placeholder="Password"
+        >
 
-            <input
-                type="file"
-                id="image-file"
-                accept="image/*"
-            >
+        <button id="login-button">
+            Login
+        </button>
 
-            <button id="upload-button">
-                Upload Image
-            </button>
-
-            <p id="upload-message"></p>
-
-            <hr>
-
-            <h3>Website Images</h3>
-
-            <div id="image-list">
-                Loading images...
-            </div>
-
-        </div>
+        <p id="login-message"></p>
 
     </div>
 
 
-    <!-- SUPABASE -->
+    <!-- ADMIN PANEL -->
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <div id="admin-panel" style="display:none;">
 
-    <script src="admin.js"></script>
+        <button id="logout-button">
+            Logout
+        </button>
+
+
+        <hr>
+
+
+        <h3>Manage Website Images</h3>
+
+
+        <label for="image-area">
+            Website Area
+        </label>
+
+        <select id="image-area">
+
+            <option value="">
+                Select an area
+            </option>
+
+            <option value="hero">
+                Hero Background
+            </option>
+
+            <option value="about">
+                About Section
+            </option>
+
+            <option value="swimming">
+                Swimming Area
+            </option>
+
+            <option value="events">
+                Events Area
+            </option>
+
+            <option value="restaurant">
+                Restaurant Area
+            </option>
+
+            <option value="food">
+                Food Area
+            </option>
+
+        </select>
+
+
+        <label for="image-position">
+            Image Position
+        </label>
+
+        <select id="image-position">
+
+            <option value="">
+                Select image position
+            </option>
+
+            <option value="main">
+                Main Image
+            </option>
+
+            <option value="image-1">
+                Image 1
+            </option>
+
+            <option value="image-2">
+                Image 2
+            </option>
+
+            <option value="image-3">
+                Image 3
+            </option>
+
+            <option value="image-4">
+                Image 4
+            </option>
+
+            <option value="image-5">
+                Image 5
+            </option>
+
+        </select>
+
+
+        <input
+            type="file"
+            id="image-file"
+            accept="image/*"
+        >
+
+
+        <button id="upload-button">
+            Upload / Replace Image
+        </button>
+
+
+        <p id="upload-message"></p>
+
+
+        <hr>
+
+
+        <h3>Current Website Images</h3>
+
+        <div id="image-list">
+            Loading images...
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="admin.js"></script>
 
 </body>
 

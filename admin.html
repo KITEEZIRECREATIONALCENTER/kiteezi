@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Kiteezi Recreational Center - Admin</title>
+
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+    <div class="admin-container">
+
+        <h1>Kiteezi Recreational Center</h1>
+
+        <h2>Admin Image Manager</h2>
+
+        <!-- LOGIN -->
+
+        <div id="login-section">
+
+            <h3>Administrator Login</h3>
+
+            <input
+                type="email"
+                id="admin-email"
+                placeholder="Admin email"
+            >
+
+            <input
+                type="password"
+                id="admin-password"
+                placeholder="Password"
+            >
+
+            <button id="login-button">
+                Login
+            </button>
+
+            <p id="login-message"></p>
+
+        </div>
+
+
+        <!-- ADMIN PANEL -->
+
+        <div id="admin-panel" style="display: none;">
+
+            <button id="logout-button">
+                Logout
+            </button>
+
+            <hr>
+
+            <h3>Upload Image</h3>
+
+            <input
+                type="file"
+                id="image-file"
+                accept="image/*"
+            >
+
+            <button id="upload-button">
+                Upload Image
+            </button>
+
+            <p id="upload-message"></p>
+
+            <hr>
+
+            <h3>Website Images</h3>
+
+            <div id="image-list">
+                Loading images...
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SUPABASE -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="admin.js"></script>
+
+</body>
+
+</html>

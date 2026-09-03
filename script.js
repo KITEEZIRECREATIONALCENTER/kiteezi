@@ -814,5 +814,5 @@ loadManagedMedia();
 
 function openWhatsApp() {
     window.location.href =
-        "https://wa.me/256XXXXXXXXX?text=Hello%20I%20would%20like%20to%20make%20an%20inquiry";
+        "https://wa.me/256756749854?text=Hello%20I%20would%20like%20to%20make%20an%20inquiry";
 }

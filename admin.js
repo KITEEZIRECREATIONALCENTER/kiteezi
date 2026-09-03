@@ -4,12 +4,9 @@
 // ==========================================
 
 
-// ==========================================
-// SUPABASE CONNECTION
-// ==========================================
-
 const SUPABASE_URL =
     "https://pkvctsfdqyzlcryikcox.supabase.co";
+
 
 const SUPABASE_KEY =
     "sb_publishable__pq1skdZvbMRm_R67-xYmw_Ogsm4r00";
@@ -44,6 +41,12 @@ const uploadButton =
 const imageFile =
     document.getElementById("image-file");
 
+const imageArea =
+    document.getElementById("image-area");
+
+const imagePosition =
+    document.getElementById("image-position");
+
 const loginMessage =
     document.getElementById("login-message");
 
@@ -73,6 +76,7 @@ loginButton.addEventListener(
                 .getElementById("admin-password")
                 .value;
 
+
         if (!email || !password) {
 
             loginMessage.textContent =
@@ -82,7 +86,7 @@ loginButton.addEventListener(
         }
 
 
-        const { data, error } =
+        const { error } =
             await supabaseClient.auth
                 .signInWithPassword({
                     email: email,
@@ -145,7 +149,7 @@ logoutButton.addEventListener(
 
 
 // ==========================================
-// UPLOAD IMAGE
+// UPLOAD / REPLACE IMAGE
 // ==========================================
 
 uploadButton.addEventListener(
@@ -155,26 +159,50 @@ uploadButton.addEventListener(
         const file =
             imageFile.files[0];
 
+        const area =
+            imageArea.value;
+
+        const position =
+            imagePosition.value;
+
+
         if (!file) {
 
             uploadMessage.textContent =
-                "Please choose an image first.";
+                "Please choose an image.";
 
             return;
         }
 
 
-        const fileName =
-            Date.now() +
-            "-" +
-            file.name;
+        if (!area || !position) {
+
+            uploadMessage.textContent =
+                "Please select the website area and image position.";
+
+            return;
+        }
 
 
         uploadMessage.textContent =
             "Uploading image...";
 
 
-        const { error } =
+        // Create a unique filename
+
+        const fileName =
+            area +
+            "-" +
+            position +
+            "-" +
+            Date.now() +
+            "-" +
+            file.name;
+
+
+        // Upload to Supabase Storage
+
+        const { error: uploadError } =
             await supabaseClient.storage
                 .from("website-images")
                 .upload(
@@ -183,12 +211,68 @@ uploadButton.addEventListener(
                 );
 
 
-        if (error) {
+        if (uploadError) {
 
-            console.error(error);
+            console.error(uploadError);
 
             uploadMessage.textContent =
-                "Upload failed.";
+                "Image upload failed.";
+
+            return;
+        }
+
+
+        // Check whether this position
+        // already has an image
+
+        const { data: oldImage } =
+            await supabaseClient
+                .from("website_images")
+                .select("*")
+                .eq("area", area)
+                .eq("position", position)
+                .maybeSingle();
+
+
+        // If an old image exists,
+        // delete it from Storage
+
+        if (oldImage) {
+
+            await supabaseClient.storage
+                .from("website-images")
+                .remove([
+                    oldImage.file_path
+                ]);
+        }
+
+
+        // Save the new image location
+        // in the database
+
+        const { error: databaseError } =
+            await supabaseClient
+                .from("website_images")
+                .upsert(
+                    {
+                        area: area,
+                        position: position,
+                        file_path: fileName,
+                        updated_at: new Date().toISOString()
+                    },
+                    {
+                        onConflict:
+                            "area,position"
+                    }
+                );
+
+
+        if (databaseError) {
+
+            console.error(databaseError);
+
+            uploadMessage.textContent =
+                "Image uploaded, but the database could not be updated.";
 
             return;
         }
@@ -197,7 +281,9 @@ uploadButton.addEventListener(
         uploadMessage.textContent =
             "Image uploaded successfully.";
 
-        imageFile.value = "";
+
+        imageFile.value =
+            "";
 
         loadImages();
     }
@@ -205,7 +291,7 @@ uploadButton.addEventListener(
 
 
 // ==========================================
-// LOAD IMAGES
+// LOAD CURRENT IMAGES
 // ==========================================
 
 async function loadImages() {
@@ -215,9 +301,10 @@ async function loadImages() {
 
 
     const { data, error } =
-        await supabaseClient.storage
-            .from("website-images")
-            .list();
+        await supabaseClient
+            .from("website_images")
+            .select("*")
+            .order("area");
 
 
     if (error) {
@@ -231,25 +318,35 @@ async function loadImages() {
     }
 
 
-    imageList.innerHTML = "";
+    imageList.innerHTML =
+        "";
 
 
     if (!data || data.length === 0) {
 
         imageList.innerHTML =
-            "No images uploaded yet.";
+            "No website images have been assigned yet.";
 
         return;
     }
 
 
-    data.forEach(function(file) {
+    data.forEach(function(item) {
 
         const card =
             document.createElement("div");
 
         card.className =
             "image-card";
+
+
+        const title =
+            document.createElement("h4");
+
+        title.textContent =
+            item.area +
+            " — " +
+            item.position;
 
 
         const image =
@@ -259,18 +356,13 @@ async function loadImages() {
         const { data: publicUrlData } =
             supabaseClient.storage
                 .from("website-images")
-                .getPublicUrl(file.name);
+                .getPublicUrl(
+                    item.file_path
+                );
 
 
         image.src =
             publicUrlData.publicUrl;
-
-
-        const name =
-            document.createElement("p");
-
-        name.textContent =
-            file.name;
 
 
         const deleteButton =
@@ -279,6 +371,7 @@ async function loadImages() {
         deleteButton.textContent =
             "Delete";
 
+
         deleteButton.className =
             "delete-button";
 
@@ -286,14 +379,19 @@ async function loadImages() {
         deleteButton.addEventListener(
             "click",
             function() {
-                deleteImage(file.name);
+
+                deleteImage(
+                    item.id,
+                    item.file_path
+                );
+
             }
         );
 
 
-        card.appendChild(image);
+        card.appendChild(title);
 
-        card.appendChild(name);
+        card.appendChild(image);
 
         card.appendChild(deleteButton);
 
@@ -306,7 +404,10 @@ async function loadImages() {
 // DELETE IMAGE
 // ==========================================
 
-async function deleteImage(fileName) {
+async function deleteImage(
+    id,
+    filePath
+) {
 
     const confirmed =
         confirm(
@@ -319,20 +420,39 @@ async function deleteImage(fileName) {
     }
 
 
-    const { error } =
+    const { error: storageError } =
         await supabaseClient.storage
             .from("website-images")
             .remove([
-                fileName
+                filePath
             ]);
 
 
-    if (error) {
+    if (storageError) {
 
-        console.error(error);
+        console.error(storageError);
 
         alert(
             "The image could not be deleted."
+        );
+
+        return;
+    }
+
+
+    const { error: databaseError } =
+        await supabaseClient
+            .from("website_images")
+            .delete()
+            .eq("id", id);
+
+
+    if (databaseError) {
+
+        console.error(databaseError);
+
+        alert(
+            "The image file was deleted, but the database record could not be deleted."
         );
 
         return;

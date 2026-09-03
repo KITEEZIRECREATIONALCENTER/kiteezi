@@ -523,16 +523,50 @@ if (lightbox) {
     );
 }
 // ==========================================
-// WEBSITE IMAGE MANAGEMENT
+// WEBSITE MEDIA MANAGEMENT
+// IMAGES + VIDEOS
 // ==========================================
 
-const IMAGE_STORAGE_URL =
-    "https://pkvctsfdqyzlcryikcox.supabase.co/storage/v1/object/public/website-images";
+const WEBSITE_STORAGE_URL =
+    SUPABASE_URL +
+    "/storage/v1/object/public/website-images";
 
+
+async function getWebsiteMedia(
+    area,
+    position = "main"
+) {
+
+    const { data, error } =
+        await supabaseClient
+            .from("website_images")
+            .select("file_path, media_type")
+            .eq("area", area)
+            .eq("position", position)
+            .maybeSingle();
+
+
+    if (error) {
+
+        console.error(
+            "Media loading error:",
+            error
+        );
+
+        return null;
+    }
+
+
+    return data;
+}
+
+
+// ==========================================
+// LOAD IMAGE
+// ==========================================
 
 async function loadWebsiteImage(
     area,
-    position,
     elementId
 ) {
 
@@ -545,71 +579,247 @@ async function loadWebsiteImage(
     }
 
 
-    const { data, error } =
-        await supabaseClient
-            .from("website_images")
-            .select("file_path")
-            .eq("area", area)
-            .eq("position", position)
-            .maybeSingle();
+    const media =
+        await getWebsiteMedia(area);
 
 
-    if (error) {
-
-        console.error(
-            "Image loading error:",
-            error
-        );
-
+    if (!media) {
         return;
     }
 
 
-    if (!data) {
+    if (
+        media.media_type &&
+        media.media_type !== "image"
+    ) {
         return;
     }
 
 
     element.src =
-        IMAGE_STORAGE_URL +
+        WEBSITE_STORAGE_URL +
         "/" +
-        data.file_path;
+        media.file_path;
 }
 
 
 // ==========================================
-// LOAD MANAGED IMAGES
+// LOAD VIDEO
 // ==========================================
 
-async function loadManagedImages() {
+async function loadWebsiteVideo(
+    area,
+    elementId
+) {
+
+    const video =
+        document.getElementById(elementId);
+
+
+    if (!video) {
+        return;
+    }
+
+
+    const media =
+        await getWebsiteMedia(area);
+
+
+    if (!media) {
+        return;
+    }
+
+
+    if (
+        media.media_type &&
+        media.media_type !== "video"
+    ) {
+        return;
+    }
+
+
+    video.src =
+        WEBSITE_STORAGE_URL +
+        "/" +
+        media.file_path;
+
+
+    video.load();
+}
+
+
+// ==========================================
+// LOAD HERO BACKGROUND
+// ==========================================
+
+async function loadHeroBackground() {
+
+    const hero =
+        document.getElementById("home");
+
+
+    if (!hero) {
+        return;
+    }
+
+
+    const media =
+        await getWebsiteMedia("hero");
+
+
+    if (!media) {
+        return;
+    }
+
+
+    if (
+        media.media_type &&
+        media.media_type !== "image"
+    ) {
+        return;
+    }
+
+
+    const imageURL =
+        WEBSITE_STORAGE_URL +
+        "/" +
+        media.file_path;
+
+
+    hero.style.backgroundImage =
+        `
+        linear-gradient(
+            rgba(0, 0, 0, 0.55),
+            rgba(0, 0, 0, 0.55)
+        ),
+        url("${imageURL}")
+        `;
+}
+
+
+// ==========================================
+// LOAD MAIN WEBSITE MEDIA
+// ==========================================
+
+async function loadManagedMedia() {
+
+    // Hero
+
+    await loadHeroBackground();
+
+
+    // About
 
     await loadWebsiteImage(
         "about",
-        "main",
         "about-image"
     );
 
 
+    // Swimming
+
     await loadWebsiteImage(
         "swimming",
-        "main",
         "swimming-image"
     );
 
 
+    // Sports video
+
+    await loadWebsiteVideo(
+        "sports",
+        "sports-video"
+    );
+
+
+    // Events
+
+    await loadWebsiteImage(
+        "events",
+        "events-image"
+    );
+
+
+    // Restaurant
+
     await loadWebsiteImage(
         "restaurant",
-        "main",
         "restaurant-image"
     );
 
 
+    // Food
+
     await loadWebsiteImage(
         "food",
-        "main",
         "food-image"
     );
+
+
+    // Menu images
+
+    await loadWebsiteImage(
+        "coffee",
+        "coffee-image"
+    );
+
+
+    await loadWebsiteImage(
+        "snacks",
+        "snacks-image"
+    );
+
+
+    await loadWebsiteImage(
+        "goat",
+        "goat-image"
+    );
+
+
+    await loadWebsiteImage(
+        "liver",
+        "liver-image"
+    );
+
+
+    await loadWebsiteImage(
+        "chicken",
+        "chicken-image"
+    );
+
+
+    await loadWebsiteImage(
+        "burger",
+        "burger-image"
+    );
+
+
+    await loadWebsiteImage(
+        "rice",
+        "rice-image"
+    );
+
+
+    await loadWebsiteImage(
+        "pizza",
+        "pizza-image"
+    );
+
+
+    await loadWebsiteImage(
+        "fish",
+        "fish-image"
+    );
+
+
+    // Logo
+
+    await loadWebsiteImage(
+        "logo",
+        "website-logo"
+    );
+
 }
 
 
-loadManagedImages();
+loadManagedMedia();

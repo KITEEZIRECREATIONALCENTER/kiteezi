@@ -1,10 +1,127 @@
-
 function welcome() {
     alert("Welcome to Kiteezi Recreational Center!");
 }
 
 welcome();
 
+
+// ===============================
+// SUPABASE DATABASE CONNECTION
+// ===============================
+
+const SUPABASE_URL = "https://pkvctsfdqyzlcryikcox.supabase.co";
+const SUPABASE_KEY = "sb_publishable__pq1skdZvbMRm_R67-xYmw_Ogsm4r00";
+
+
+// ===============================
+// REVIEWS
+// ===============================
+
+// Submit a review to Supabase
+async function submitReview(name, review, rating) {
+
+    try {
+
+        const response = await fetch(
+            `${SUPABASE_URL}/rest/v1/reviews`,
+            {
+                method: "POST",
+
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": `Bearer ${SUPABASE_KEY}`,
+                    "Content-Type": "application/json",
+                    "Prefer": "return=representation"
+                },
+
+                body: JSON.stringify({
+                    name: name,
+                    review: review,
+                    rating: rating
+                })
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(await response.text());
+        }
+
+        alert("Thank you! Your review has been submitted.");
+
+        loadReviews();
+
+    } catch (error) {
+
+        console.error("Error submitting review:", error);
+        alert("Sorry, your review could not be submitted.");
+    }
+}
+
+
+// Load reviews from Supabase
+async function loadReviews() {
+
+    try {
+
+        const response = await fetch(
+            `${SUPABASE_URL}/rest/v1/reviews?select=*&order=created_at.desc`,
+            {
+                method: "GET",
+
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": `Bearer ${SUPABASE_KEY}`
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(await response.text());
+        }
+
+        const reviews = await response.json();
+
+        console.log("Reviews:", reviews);
+
+        const reviewsContainer =
+            document.getElementById("reviews-container");
+
+        if (!reviewsContainer) {
+            return;
+        }
+
+        reviewsContainer.innerHTML = "";
+
+        reviews.forEach(function (item) {
+
+            const reviewElement = document.createElement("div");
+
+            reviewElement.className = "review";
+
+            reviewElement.innerHTML = `
+                <h3>${item.name}</h3>
+                <p>${item.review}</p>
+                <p>⭐ ${item.rating}/5</p>
+            `;
+
+            reviewsContainer.appendChild(reviewElement);
+        });
+
+    } catch (error) {
+
+        console.error("Error loading reviews:", error);
+    }
+}
+
+
+// Load reviews when the page opens
+loadReviews();
+
+
+
+// ===============================
+// IMAGE LIGHTBOX
+// ===============================
 
 // Open an image in the large-screen viewer
 function openImage(imageSource) {
@@ -64,4 +181,32 @@ document.getElementById("lightbox").addEventListener("click", function(event) {
     }
 
 });
+
+
+// Handle the review form
+const reviewForm = document.getElementById("review-form");
+
+if (reviewForm) {
+
 ```
+reviewForm.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const name = document.getElementById("review-name").value.trim();
+    const review = document.getElementById("review-text").value.trim();
+    const rating = Number(document.getElementById("review-rating").value);
+
+    if (!name || !review || !rating) {
+        alert("Please complete all review fields.");
+        return;
+    }
+
+    await submitReview(name, review, rating);
+
+    reviewForm.reset();
+});
+
+}
+
+

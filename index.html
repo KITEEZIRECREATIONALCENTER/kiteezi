@@ -327,11 +327,59 @@
             Call Us
         </a>
 
-        <a href="https://wa.me/+256751478009" class="button">
+        <a href="https://wa.me/+256709763803" class="button">
             WhatsApp Us
         </a>
 
     </section>
+
+    <section id="reviews" class="reviews-section">
+
+<h2>Customer Reviews</h2>
+
+<p>Share your experience at Kiteezi Recreational Center.</p>
+
+<form id="review-form">
+
+    <label for="review-name">Your Name</label>
+    <input
+        type="text"
+        id="review-name"
+        name="name"
+        placeholder="Enter your name"
+        required
+    >
+
+    <label for="review-rating">Rating</label>
+    <select id="review-rating" name="rating" required>
+        <option value="">Choose a rating</option>
+        <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+        <option value="4">⭐⭐⭐⭐ Very Good</option>
+        <option value="3">⭐⭐⭐ Good</option>
+        <option value="2">⭐⭐ Fair</option>
+        <option value="1">⭐ Poor</option>
+    </select>
+
+    <label for="review-text">Your Review</label>
+    <textarea
+        id="review-text"
+        name="review"
+        placeholder="Write your review here..."
+        rows="5"
+        required
+    ></textarea>
+
+    <button type="submit">Submit Review</button>
+
+</form>
+
+
+<div id="reviews-container">
+    <!-- Reviews from Supabase will appear here -->
+</div>
+
+
+</section>
 
 
     <!-- Footer -->
@@ -343,7 +391,7 @@
 
     </footer>
 
-<script src="script.js"></script>
+
 <!-- Image/Video Lightbox -->
 <div id="lightbox" class="lightbox">
 
@@ -354,5 +402,8 @@
     <video id="lightbox-video" controls></video>
 
 </div>
+
+<script src="script.js"></script>
+
 </body>
 </html>

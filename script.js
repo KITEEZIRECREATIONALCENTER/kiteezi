@@ -1,5 +1,9 @@
-alert("NEW SCRIPT IS LOADING");
+// ==========================================
+// KITEEZI RECREATIONAL CENTER - JAVASCRIPT
+// ==========================================
 
+
+// Welcome message
 function welcome() {
     alert("Welcome to Kiteezi Recreational Center!");
 }
@@ -7,19 +11,19 @@ function welcome() {
 welcome();
 
 
-// ===============================
-// SUPABASE DATABASE CONNECTION
-// ===============================
+// ==========================================
+// SUPABASE CONNECTION
+// ==========================================
 
 const SUPABASE_URL = "https://pkvctsfdqyzlcryikcox.supabase.co";
+
 const SUPABASE_KEY = "sb_publishable__pq1skdZvbMRm_R67-xYmw_Ogsm4r00";
 
 
-// ===============================
-// REVIEWS
-// ===============================
+// ==========================================
+// SUBMIT REVIEW TO SUPABASE
+// ==========================================
 
-// Submit a review to Supabase
 async function submitReview(name, review, rating) {
 
     try {
@@ -49,7 +53,9 @@ async function submitReview(name, review, rating) {
         console.log("Supabase response:", response.status, result);
 
         if (!response.ok) {
-            alert("Supabase error: " + result);
+
+            alert("Review could not be submitted.\n\n" + result);
+
             return false;
         }
 
@@ -59,16 +65,27 @@ async function submitReview(name, review, rating) {
 
     } catch (error) {
 
-        console.error("Connection error:", error);
+        console.error("Supabase connection error:", error);
 
-        alert("Connection error: " + error.message);
+        alert("Connection error:\n\n" + error.message);
 
         return false;
     }
 }
 
-// Load reviews from Supabase
+
+// ==========================================
+// LOAD REVIEWS FROM SUPABASE
+// ==========================================
+
 async function loadReviews() {
+
+    const reviewsContainer =
+        document.getElementById("reviews-container");
+
+    if (!reviewsContainer) {
+        return;
+    }
 
     try {
 
@@ -85,79 +102,175 @@ async function loadReviews() {
         );
 
         if (!response.ok) {
-            throw new Error(await response.text());
+
+            const errorText = await response.text();
+
+            console.error(
+                "Could not load reviews:",
+                errorText
+            );
+
+            return;
         }
 
         const reviews = await response.json();
 
-        console.log("Reviews:", reviews);
+        reviewsContainer.innerHTML = "";
 
-        const reviewsContainer =
-            document.getElementById("reviews-container");
+        if (reviews.length === 0) {
 
-        if (!reviewsContainer) {
+            reviewsContainer.innerHTML =
+                "<p>No reviews yet. Be the first to leave a review!</p>";
+
             return;
         }
 
-        reviewsContainer.innerHTML = "";
 
-        reviews.forEach(function (item) {
+        reviews.forEach(function(item) {
 
-            const reviewElement = document.createElement("div");
+            const reviewElement =
+                document.createElement("div");
 
             reviewElement.className = "review";
 
             reviewElement.innerHTML = `
                 <h3>${item.name}</h3>
-                <p>${item.review}</p>
                 <p>⭐ ${item.rating}/5</p>
+                <p>${item.review}</p>
             `;
 
             reviewsContainer.appendChild(reviewElement);
+
         });
 
     } catch (error) {
 
-        console.error("Error loading reviews:", error);
+        console.error(
+            "Error loading reviews:",
+            error
+        );
     }
 }
 
 
-// Load reviews when the page opens
+// ==========================================
+// REVIEW FORM
+// ==========================================
+
+const reviewForm =
+    document.getElementById("review-form");
+
+if (reviewForm) {
+
+    reviewForm.addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+            const name =
+                document.getElementById("review-name")
+                .value
+                .trim();
+
+            const review =
+                document.getElementById("review-text")
+                .value
+                .trim();
+
+            const rating =
+                Number(
+                    document.getElementById("review-rating")
+                    .value
+                );
+
+
+            if (!name || !review || !rating) {
+
+                alert(
+                    "Please complete all review fields."
+                );
+
+                return;
+            }
+
+
+            const successful =
+                await submitReview(
+                    name,
+                    review,
+                    rating
+                );
+
+
+            if (successful) {
+
+                reviewForm.reset();
+
+                // Reload reviews so the new review appears
+                loadReviews();
+            }
+
+        }
+    );
+}
+
+
+// ==========================================
+// LOAD REVIEWS WHEN PAGE OPENS
+// ==========================================
+
 loadReviews();
 
 
-
-// ===============================
+// ==========================================
 // IMAGE LIGHTBOX
-// ===============================
+// ==========================================
 
 // Open an image in the large-screen viewer
 function openImage(imageSource) {
 
-    const lightbox = document.getElementById("lightbox");
-    const image = document.getElementById("lightbox-image");
-    const video = document.getElementById("lightbox-video");
+    const lightbox =
+        document.getElementById("lightbox");
+
+    const image =
+        document.getElementById("lightbox-image");
+
+    const video =
+        document.getElementById("lightbox-video");
+
 
     image.src = imageSource;
 
     image.style.display = "block";
+
     video.style.display = "none";
 
     lightbox.style.display = "flex";
 }
 
 
+// ==========================================
+// VIDEO LIGHTBOX
+// ==========================================
+
 // Open a video in the large-screen viewer
 function openVideo(videoSource) {
 
-    const lightbox = document.getElementById("lightbox");
-    const image = document.getElementById("lightbox-image");
-    const video = document.getElementById("lightbox-video");
+    const lightbox =
+        document.getElementById("lightbox");
+
+    const image =
+        document.getElementById("lightbox-image");
+
+    const video =
+        document.getElementById("lightbox-video");
+
 
     video.src = videoSource;
 
     video.style.display = "block";
+
     image.style.display = "none";
 
     lightbox.style.display = "flex";
@@ -166,56 +279,50 @@ function openVideo(videoSource) {
 }
 
 
-// Close the large-screen viewer
+// ==========================================
+// CLOSE LIGHTBOX
+// ==========================================
+
 function closeLightbox() {
 
-    const lightbox = document.getElementById("lightbox");
-    const image = document.getElementById("lightbox-image");
-    const video = document.getElementById("lightbox-video");
+    const lightbox =
+        document.getElementById("lightbox");
+
+    const image =
+        document.getElementById("lightbox-image");
+
+    const video =
+        document.getElementById("lightbox-video");
+
 
     lightbox.style.display = "none";
 
     image.src = "";
 
     video.pause();
+
     video.src = "";
 }
 
 
-// Close viewer when clicking the dark background
-document.getElementById("lightbox").addEventListener("click", function(event) {
+// ==========================================
+// CLOSE LIGHTBOX BY CLICKING BACKGROUND
+// ==========================================
 
-    if (event.target === this) {
-        closeLightbox();
-    }
+const lightbox =
+    document.getElementById("lightbox");
 
-});
+if (lightbox) {
 
+    lightbox.addEventListener(
+        "click",
+        function(event) {
 
-// Handle the review form
-const reviewForm = document.getElementById("review-form");
+            if (event.target === this) {
 
-if (reviewForm) {
+                closeLightbox();
+            }
 
-```
-reviewForm.addEventListener("submit", async function(event) {
-
-    event.preventDefault();
-
-    const name = document.getElementById("review-name").value.trim();
-    const review = document.getElementById("review-text").value.trim();
-    const rating = Number(document.getElementById("review-rating").value);
-
-    if (!name || !review || !rating) {
-        alert("Please complete all review fields.");
-        return;
-    }
-
-    await submitReview(name, review, rating);
-
-    reviewForm.reset();
-});
-
+        }
+    );
 }
-
-

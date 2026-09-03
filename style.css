@@ -629,3 +629,441 @@ footer {
         font-size: 38px;
     }
 }
+
+/* ==========================================
+   COMPACT MENU SYSTEM
+========================================== */
+
+.menu-hero {
+    padding: 45px 20px;
+    text-align: center;
+    background: #063970;
+    color: white;
+}
+
+.menu-hero h1 {
+    font-size: 42px;
+    margin-bottom: 8px;
+}
+
+.menu-hero p {
+    font-size: 17px;
+}
+
+
+/* SEARCH + CATEGORIES */
+
+.menu-controls {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: white;
+    padding: 15px 5%;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+
+
+.menu-search {
+    max-width: 700px;
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f5f7fa;
+    border: 1px solid #ddd;
+    border-radius: 30px;
+    padding: 0 18px;
+}
+
+
+.menu-search span {
+    font-size: 20px;
+}
+
+
+.menu-search input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 13px 5px;
+    font-size: 16px;
+}
+
+
+.menu-categories {
+    display: flex;
+    gap: 8px;
+    max-width: 1100px;
+    margin: auto;
+    overflow-x: auto;
+    padding-bottom: 3px;
+    scrollbar-width: thin;
+}
+
+
+.category-button {
+    flex: 0 0 auto;
+    border: 1px solid #063970;
+    background: white;
+    color: #063970;
+    border-radius: 20px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+
+.category-button:hover,
+.category-button.active {
+    background: #063970;
+    color: white;
+}
+
+
+.menu-no-results {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 18px;
+    color: #666;
+}
+
+
+/* SHORTER MENU SECTIONS */
+
+.menu-section {
+    padding: 35px 5%;
+}
+
+
+.menu-section h2 {
+    margin-bottom: 20px;
+}
+
+
+.menu-section > img {
+    display: block;
+    width: 100%;
+    max-width: 650px;
+    height: 180px;
+    object-fit: cover;
+    margin: 0 auto 20px;
+    border-radius: 12px;
+}
+
+
+.menu-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(210px, 1fr));
+    gap: 14px;
+    max-width: 1100px;
+    margin: auto;
+}
+
+
+.menu-item {
+    background: white;
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    text-align: center;
+}
+
+
+.menu-item h3 {
+    color: #063970;
+    font-size: 17px;
+    margin-bottom: 7px;
+}
+
+
+.menu-item p {
+    margin: 5px 0;
+}
+
+
+.menu-item .price {
+    font-weight: bold;
+    color: #e76f51;
+}
+
+
+.order-button {
+    width: 100%;
+    padding: 9px 12px;
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+
+/* ==========================================
+   FLOATING ORDER BUTTON
+========================================== */
+
+.floating-order-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 5000;
+
+    border: none;
+    border-radius: 30px;
+
+    background: #063970;
+    color: white;
+
+    padding: 14px 22px;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+
+    cursor: pointer;
+}
+
+
+.floating-order-button:hover {
+    transform: translateY(-2px);
+}
+
+
+#order-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 24px;
+    height: 24px;
+
+    margin-left: 6px;
+
+    border-radius: 50%;
+
+    background: #f4a261;
+    color: white;
+
+    font-size: 13px;
+}
+
+
+/* ==========================================
+   ORDER POPUP
+========================================== */
+
+.order-section {
+    position: fixed;
+
+    right: 0;
+    top: 0;
+
+    width: min(450px, 100%);
+
+    height: 100vh;
+
+    overflow-y: auto;
+
+    background: white;
+
+    z-index: 6000;
+
+    padding: 70px 25px 30px;
+
+    box-shadow:
+        -5px 0 25px rgba(0,0,0,0.2);
+
+    transform: translateX(100%);
+
+    transition: transform 0.3s ease;
+}
+
+
+.order-section.order-open {
+    transform: translateX(0);
+}
+
+
+.close-order {
+    position: absolute;
+
+    top: 15px;
+    right: 20px;
+
+    width: 42px;
+    height: 42px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #f1f1f1;
+
+    color: #333;
+
+    font-size: 28px;
+
+    cursor: pointer;
+}
+
+
+.close-order:hover {
+    background: #063970;
+    color: white;
+}
+
+
+.order-section h2 {
+    margin-bottom: 25px;
+}
+
+
+.order-line {
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+
+.order-line-details {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 7px 0;
+}
+
+
+.remove-button {
+    background: #b00020;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
+body.order-is-open {
+    overflow: hidden;
+}
+
+
+/* ==========================================
+   FOOD ADDED MESSAGE
+========================================== */
+
+.added-message {
+    position: fixed;
+
+    left: 50%;
+    bottom: 80px;
+
+    transform:
+        translate(-50%, 20px);
+
+    opacity: 0;
+
+    z-index: 7000;
+
+    background: #063970;
+    color: white;
+
+    padding: 12px 20px;
+
+    border-radius: 25px;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,0.2);
+
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+
+    pointer-events: none;
+}
+
+
+.added-message.show {
+    opacity: 1;
+
+    transform:
+        translate(-50%, 0);
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 768px) {
+
+    .menu-hero {
+        padding: 30px 15px;
+    }
+
+
+    .menu-hero h1 {
+        font-size: 32px;
+    }
+
+
+    .menu-controls {
+        padding: 10px 12px;
+    }
+
+
+    .menu-section {
+        padding: 25px 12px;
+    }
+
+
+    .menu-section > img {
+        height: 140px;
+    }
+
+
+    .menu-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 10px;
+    }
+
+
+    .menu-item {
+        padding: 12px 8px;
+    }
+
+
+    .menu-item h3 {
+        font-size: 15px;
+    }
+
+
+    .menu-item .price {
+        font-size: 14px;
+    }
+
+
+    .order-button {
+        font-size: 13px;
+        padding: 8px 5px;
+    }
+
+
+    .floating-order-button {
+        right: 12px;
+        bottom: 12px;
+        padding: 12px 17px;
+    }
+
+}
+
+
+@media (max-width: 420px) {
+
+    .menu-grid {
+        grid-template-columns: 1fr;
+    }
+
+}

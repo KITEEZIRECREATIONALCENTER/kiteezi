@@ -1,6 +1,6 @@
 // ==========================================
 // KITEEZI RECREATIONAL CENTER
-// ADMIN IMAGE MANAGEMENT
+// ADMIN MEDIA MANAGEMENT
 // ==========================================
 
 
@@ -38,14 +38,17 @@ const logoutButton =
 const uploadButton =
     document.getElementById("upload-button");
 
-const imageFile =
-    document.getElementById("image-file");
+const refreshButton =
+    document.getElementById("refresh-button");
 
-const imageArea =
-    document.getElementById("image-area");
+const mediaFile =
+    document.getElementById("media-file");
 
-const imagePosition =
-    document.getElementById("image-position");
+const mediaArea =
+    document.getElementById("media-area");
+
+const mediaType =
+    document.getElementById("media-type");
 
 const loginMessage =
     document.getElementById("login-message");
@@ -53,8 +56,22 @@ const loginMessage =
 const uploadMessage =
     document.getElementById("upload-message");
 
-const imageList =
-    document.getElementById("image-list");
+const mediaList =
+    document.getElementById("media-list");
+
+
+// ==========================================
+// STORAGE
+// ==========================================
+
+const STORAGE_BUCKET =
+    "website-images";
+
+
+const STORAGE_URL =
+    SUPABASE_URL +
+    "/storage/v1/object/public/" +
+    STORAGE_BUCKET;
 
 
 // ==========================================
@@ -63,7 +80,7 @@ const imageList =
 
 loginButton.addEventListener(
     "click",
-    async function() {
+    async function () {
 
         const email =
             document
@@ -86,11 +103,18 @@ loginButton.addEventListener(
         }
 
 
+        loginMessage.textContent =
+            "Logging in...";
+
+
         const { error } =
             await supabaseClient.auth
                 .signInWithPassword({
+
                     email: email,
+
                     password: password
+
                 });
 
 
@@ -99,7 +123,7 @@ loginButton.addEventListener(
             console.error(error);
 
             loginMessage.textContent =
-                "Login failed. Please check your details.";
+                "Login failed. Check your email and password.";
 
             return;
         }
@@ -110,13 +134,13 @@ loginButton.addEventListener(
 
         showAdminPanel();
 
-        loadImages();
+        loadMedia();
     }
 );
 
 
 // ==========================================
-// SHOW ADMIN PANEL
+// SHOW ADMIN
 // ==========================================
 
 function showAdminPanel() {
@@ -135,7 +159,7 @@ function showAdminPanel() {
 
 logoutButton.addEventListener(
     "click",
-    async function() {
+    async function () {
 
         await supabaseClient.auth.signOut();
 
@@ -144,29 +168,58 @@ logoutButton.addEventListener(
 
         loginSection.style.display =
             "block";
+
+        loginMessage.textContent =
+            "";
+
+        mediaList.innerHTML =
+            "";
     }
 );
 
 
 // ==========================================
-// UPLOAD / REPLACE IMAGE
+// UPLOAD / REPLACE
 // ==========================================
 
 uploadButton.addEventListener(
     "click",
-    async function() {
+    async function () {
 
         const file =
-            imageFile.files[0];
+            mediaFile.files[0];
 
         const area =
-            imageArea.value;
+            mediaArea.value;
 
-        const position =
-            imagePosition.value;
+        const type =
+            mediaType.value;
 
 
         if (!file) {
+
+            uploadMessage.textContent =
+                "Please choose a file.";
+
+            return;
+        }
+
+
+        if (!area || !type) {
+
+            uploadMessage.textContent =
+                "Please select the website area and media type.";
+
+            return;
+        }
+
+
+        // Check file type
+
+        if (
+            type === "image" &&
+            !file.type.startsWith("image/")
+        ) {
 
             uploadMessage.textContent =
                 "Please choose an image.";
@@ -175,129 +228,190 @@ uploadButton.addEventListener(
         }
 
 
-        if (!area || !position) {
+        if (
+            type === "video" &&
+            !file.type.startsWith("video/")
+        ) {
 
             uploadMessage.textContent =
-                "Please select the website area and image position.";
+                "Please choose a video.";
 
             return;
         }
 
 
         uploadMessage.textContent =
-            "Uploading image...";
+            "Uploading...";
 
 
-        // Create a unique filename
+        try {
 
-        const fileName =
-            area +
-            "-" +
-            position +
-            "-" +
-            Date.now() +
-            "-" +
-            file.name;
+            // ==========================================
+            // FIND EXISTING MEDIA
+            // ==========================================
 
-
-        // Upload to Supabase Storage
-
-        const { error: uploadError } =
-            await supabaseClient.storage
-                .from("website-images")
-                .upload(
-                    fileName,
-                    file
-                );
+            const { data: oldMedia } =
+                await supabaseClient
+                    .from("website_images")
+                    .select("*")
+                    .eq("area", area)
+                    .eq("position", "main")
+                    .maybeSingle();
 
 
-        if (uploadError) {
+            // ==========================================
+            // CREATE FILE NAME
+            // ==========================================
 
-            console.error(uploadError);
+            const extension =
+                file.name
+                    .split(".")
+                    .pop()
+                    .toLowerCase();
+
+
+            const fileName =
+                area +
+                "-main-" +
+                Date.now() +
+                "." +
+                extension;
+
+
+            // ==========================================
+            // UPLOAD NEW FILE
+            // ==========================================
+
+            const { error: uploadError } =
+                await supabaseClient.storage
+                    .from(STORAGE_BUCKET)
+                    .upload(
+                        fileName,
+                        file,
+                        {
+                            upsert: false
+                        }
+                    );
+
+
+            if (uploadError) {
+
+                console.error(uploadError);
+
+                uploadMessage.textContent =
+                    "Upload failed: " +
+                    uploadError.message;
+
+                return;
+            }
+
+
+            // ==========================================
+            // SAVE DATABASE RECORD
+            // ==========================================
+
+            const { error: databaseError } =
+                await supabaseClient
+                    .from("website_images")
+                    .upsert(
+                        {
+                            area: area,
+
+                            position: "main",
+
+                            file_path: fileName,
+
+                            media_type: type,
+
+                            updated_at:
+                                new Date().toISOString()
+                        },
+                        {
+                            onConflict:
+                                "area,position"
+                        }
+                    );
+
+
+            if (databaseError) {
+
+                console.error(databaseError);
+
+                // Remove newly uploaded file
+
+                await supabaseClient.storage
+                    .from(STORAGE_BUCKET)
+                    .remove([
+                        fileName
+                    ]);
+
+
+                uploadMessage.textContent =
+                    "File uploaded but database update failed.";
+
+                return;
+            }
+
+
+            // ==========================================
+            // DELETE OLD FILE
+            // ==========================================
+
+            if (
+                oldMedia &&
+                oldMedia.file_path &&
+                oldMedia.file_path !== fileName
+            ) {
+
+                await supabaseClient.storage
+                    .from(STORAGE_BUCKET)
+                    .remove([
+                        oldMedia.file_path
+                    ]);
+            }
+
 
             uploadMessage.textContent =
-                "Image upload failed.";
+                "Media changed successfully.";
 
-            return;
+
+            mediaFile.value =
+                "";
+
+            mediaArea.value =
+                "";
+
+            mediaType.value =
+                "";
+
+
+            await loadMedia();
+
         }
 
+        catch (error) {
 
-        // Check whether this position
-        // already has an image
-
-        const { data: oldImage } =
-            await supabaseClient
-                .from("website_images")
-                .select("*")
-                .eq("area", area)
-                .eq("position", position)
-                .maybeSingle();
-
-
-        // If an old image exists,
-        // delete it from Storage
-
-        if (oldImage) {
-
-            await supabaseClient.storage
-                .from("website-images")
-                .remove([
-                    oldImage.file_path
-                ]);
-        }
-
-
-        // Save the new image location
-        // in the database
-
-        const { error: databaseError } =
-            await supabaseClient
-                .from("website_images")
-                .upsert(
-                    {
-                        area: area,
-                        position: position,
-                        file_path: fileName,
-                        updated_at: new Date().toISOString()
-                    },
-                    {
-                        onConflict:
-                            "area,position"
-                    }
-                );
-
-
-        if (databaseError) {
-
-            console.error(databaseError);
+            console.error(error);
 
             uploadMessage.textContent =
-                "Image uploaded, but the database could not be updated.";
+                "Something went wrong.";
 
-            return;
         }
 
-
-        uploadMessage.textContent =
-            "Image uploaded successfully.";
-
-
-        imageFile.value =
-            "";
-
-        loadImages();
     }
 );
 
 
 // ==========================================
-// LOAD CURRENT IMAGES
+// LOAD MEDIA
 // ==========================================
 
-async function loadImages() {
+async function loadMedia() {
 
-    imageList.innerHTML =
-        "Loading images...";
+    mediaList.innerHTML =
+        `<p class="loading">
+            Loading website media...
+        </p>`;
 
 
     const { data, error } =
@@ -311,107 +425,242 @@ async function loadImages() {
 
         console.error(error);
 
-        imageList.innerHTML =
-            "Unable to load images.";
+        mediaList.innerHTML =
+            `<p class="no-media">
+                Unable to load website media.
+            </p>`;
 
         return;
     }
 
 
-    imageList.innerHTML =
+    mediaList.innerHTML =
         "";
 
 
     if (!data || data.length === 0) {
 
-        imageList.innerHTML =
-            "No website images have been assigned yet.";
+        mediaList.innerHTML =
+            `<p class="no-media">
+                No website media has been uploaded yet.
+            </p>`;
 
         return;
     }
 
 
-    data.forEach(function(item) {
+    data.forEach(function (item) {
 
-        const card =
-            document.createElement("div");
+        createMediaCard(item);
 
-        card.className =
-            "image-card";
-
-
-        const title =
-            document.createElement("h4");
-
-        title.textContent =
-            item.area +
-            " — " +
-            item.position;
-
-
-        const image =
-            document.createElement("img");
-
-
-        const { data: publicUrlData } =
-            supabaseClient.storage
-                .from("website-images")
-                .getPublicUrl(
-                    item.file_path
-                );
-
-
-        image.src =
-            publicUrlData.publicUrl;
-
-
-        const deleteButton =
-            document.createElement("button");
-
-        deleteButton.textContent =
-            "Delete";
-
-
-        deleteButton.className =
-            "delete-button";
-
-
-        deleteButton.addEventListener(
-            "click",
-            function() {
-
-                deleteImage(
-                    item.id,
-                    item.file_path
-                );
-
-            }
-        );
-
-
-        card.appendChild(title);
-
-        card.appendChild(image);
-
-        card.appendChild(deleteButton);
-
-        imageList.appendChild(card);
     });
 }
 
 
 // ==========================================
-// DELETE IMAGE
+// CREATE MEDIA CARD
 // ==========================================
 
-async function deleteImage(
+function createMediaCard(item) {
+
+    const card =
+        document.createElement("div");
+
+    card.className =
+        "media-card";
+
+
+    const mediaURL =
+        STORAGE_URL +
+        "/" +
+        item.file_path;
+
+
+    // ==========================================
+    // PREVIEW
+    // ==========================================
+
+    let preview;
+
+
+    if (item.media_type === "video") {
+
+        preview =
+            document.createElement("video");
+
+        preview.src =
+            mediaURL;
+
+        preview.controls =
+            true;
+
+    }
+
+    else {
+
+        preview =
+            document.createElement("img");
+
+        preview.src =
+            mediaURL;
+
+        preview.alt =
+            getAreaName(item.area);
+
+    }
+
+
+    preview.className =
+        "media-preview";
+
+
+    // ==========================================
+    // INFORMATION
+    // ==========================================
+
+    const info =
+        document.createElement("div");
+
+    info.className =
+        "media-info";
+
+
+    const name =
+        document.createElement("div");
+
+    name.className =
+        "media-name";
+
+    name.textContent =
+        getAreaName(item.area);
+
+
+    const type =
+        document.createElement("span");
+
+    type.className =
+        "media-type";
+
+    type.textContent =
+        item.media_type === "video"
+            ? "VIDEO"
+            : "IMAGE";
+
+
+    const file =
+        document.createElement("div");
+
+    file.className =
+        "media-file";
+
+    file.textContent =
+        item.file_path;
+
+
+    // ==========================================
+    // ACTIONS
+    // ==========================================
+
+    const actions =
+        document.createElement("div");
+
+    actions.className =
+        "media-actions";
+
+
+    const replaceButton =
+        document.createElement("button");
+
+    replaceButton.className =
+        "replace-button";
+
+    replaceButton.textContent =
+        "Replace";
+
+
+    replaceButton.addEventListener(
+        "click",
+        function () {
+
+            mediaArea.value =
+                item.area;
+
+            mediaType.value =
+                item.media_type;
+
+            mediaFile.click();
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+    );
+
+
+    const deleteButton =
+        document.createElement("button");
+
+    deleteButton.className =
+        "delete-button";
+
+    deleteButton.textContent =
+        "Delete";
+
+
+    deleteButton.addEventListener(
+        "click",
+        function () {
+
+            deleteMedia(
+                item.id,
+                item.file_path
+            );
+
+        }
+    );
+
+
+    actions.appendChild(
+        replaceButton
+    );
+
+    actions.appendChild(
+        deleteButton
+    );
+
+
+    info.appendChild(name);
+
+    info.appendChild(type);
+
+    info.appendChild(file);
+
+    info.appendChild(actions);
+
+
+    card.appendChild(preview);
+
+    card.appendChild(info);
+
+
+    mediaList.appendChild(card);
+}
+
+
+// ==========================================
+// DELETE MEDIA
+// ==========================================
+
+async function deleteMedia(
     id,
     filePath
 ) {
 
     const confirmed =
         confirm(
-            "Are you sure you want to delete this image?"
+            "Delete this media from the website?"
         );
 
 
@@ -422,7 +671,7 @@ async function deleteImage(
 
     const { error: storageError } =
         await supabaseClient.storage
-            .from("website-images")
+            .from(STORAGE_BUCKET)
             .remove([
                 filePath
             ]);
@@ -433,7 +682,7 @@ async function deleteImage(
         console.error(storageError);
 
         alert(
-            "The image could not be deleted."
+            "The file could not be deleted."
         );
 
         return;
@@ -452,7 +701,7 @@ async function deleteImage(
         console.error(databaseError);
 
         alert(
-            "The image file was deleted, but the database record could not be deleted."
+            "The file was deleted, but the database record could not be deleted."
         );
 
         return;
@@ -460,16 +709,97 @@ async function deleteImage(
 
 
     alert(
-        "Image deleted successfully."
+        "Media deleted successfully."
     );
 
 
-    loadImages();
+    loadMedia();
 }
 
 
 // ==========================================
-// CHECK LOGIN SESSION
+// AREA NAMES
+// ==========================================
+
+function getAreaName(area) {
+
+    const names = {
+
+        hero:
+            "Hero Background",
+
+        about:
+            "About Section",
+
+        swimming:
+            "Swimming",
+
+        sports:
+            "Sports Video",
+
+        events:
+            "Events",
+
+        restaurant:
+            "Restaurant",
+
+        food:
+            "Food",
+
+        coffee:
+            "Coffee",
+
+        snacks:
+            "Snacks",
+
+        goat:
+            "Goat",
+
+        liver:
+            "Liver",
+
+        chicken:
+            "Chicken",
+
+        burger:
+            "Burger",
+
+        rice:
+            "Rice",
+
+        pizza:
+            "Pizza",
+
+        fish:
+            "Fish",
+
+        logo:
+            "Website Logo"
+
+    };
+
+
+    return names[area] || area;
+
+}
+
+
+// ==========================================
+// REFRESH
+// ==========================================
+
+refreshButton.addEventListener(
+    "click",
+    function () {
+
+        loadMedia();
+
+    }
+);
+
+
+// ==========================================
+// CHECK LOGIN
 // ==========================================
 
 async function checkSession() {
@@ -483,8 +813,10 @@ async function checkSession() {
 
         showAdminPanel();
 
-        loadImages();
+        loadMedia();
+
     }
+
 }
 
 

@@ -64,21 +64,20 @@ async function submitReview(name, review, rating) {
         const result = await response.text();
 
 
-        if (!response.ok) {
+      if (!response.ok) {
+    console.error(
+        "Supabase error:",
+        response.status,
+        result
+    );
 
-            console.error(
-                "Supabase error:",
-                response.status,
-                result
-            );
+    alert(
+        "SUPABASE ERROR:\n\n" +
+        result
+    );
 
-            alert(
-                "Your review could not be submitted. " +
-                "Please try again."
-            );
-
-            return false;
-        }
+    return false;
+}
 
 
         console.log(

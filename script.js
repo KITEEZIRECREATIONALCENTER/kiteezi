@@ -36,27 +36,34 @@ async function submitReview(name, review, rating) {
 
                 body: JSON.stringify({
                     name: name,
-                    review: review,
-                    rating: rating
+                    rating: rating,
+                    review: review
                 })
             }
         );
 
+        const result = await response.text();
+
+        console.log("Supabase response:", response.status, result);
+
         if (!response.ok) {
-            throw new Error(await response.text());
+            alert("Supabase error: " + result);
+            return false;
         }
 
-        alert("Thank you! Your review has been submitted.");
+        alert("Review submitted successfully!");
 
-        loadReviews();
+        return true;
 
     } catch (error) {
 
-        console.error("Error submitting review:", error);
-        alert("Sorry, your review could not be submitted.");
+        console.error("Connection error:", error);
+
+        alert("Connection error: " + error.message);
+
+        return false;
     }
 }
-
 
 // Load reviews from Supabase
 async function loadReviews() {

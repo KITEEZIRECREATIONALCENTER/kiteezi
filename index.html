@@ -19,21 +19,49 @@
     <nav>
 
         <div class="logo-area">
-            <img
-                id="website-logo"
-                src="images/LOGO.png"
-                alt="Kiteezi Recreational Center Logo"
-            >
+
+            <a href="index.html">
+
+                <img
+                    id="website-logo"
+                    src="images/LOGO.png"
+                    alt="Kiteezi Recreational Center Logo"
+                >
+
+            </a>
+
+            <h2>RECREATIONAL CENTER</h2>
+
         </div>
 
-        <div class="nav-links">
-            <a href="#home">Home</a>
-            <a href="#about">About</a>
-            <a href="#facilities">Facilities</a>
-            <a href="menu.html">Menu</a>
-            <a href="#reviews">Reviews</a>
-            <a href="#contact">Contact</a>
-        </div>
+
+        <ul>
+
+            <li>
+                <a href="#home">Home</a>
+            </li>
+
+            <li>
+                <a href="#about">About</a>
+            </li>
+
+            <li>
+                <a href="#facilities">Facilities</a>
+            </li>
+
+            <li>
+                <a href="menu.html">Menu</a>
+            </li>
+
+            <li>
+                <a href="#reviews">Reviews</a>
+            </li>
+
+            <li>
+                <a href="#contact">Contact</a>
+            </li>
+
+        </ul>
 
     </nav>
 
@@ -42,18 +70,30 @@
          HERO
     ========================== -->
 
-    <section id="home" class="hero">
+    <section class="hero" id="home">
 
-        <div class="hero-overlay">
+        <div class="hero-content">
 
-            <h1>Kiteezi Recreational Center</h1>
+            <h1>
+                Welcome to Kiteezi Recreational Center
+            </h1>
 
             <p>
-                Relax. Eat. Play. Enjoy.
+                Relax. Play. Connect. Create unforgettable memories.
             </p>
 
-            <a href="menu.html" class="btn">
-                View Our Menu
+            <a
+                href="#facilities"
+                class="button"
+            >
+                Explore Our Facilities
+            </a>
+
+            <a
+                href="#contact"
+                class="button secondary"
+            >
+                Contact Us
             </a>
 
         </div>
@@ -65,33 +105,42 @@
          ABOUT
     ========================== -->
 
-    <section id="about" class="section">
+    <section id="about">
 
-        <div class="section-content">
+        <h2>
+            About Kiteezi Recreational Center
+        </h2>
 
-            <div class="section-text">
+        <div class="about">
 
-                <h2>About Us</h2>
+            <div
+                id="about-media"
+                class="media-gallery"
+            >
 
-                <p>
-                    Welcome to Kiteezi Recreational Center,
-                    a place where family, friends and good
-                    memories come together.
-                </p>
-
-                <p>
-                    Enjoy delicious food, swimming,
-                    sports, events and a relaxing environment.
-                </p>
+                <img
+                    src="images/full view.jpg"
+                    alt="Kiteezi Recreational Center"
+                    onclick="openImage(this.src)"
+                >
 
             </div>
 
 
-            <!-- MEDIA FROM SUPABASE -->
+            <div class="about-text">
 
-            <div
-                id="about-media"
-                class="media-gallery">
+                <p>
+                    Welcome to Kiteezi Recreational Center, your destination for relaxation, entertainment, sports and unforgettable experiences.
+                </p>
+
+                <p>
+                    Whether you are looking for a place to relax with friends, enjoy recreational activities, celebrate special occasions or spend quality time with family, Kiteezi is the place to be.
+                </p>
+
+                <p class="opening-hours">
+                    🕙 Open every day from 10:00 AM to 10:00 PM
+                </p>
+
             </div>
 
         </div>
@@ -103,101 +152,143 @@
          FACILITIES
     ========================== -->
 
-    <section id="facilities" class="section">
+    <section id="facilities">
 
-        <h2>Our Facilities</h2>
+        <h2>
+            Our Facilities
+        </h2>
 
 
         <div class="cards">
 
 
-            <!-- =========================
-                 SWIMMING
-            ========================== -->
+            <!-- SWIMMING -->
 
             <div class="card">
-
-                <h3>Swimming</h3>
-
-                <p>
-                    Enjoy a refreshing swimming experience
-                    at Kiteezi Recreational Center.
-                </p>
 
                 <div
                     id="swimming-media"
-                    class="media-gallery">
+                    class="media-gallery"
+                >
+
+                    <img
+                        src="images/sky view.webp"
+                        alt="Swimming area"
+                        onclick="openImage(this.src)"
+                    >
+
                 </div>
+
+
+                <h3>
+                    Swimming
+                </h3>
+
+                <p>
+                    Enjoy a refreshing swim in a relaxing environment suitable for friends and family.
+                </p>
 
             </div>
 
 
-            <!-- =========================
-                 SPORTS
-            ========================== -->
+            <!-- SPORTS -->
 
             <div class="card">
-
-                <h3>Sports</h3>
-
-                <p>
-                    Enjoy outdoor sports and activities
-                    with friends and family.
-                </p>
 
                 <div
                     id="sports-media"
-                    class="media-gallery">
+                    class="media-gallery"
+                >
+
+                    <video
+                        src="videos/gardens.mp4"
+                        controls
+                        onclick="openVideo(this.src)"
+                    ></video>
+
                 </div>
+
+
+                <h3>
+                    Sports & Recreation
+                </h3>
+
+                <p>
+                    Enjoy outdoor activities, games and recreational experiences in our spacious environment.
+                </p>
 
             </div>
 
 
-            <!-- =========================
-                 EVENTS
-            ========================== -->
+            <!-- EVENTS -->
 
             <div class="card">
-
-                <h3>Events</h3>
-
-                <p>
-                    A perfect place for celebrations,
-                    parties and special events.
-                </p>
 
                 <div
                     id="events-media"
-                    class="media-gallery">
+                    class="media-gallery"
+                >
+
+                    <img
+                        src=""
+                        alt=""
+                        onclick="openImage(this.src)"
+                    >
+
                 </div>
+
+
+                <h3>
+                    Events
+                </h3>
+
+                <p>
+                    Our recreational center provides a great environment for celebrations, parties and special occasions.
+                </p>
 
             </div>
 
 
-            <!-- =========================
-                 RESTAURANT
-            ========================== -->
+            <!-- RESTAURANT -->
 
             <div class="card">
 
-                <h3>Restaurant</h3>
-
-                <p>
-                    Enjoy delicious meals and refreshments
-                    prepared for you.
-                </p>
-
                 <div
                     id="restaurant-media"
-                    class="media-gallery">
+                    class="media-gallery"
+                >
+
+                    <img
+                        src="images/food.webp"
+                        alt="Restaurant area"
+                        onclick="openImage(this.src)"
+                    >
+
+                    <img
+                        src="pizza.jpg"
+                        alt="Good food"
+                        onclick="openImage(this.src)"
+                    >
+
                 </div>
 
-                <a href="menu.html" class="btn">
+
+                <h3>
+                    Restaurant
+                </h3>
+
+                <p>
+                    Enjoy delicious meals, refreshments and snacks prepared for you at our restaurant.
+                </p>
+
+                <a
+                    href="menu.html"
+                    class="button"
+                >
                     View Menu
                 </a>
 
             </div>
-
 
         </div>
 
@@ -208,45 +299,70 @@
          REVIEWS
     ========================== -->
 
-    <section id="reviews" class="section">
+    <section id="reviews">
 
-        <h2>Customer Reviews</h2>
-
-
-        <div
-            id="reviews-container"
-            class="reviews-container">
-        </div>
+        <h2>
+            Customer Reviews
+        </h2>
 
 
-        <div class="review-form-container">
+        <form id="review-form">
 
-            <h3>Leave a Review</h3>
+            <input
+                type="text"
+                id="review-name"
+                placeholder="Your name"
+                required
+            >
 
-            <form id="review-form">
 
-                <input
-                    type="text"
-                    id="review-name"
-                    placeholder="Your name"
-                    required
-                >
+            <select
+                id="review-rating"
+                required
+            >
 
-                <textarea
-                    id="review-message"
-                    placeholder="Write your review..."
-                    required
-                ></textarea>
+                <option value="">
+                    Select rating
+                </option>
 
-                <button
-                    type="submit"
-                    class="btn">
-                    Submit Review
-                </button>
+                <option value="5">
+                    ⭐⭐⭐⭐⭐
+                </option>
 
-            </form>
+                <option value="4">
+                    ⭐⭐⭐⭐
+                </option>
 
-        </div>
+                <option value="3">
+                    ⭐⭐⭐
+                </option>
+
+                <option value="2">
+                    ⭐⭐
+                </option>
+
+                <option value="1">
+                    ⭐
+                </option>
+
+            </select>
+
+
+            <textarea
+                id="review-text"
+                placeholder="Write your review..."
+                required
+            ></textarea>
+
+
+            <button type="submit">
+                Submit Review
+            </button>
+
+        </form>
+
+
+        <div id="reviews-container"></div>
 
     </section>
 
@@ -255,24 +371,49 @@
          CONTACT
     ========================== -->
 
-    <section id="contact" class="section contact-section">
+    <section id="contact">
 
-        <h2>Contact Us</h2>
+        <h2>
+            Contact Us
+        </h2>
 
-        <p>
-            Come and enjoy a great time at
-            Kiteezi Recreational Center.
-        </p>
 
-        <p>
-            📍 Kiteezi, Wakiso, Uganda
-        </p>
+        <div class="contact-container">
 
-        <button
-            class="btn"
-            onclick="openWhatsApp()">
-            Contact Us on WhatsApp
-        </button>
+            <p>
+                📍 Kiteezi, opposite Shell Kiteezi, Uganda
+            </p>
+
+            <p>
+                📞 +256766529086 / +256709763803
+            </p>
+
+            <p>
+                ✉️ krecreationalcenter@gmail.com
+            </p>
+
+
+            <div class="contact-buttons">
+
+                <a
+                    href="tel:+256766529086"
+                    class="button"
+                >
+                    Call Us
+                </a>
+
+
+                <a
+                    href="https://wa.me/256709763803"
+                    class="button whatsapp-button"
+                    target="_blank"
+                >
+                    WhatsApp
+                </a>
+
+            </div>
+
+        </div>
 
     </section>
 
@@ -284,8 +425,7 @@
     <footer>
 
         <p>
-            © 2026 Kiteezi Recreational Center.
-            All Rights Reserved.
+            © 2026 Kiteezi Recreational Center. All rights reserved.
         </p>
 
     </footer>
@@ -297,11 +437,13 @@
 
     <div
         id="lightbox"
-        class="lightbox">
+        class="lightbox"
+    >
 
         <span
-            class="lightbox-close"
-            onclick="closeLightbox()">
+            class="close-lightbox"
+            onclick="closeLightbox()"
+        >
             &times;
         </span>
 
@@ -309,14 +451,14 @@
         <img
             id="lightbox-image"
             src=""
-            alt="Preview"
+            alt=""
         >
 
 
         <video
             id="lightbox-video"
-            controls>
-        </video>
+            controls
+        ></video>
 
     </div>
 

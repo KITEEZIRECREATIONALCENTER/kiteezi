@@ -2,6 +2,7 @@
     box-sizing: border-box;
 }
 
+
 body {
     margin: 0;
 
@@ -16,13 +17,17 @@ body {
 .admin-container {
     width: 100%;
 
-    max-width: 1100px;
+    max-width: 1150px;
 
     margin: 0 auto;
 
     padding: 30px 20px;
 }
 
+
+/* =========================
+   HEADER
+========================= */
 
 .admin-header {
     background: #063970;
@@ -51,6 +56,10 @@ body {
 }
 
 
+/* =========================
+   CARDS
+========================= */
+
 .admin-card {
     background: white;
 
@@ -72,6 +81,10 @@ body {
     margin-top: 0;
 }
 
+
+/* =========================
+   FORM
+========================= */
 
 .admin-card label {
     display: block;
@@ -143,6 +156,15 @@ button:hover {
 }
 
 
+button:disabled {
+    opacity: 0.5;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
 .logout-button {
     background: #b00020;
 
@@ -156,6 +178,41 @@ button:hover {
     background: #f4a261;
 }
 
+
+.cancel-button {
+    background: #777;
+
+    margin-left: 8px;
+}
+
+
+.help-text {
+    color: #555;
+
+    margin-top: -5px;
+}
+
+
+.file-help {
+    color: #777;
+
+    font-size: 13px;
+
+    margin-top: 7px;
+}
+
+
+#upload-message,
+#login-message {
+    margin-top: 15px;
+
+    font-weight: bold;
+}
+
+
+/* =========================
+   TOP BAR
+========================= */
 
 .admin-topbar,
 .media-heading {
@@ -179,29 +236,39 @@ button:hover {
 }
 
 
-#upload-message,
-#login-message {
-    margin-top: 15px;
+/* =========================
+   MEDIA SECTIONS
+========================= */
 
-    font-weight: bold;
+.media-section {
+    margin-bottom: 35px;
 }
 
 
-/* =========================
-   MEDIA GRID
-========================= */
+.media-section h3 {
+    color: #063970;
 
-#media-list {
+    border-bottom: 2px solid #eee;
+
+    padding-bottom: 10px;
+
+    margin-bottom: 15px;
+}
+
+
+.media-grid {
     display: grid;
 
     grid-template-columns:
         repeat(auto-fit, minmax(250px, 1fr));
 
     gap: 20px;
-
-    margin-top: 20px;
 }
 
+
+/* =========================
+   MEDIA CARD
+========================= */
 
 .media-card {
     border: 1px solid #ddd;
@@ -229,17 +296,6 @@ button:hover {
 
 .media-info {
     padding: 15px;
-}
-
-
-.media-name {
-    color: #063970;
-
-    font-size: 18px;
-
-    font-weight: bold;
-
-    margin-bottom: 8px;
 }
 
 
@@ -350,7 +406,14 @@ button:hover {
     }
 
 
-    #media-list {
+    .cancel-button {
+        margin-left: 0;
+
+        width: 100%;
+    }
+
+
+    .media-grid {
         grid-template-columns: 1fr;
     }
 

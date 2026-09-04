@@ -17,44 +17,43 @@
     ========================== -->
 
     <nav>
+
         <div class="logo-area">
-          <img id="website-logo"
-     src="images/LOGO.png"
-     alt="Kiteezi Recreational Center logo">
-            <h2>RECREATIONAL CENTER</h2>
+            <img
+                id="website-logo"
+                src="images/LOGO.png"
+                alt="Kiteezi Recreational Center Logo"
+            >
         </div>
 
-        <ul>
-            <li><a href="#home">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#facilities">Facilities</a></li>
-            <li><a href="menu.html">Menu</a></li>
-            <li><a href="#reviews">Reviews</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#facilities">Facilities</a>
+            <a href="menu.html">Menu</a>
+            <a href="#reviews">Reviews</a>
+            <a href="#contact">Contact</a>
+        </div>
+
     </nav>
 
 
     <!-- =========================
-         HOME
+         HERO
     ========================== -->
 
-    <section class="hero" id="home">
+    <section id="home" class="hero">
 
-        <div class="hero-content">
+        <div class="hero-overlay">
 
-            <h1>Welcome to Kiteezi Recreational Center</h1>
+            <h1>Kiteezi Recreational Center</h1>
 
             <p>
-                Relax. Play. Connect. Create unforgettable memories.
+                Relax. Eat. Play. Enjoy.
             </p>
 
-            <a href="#facilities" class="button">
-                Explore Our Facilities
-            </a>
-
-            <a href="#contact" class="button secondary">
-                Contact Us
+            <a href="menu.html" class="btn">
+                View Our Menu
             </a>
 
         </div>
@@ -66,30 +65,34 @@
          ABOUT
     ========================== -->
 
-    <section id="about">
+    <section id="about" class="section">
 
-        <h2>About Kiteezi Recreational Center</h2>
+        <div class="section-content">
 
-        <div class="about">
+            <div class="section-text">
 
-            <img id="about-image" src="images/full view.jpg"
-                 alt="Kiteezi Recreational Center">
+                <h2>About Us</h2>
 
-            <p>
-                Welcome to Kiteezi Recreational Center, your destination
-                for relaxation, entertainment, sports and unforgettable
-                experiences.
-            </p>
+                <p>
+                    Welcome to Kiteezi Recreational Center,
+                    a place where family, friends and good
+                    memories come together.
+                </p>
 
-            <p>
-                Whether you are looking for a place to relax with friends,
-                enjoy recreational activities, celebrate special occasions
-                or spend quality time with family, Kiteezi is the place to be.
-            </p>
+                <p>
+                    Enjoy delicious food, swimming,
+                    sports, events and a relaxing environment.
+                </p>
 
-            <p class="opening-hours">
-                🕙 Open every day from 10:00 AM to 10:00 PM
-            </p>
+            </div>
+
+
+            <!-- MEDIA FROM SUPABASE -->
+
+            <div
+                id="about-media"
+                class="media-gallery">
+            </div>
 
         </div>
 
@@ -100,90 +103,101 @@
          FACILITIES
     ========================== -->
 
-    <section id="facilities">
+    <section id="facilities" class="section">
 
-        <h2>Our Facilities & Activities</h2>
+        <h2>Our Facilities</h2>
+
 
         <div class="cards">
 
-            <!-- Swimming -->
+
+            <!-- =========================
+                 SWIMMING
+            ========================== -->
 
             <div class="card">
 
-                <h3>🏊 Swimming</h3>
-
-               <img id="swimming-image" src="images/sky view.webp"
-                     alt="Swimming area"
-                     onclick="openImage(this.src)">
+                <h3>Swimming</h3>
 
                 <p>
-                    Enjoy a refreshing swimming experience in a relaxing
-                    environment.
+                    Enjoy a refreshing swimming experience
+                    at Kiteezi Recreational Center.
                 </p>
+
+                <div
+                    id="swimming-media"
+                    class="media-gallery">
+                </div>
 
             </div>
 
 
-            <!-- Sports -->
+            <!-- =========================
+                 SPORTS
+            ========================== -->
 
             <div class="card">
 
-                <h3>⚽ Sports</h3>
-<video id="sports-video"
-       src="videos/gardens.mp4"
-       controls
-       onclick="openVideo(this.src)">
-</video>
+                <h3>Sports</h3>
 
                 <p>
-                    Enjoy different sporting and recreational activities
+                    Enjoy outdoor sports and activities
                     with friends and family.
                 </p>
 
+                <div
+                    id="sports-media"
+                    class="media-gallery">
+                </div>
+
             </div>
 
 
-            <!-- Events -->
+            <!-- =========================
+                 EVENTS
+            ========================== -->
 
             <div class="card">
 
-                <h3>🎉 Events</h3>
-
-               <img id="Events-image"
-     src=""
-     alt=""
-     onclick="openImage(this.src)">
-
-              
+                <h3>Events</h3>
 
                 <p>
-                    Host birthdays, parties, corporate events and other
-                    special occasions.
+                    A perfect place for celebrations,
+                    parties and special events.
                 </p>
+
+                <div
+                    id="events-media"
+                    class="media-gallery">
+                </div>
 
             </div>
 
 
-            <!-- Restaurant -->
+            <!-- =========================
+                 RESTAURANT
+            ========================== -->
 
             <div class="card">
 
-                <h3>🍽️ Restaurant</h3>
+                <h3>Restaurant</h3>
 
-               <img id="restaurant-image"
-     src="images/food.webp"
-     alt="Restaurant area"
-     onclick="openImage(this.src)">
-
-                <img id="food-image"
-     src="pizza.jpg "
-     alt="good food"
-     onclick="openImage(this.src)">
                 <p>
-                    Relax and enjoy delicious meals and refreshments.
+                    Enjoy delicious meals and refreshments
+                    prepared for you.
                 </p>
 
+                <div
+                    id="restaurant-media"
+                    class="media-gallery">
+                </div>
+
+                <a href="menu.html" class="btn">
+                    View Menu
+                </a>
+
             </div>
+
 
         </div>
 
@@ -191,119 +205,46 @@
 
 
     <!-- =========================
-         CUSTOMER REVIEWS
+         REVIEWS
     ========================== -->
 
-    <section id="reviews" class="reviews-section">
+    <section id="reviews" class="section">
 
         <h2>Customer Reviews</h2>
 
-        <p class="reviews-intro">
-            We would love to hear about your experience at
-            Kiteezi Recreational Center.
-        </p>
+
+        <div
+            id="reviews-container"
+            class="reviews-container">
+        </div>
 
 
-        <!-- Review Form -->
+        <div class="review-form-container">
 
-        <div class="review-form-card">
+            <h3>Leave a Review</h3>
 
             <form id="review-form">
 
-                <div class="form-group">
+                <input
+                    type="text"
+                    id="review-name"
+                    placeholder="Your name"
+                    required
+                >
 
-                    <label for="review-name">
-                        Your Name
-                    </label>
-
-                    <input
-                        type="text"
-                        id="review-name"
-                        name="name"
-                        placeholder="Enter your name"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="review-rating">
-                        Your Rating
-                    </label>
-
-                    <select
-                        id="review-rating"
-                        name="rating"
-                        required
-                    >
-
-                        <option value="">
-                            Choose a rating
-                        </option>
-
-                        <option value="5">
-                            ⭐⭐⭐⭐⭐ Excellent
-                        </option>
-
-                        <option value="4">
-                            ⭐⭐⭐⭐ Very Good
-                        </option>
-
-                        <option value="3">
-                            ⭐⭐⭐ Good
-                        </option>
-
-                        <option value="2">
-                            ⭐⭐ Fair
-                        </option>
-
-                        <option value="1">
-                            ⭐ Poor
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="review-text">
-                        Your Review
-                    </label>
-
-                    <textarea
-                        id="review-text"
-                        name="review"
-                        placeholder="Write your review here..."
-                        rows="5"
-                        required
-                    ></textarea>
-
-                </div>
-
+                <textarea
+                    id="review-message"
+                    placeholder="Write your review..."
+                    required
+                ></textarea>
 
                 <button
                     type="submit"
-                    class="review-button"
-                >
+                    class="btn">
                     Submit Review
                 </button>
 
             </form>
-
-        </div>
-
-
-        <!-- Reviews loaded from Supabase -->
-
-        <div id="reviews-container">
-
-            <p class="loading-reviews">
-                Loading reviews...
-            </p>
 
         </div>
 
@@ -314,34 +255,24 @@
          CONTACT
     ========================== -->
 
-    <section class="contact" id="contact">
+    <section id="contact" class="section contact-section">
 
-        <h2>Visit Kiteezi Recreational Center</h2>
+        <h2>Contact Us</h2>
 
         <p>
-            📍 Location: Kiteezi, opposite Shell Kiteezi, Uganda
+            Come and enjoy a great time at
+            Kiteezi Recreational Center.
         </p>
 
         <p>
-            📞 Phone: +256766529086 / +256709763803
+            📍 Kiteezi, Wakiso, Uganda
         </p>
 
-        <p>
-            📧 Email: krecreationalcenter@gmail.com
-        </p>
-
-        <br>
-
-        <a href="tel:+256766529086" class="button">
-            Call Us
-        </a>
-
-        <a href="https://wa.me/256709763803"
-           class="button"
-           target="_blank"
-           rel="noopener">
-            WhatsApp Us
-        </a>
+        <button
+            class="btn"
+            onclick="openWhatsApp()">
+            Contact Us on WhatsApp
+        </button>
 
     </section>
 
@@ -361,33 +292,41 @@
 
 
     <!-- =========================
-         IMAGE / VIDEO LIGHTBOX
+         LIGHTBOX
     ========================== -->
 
-    <div id="lightbox" class="lightbox">
+    <div
+        id="lightbox"
+        class="lightbox">
 
-        <span class="close"
-              onclick="closeLightbox()">
+        <span
+            class="lightbox-close"
+            onclick="closeLightbox()">
             &times;
         </span>
+
 
         <img
             id="lightbox-image"
             src=""
-            alt="Large view"
+            alt="Preview"
         >
+
 
         <video
             id="lightbox-video"
-            controls
-        ></video>
+            controls>
+        </video>
 
     </div>
 
 
-    <!-- JavaScript -->
+    <!-- =========================
+         SUPABASE
+    ========================== -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script src="script.js"></script>
 
 </body>

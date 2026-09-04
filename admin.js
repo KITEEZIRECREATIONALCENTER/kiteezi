@@ -38,6 +38,9 @@ const logoutButton =
 const uploadButton =
     document.getElementById("upload-button");
 
+const cancelReplaceButton =
+    document.getElementById("cancel-replace-button");
+
 const refreshButton =
     document.getElementById("refresh-button");
 
@@ -47,9 +50,6 @@ const mediaFile =
 const mediaArea =
     document.getElementById("media-area");
 
-const mediaType =
-    document.getElementById("media-type");
-
 const loginMessage =
     document.getElementById("login-message");
 
@@ -58,6 +58,9 @@ const uploadMessage =
 
 const mediaList =
     document.getElementById("media-list");
+
+const uploadTitle =
+    document.getElementById("upload-title");
 
 
 // ==========================================
@@ -72,6 +75,15 @@ const STORAGE_URL =
     SUPABASE_URL +
     "/storage/v1/object/public/" +
     STORAGE_BUCKET;
+
+
+// ==========================================
+// REPLACEMENT STATE
+// ==========================================
+
+let replacingMediaId = null;
+
+let replacingOldFile = null;
 
 
 // ==========================================
@@ -179,209 +191,221 @@ logoutButton.addEventListener(
 
 
 // ==========================================
-// UPLOAD / REPLACE
+// UPLOAD
 // ==========================================
 
 uploadButton.addEventListener(
     "click",
     async function () {
 
-        const file =
-            mediaFile.files[0];
+        const files =
+            Array.from(mediaFile.files);
 
         const area =
             mediaArea.value;
 
-        const type =
-            mediaType.value;
 
-
-        if (!file) {
+        if (!area) {
 
             uploadMessage.textContent =
-                "Please choose a file.";
+                "Please select the website area.";
 
             return;
         }
 
 
-        if (!area || !type) {
+        if (files.length === 0) {
 
             uploadMessage.textContent =
-                "Please select the website area and media type.";
+                "Please choose at least one image or video.";
 
             return;
         }
 
 
-        // Check file type
+        // ==========================================
+        // REPLACE MODE
+        // ==========================================
 
-        if (
-            type === "image" &&
-            !file.type.startsWith("image/")
-        ) {
+        if (replacingMediaId) {
 
-            uploadMessage.textContent =
-                "Please choose an image.";
+            if (files.length !== 1) {
 
-            return;
-        }
+                uploadMessage.textContent =
+                    "Replacement requires exactly one file.";
+
+                return;
+            }
 
 
-        if (
-            type === "video" &&
-            !file.type.startsWith("video/")
-        ) {
-
-            uploadMessage.textContent =
-                "Please choose a video.";
+            await replaceMedia(
+                files[0],
+                area
+            );
 
             return;
         }
 
+
+        // ==========================================
+        // NORMAL MULTIPLE UPLOAD
+        // ==========================================
 
         uploadMessage.textContent =
-            "Uploading...";
+            "Uploading " +
+            files.length +
+            " file(s)...";
+
+
+        uploadButton.disabled =
+            true;
+
+
+        let successfulUploads = 0;
 
 
         try {
 
-            // ==========================================
-            // FIND EXISTING MEDIA
-            // ==========================================
+            for (
+                let i = 0;
+                i < files.length;
+                i++
+            ) {
 
-            const { data: oldMedia } =
-                await supabaseClient
-                    .from("website_images")
-                    .select("*")
-                    .eq("area", area)
-                    .eq("position", "main")
-                    .maybeSingle();
+                const file =
+                    files[i];
 
 
-            // ==========================================
-            // CREATE FILE NAME
-            // ==========================================
+                // Make sure file is image or video
 
-            const extension =
-                file.name
-                    .split(".")
-                    .pop()
-                    .toLowerCase();
+                if (
+                    !file.type.startsWith("image/") &&
+                    !file.type.startsWith("video/")
+                ) {
 
-
-            const fileName =
-                area +
-                "-main-" +
-                Date.now() +
-                "." +
-                extension;
+                    continue;
+                }
 
 
-            // ==========================================
-            // UPLOAD NEW FILE
-            // ==========================================
+                const mediaType =
+                    file.type.startsWith("video/")
+                        ? "video"
+                        : "image";
 
-            const { error: uploadError } =
-                await supabaseClient.storage
-                    .from(STORAGE_BUCKET)
-                    .upload(
-                        fileName,
-                        file,
-                        {
-                            upsert: false
-                        }
+
+                const extension =
+                    file.name
+                        .split(".")
+                        .pop()
+                        .toLowerCase();
+
+
+                const safeArea =
+                    area.replace(
+                        /[^a-zA-Z0-9-_]/g,
+                        "-"
                     );
 
 
-            if (uploadError) {
-
-                console.error(uploadError);
-
-                uploadMessage.textContent =
-                    "Upload failed: " +
-                    uploadError.message;
-
-                return;
-            }
+                const fileName =
+                    safeArea +
+                    "-" +
+                    Date.now() +
+                    "-" +
+                    i +
+                    "." +
+                    extension;
 
 
-            // ==========================================
-            // SAVE DATABASE RECORD
-            // ==========================================
+                // ==========================================
+                // UPLOAD TO STORAGE
+                // ==========================================
 
-            const { error: databaseError } =
-                await supabaseClient
-                    .from("website_images")
-                    .upsert(
-                        {
+                const { error: uploadError } =
+                    await supabaseClient.storage
+                        .from(STORAGE_BUCKET)
+                        .upload(
+                            fileName,
+                            file,
+                            {
+                                upsert: false
+                            }
+                        );
+
+
+                if (uploadError) {
+
+                    console.error(
+                        "Storage error:",
+                        uploadError
+                    );
+
+                    continue;
+                }
+
+
+                // ==========================================
+                // SAVE DATABASE RECORD
+                // ==========================================
+
+                const { error: databaseError } =
+                    await supabaseClient
+                        .from("website_images")
+                        .insert({
+
                             area: area,
 
-                            position: "main",
+                            position:
+                                Date.now() +
+                                "-" +
+                                i,
 
-                            file_path: fileName,
+                            file_path:
+                                fileName,
 
-                            media_type: type,
+                            media_type:
+                                mediaType,
 
                             updated_at:
                                 new Date().toISOString()
-                        },
-                        {
-                            onConflict:
-                                "area,position"
-                        }
+
+                        });
+
+
+                if (databaseError) {
+
+                    console.error(
+                        "Database error:",
+                        databaseError
                     );
 
 
-            if (databaseError) {
+                    // Remove uploaded file
+                    await supabaseClient.storage
+                        .from(STORAGE_BUCKET)
+                        .remove([
+                            fileName
+                        ]);
 
-                console.error(databaseError);
-
-                // Remove newly uploaded file
-
-                await supabaseClient.storage
-                    .from(STORAGE_BUCKET)
-                    .remove([
-                        fileName
-                    ]);
+                    continue;
+                }
 
 
-                uploadMessage.textContent =
-                    "File uploaded but database update failed.";
+                successfulUploads++;
 
-                return;
-            }
-
-
-            // ==========================================
-            // DELETE OLD FILE
-            // ==========================================
-
-            if (
-                oldMedia &&
-                oldMedia.file_path &&
-                oldMedia.file_path !== fileName
-            ) {
-
-                await supabaseClient.storage
-                    .from(STORAGE_BUCKET)
-                    .remove([
-                        oldMedia.file_path
-                    ]);
             }
 
 
             uploadMessage.textContent =
-                "Media changed successfully.";
+                successfulUploads +
+                " file(s) uploaded successfully.";
 
 
             mediaFile.value =
                 "";
 
-            mediaArea.value =
-                "";
 
-            mediaType.value =
+            mediaArea.value =
                 "";
 
 
@@ -398,7 +422,278 @@ uploadButton.addEventListener(
 
         }
 
+        finally {
+
+            uploadButton.disabled =
+                false;
+
+        }
+
     }
+);
+
+
+// ==========================================
+// REPLACE MEDIA
+// ==========================================
+
+async function replaceMedia(
+    newFile,
+    area
+) {
+
+    uploadMessage.textContent =
+        "Replacing media...";
+
+
+    uploadButton.disabled =
+        true;
+
+
+    try {
+
+        const mediaType =
+            newFile.type.startsWith("video/")
+                ? "video"
+                : "image";
+
+
+        if (
+            !newFile.type.startsWith("image/") &&
+            !newFile.type.startsWith("video/")
+        ) {
+
+            uploadMessage.textContent =
+                "Please select an image or video.";
+
+            return;
+        }
+
+
+        const extension =
+            newFile.name
+                .split(".")
+                .pop()
+                .toLowerCase();
+
+
+        const safeArea =
+            area.replace(
+                /[^a-zA-Z0-9-_]/g,
+                "-"
+            );
+
+
+        const newFileName =
+            safeArea +
+            "-replacement-" +
+            Date.now() +
+            "." +
+            extension;
+
+
+        // ==========================================
+        // UPLOAD NEW FILE
+        // ==========================================
+
+        const { error: uploadError } =
+            await supabaseClient.storage
+                .from(STORAGE_BUCKET)
+                .upload(
+                    newFileName,
+                    newFile,
+                    {
+                        upsert: false
+                    }
+                );
+
+
+        if (uploadError) {
+
+            console.error(uploadError);
+
+            uploadMessage.textContent =
+                "Replacement upload failed: " +
+                uploadError.message;
+
+            return;
+        }
+
+
+        // ==========================================
+        // UPDATE DATABASE
+        // ==========================================
+
+        const { error: databaseError } =
+            await supabaseClient
+                .from("website_images")
+                .update({
+
+                    file_path:
+                        newFileName,
+
+                    media_type:
+                        mediaType,
+
+                    area:
+                        area,
+
+                    updated_at:
+                        new Date().toISOString()
+
+                })
+                .eq(
+                    "id",
+                    replacingMediaId
+                );
+
+
+        if (databaseError) {
+
+            console.error(databaseError);
+
+
+            await supabaseClient.storage
+                .from(STORAGE_BUCKET)
+                .remove([
+                    newFileName
+                ]);
+
+
+            uploadMessage.textContent =
+                "Database update failed.";
+
+            return;
+        }
+
+
+        // ==========================================
+        // DELETE OLD FILE
+        // ==========================================
+
+        if (replacingOldFile) {
+
+            await supabaseClient.storage
+                .from(STORAGE_BUCKET)
+                .remove([
+                    replacingOldFile
+                ]);
+        }
+
+
+        uploadMessage.textContent =
+            "Media replaced successfully.";
+
+
+        cancelReplacement();
+
+
+        await loadMedia();
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        uploadMessage.textContent =
+            "Something went wrong.";
+
+    }
+
+    finally {
+
+        uploadButton.disabled =
+            false;
+
+    }
+
+}
+
+
+// ==========================================
+// START REPLACEMENT
+// ==========================================
+
+function startReplacement(item) {
+
+    replacingMediaId =
+        item.id;
+
+    replacingOldFile =
+        item.file_path;
+
+
+    mediaArea.value =
+        item.area;
+
+
+    uploadTitle.textContent =
+        "Replace Media";
+
+
+    uploadButton.textContent =
+        "Replace Selected Media";
+
+
+    cancelReplaceButton.style.display =
+        "block";
+
+
+    mediaFile.value =
+        "";
+
+
+    uploadMessage.textContent =
+        "Choose ONE new image or video to replace this file.";
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+// ==========================================
+// CANCEL REPLACEMENT
+// ==========================================
+
+function cancelReplacement() {
+
+    replacingMediaId =
+        null;
+
+    replacingOldFile =
+        null;
+
+
+    uploadTitle.textContent =
+        "Add Website Media";
+
+
+    uploadButton.textContent =
+        "Upload Media";
+
+
+    cancelReplaceButton.style.display =
+        "none";
+
+
+    mediaFile.value =
+        "";
+
+
+    uploadMessage.textContent =
+        "";
+
+}
+
+
+cancelReplaceButton.addEventListener(
+    "click",
+    cancelReplacement
 );
 
 
@@ -418,7 +713,18 @@ async function loadMedia() {
         await supabaseClient
             .from("website_images")
             .select("*")
-            .order("area");
+            .order(
+                "area",
+                {
+                    ascending: true
+                }
+            )
+            .order(
+                "updated_at",
+                {
+                    ascending: true
+                }
+            );
 
 
     if (error) {
@@ -449,11 +755,83 @@ async function loadMedia() {
     }
 
 
+    // ==========================================
+    // GROUP BY AREA
+    // ==========================================
+
+    const grouped =
+        {};
+
+
     data.forEach(function (item) {
 
-        createMediaCard(item);
+        if (!grouped[item.area]) {
+
+            grouped[item.area] =
+                [];
+        }
+
+
+        grouped[item.area].push(
+            item
+        );
 
     });
+
+
+    Object.keys(grouped).forEach(
+        function (area) {
+
+            const section =
+                document.createElement("div");
+
+            section.className =
+                "media-section";
+
+
+            const heading =
+                document.createElement("h3");
+
+            heading.textContent =
+                getAreaName(area);
+
+
+            section.appendChild(
+                heading
+            );
+
+
+            const grid =
+                document.createElement("div");
+
+            grid.className =
+                "media-grid";
+
+
+            grouped[area].forEach(
+                function (item) {
+
+                    createMediaCard(
+                        item,
+                        grid
+                    );
+
+                }
+            );
+
+
+            section.appendChild(
+                grid
+            );
+
+
+            mediaList.appendChild(
+                section
+            );
+
+        }
+    );
+
 }
 
 
@@ -461,7 +839,10 @@ async function loadMedia() {
 // CREATE MEDIA CARD
 // ==========================================
 
-function createMediaCard(item) {
+function createMediaCard(
+    item,
+    container
+) {
 
     const card =
         document.createElement("div");
@@ -483,7 +864,9 @@ function createMediaCard(item) {
     let preview;
 
 
-    if (item.media_type === "video") {
+    if (
+        item.media_type === "video"
+    ) {
 
         preview =
             document.createElement("video");
@@ -493,6 +876,9 @@ function createMediaCard(item) {
 
         preview.controls =
             true;
+
+        preview.preload =
+            "metadata";
 
     }
 
@@ -507,6 +893,9 @@ function createMediaCard(item) {
         preview.alt =
             getAreaName(item.area);
 
+        preview.loading =
+            "lazy";
+
     }
 
 
@@ -515,7 +904,7 @@ function createMediaCard(item) {
 
 
     // ==========================================
-    // INFORMATION
+    // INFO
     // ==========================================
 
     const info =
@@ -525,21 +914,12 @@ function createMediaCard(item) {
         "media-info";
 
 
-    const name =
-        document.createElement("div");
-
-    name.className =
-        "media-name";
-
-    name.textContent =
-        getAreaName(item.area);
-
-
     const type =
         document.createElement("span");
 
     type.className =
         "media-type";
+
 
     type.textContent =
         item.media_type === "video"
@@ -582,18 +962,9 @@ function createMediaCard(item) {
         "click",
         function () {
 
-            mediaArea.value =
-                item.area;
-
-            mediaType.value =
-                item.media_type;
-
-            mediaFile.click();
-
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
+            startReplacement(
+                item
+            );
 
         }
     );
@@ -631,21 +1002,32 @@ function createMediaCard(item) {
     );
 
 
-    info.appendChild(name);
+    info.appendChild(
+        type
+    );
 
-    info.appendChild(type);
+    info.appendChild(
+        file
+    );
 
-    info.appendChild(file);
-
-    info.appendChild(actions);
-
-
-    card.appendChild(preview);
-
-    card.appendChild(info);
+    info.appendChild(
+        actions
+    );
 
 
-    mediaList.appendChild(card);
+    card.appendChild(
+        preview
+    );
+
+    card.appendChild(
+        info
+    );
+
+
+    container.appendChild(
+        card
+    );
+
 }
 
 
@@ -693,7 +1075,10 @@ async function deleteMedia(
         await supabaseClient
             .from("website_images")
             .delete()
-            .eq("id", id);
+            .eq(
+                "id",
+                id
+            );
 
 
     if (databaseError) {
@@ -701,7 +1086,7 @@ async function deleteMedia(
         console.error(databaseError);
 
         alert(
-            "The file was deleted, but the database record could not be deleted."
+            "The file was deleted, but its database record could not be deleted."
         );
 
         return;
@@ -714,6 +1099,7 @@ async function deleteMedia(
 
 
     loadMedia();
+
 }
 
 
@@ -735,13 +1121,16 @@ function getAreaName(area) {
             "Swimming",
 
         sports:
-            "Sports Video",
+            "Sports",
 
         events:
             "Events",
 
         restaurant:
             "Restaurant",
+
+        "restaurant-2":
+            "Restaurant 2",
 
         food:
             "Food",
@@ -790,11 +1179,7 @@ function getAreaName(area) {
 
 refreshButton.addEventListener(
     "click",
-    function () {
-
-        loadMedia();
-
-    }
+    loadMedia
 );
 
 

@@ -28,9 +28,7 @@
     </header>
 
 
-    <!-- =========================
-         LOGIN
-    ========================== -->
+    <!-- LOGIN -->
 
     <section id="login-section" class="admin-card">
 
@@ -57,9 +55,7 @@
     </section>
 
 
-    <!-- =========================
-         ADMIN PANEL
-    ========================== -->
+    <!-- ADMIN PANEL -->
 
     <section id="admin-panel" style="display:none;">
 
@@ -69,7 +65,7 @@
                 <h2>Manage Website Media</h2>
 
                 <p>
-                    Change images and videos displayed on your website.
+                    Add images, videos, or both to any website section.
                 </p>
             </div>
 
@@ -81,13 +77,17 @@
         </div>
 
 
-        <!-- =========================
-             UPLOAD AREA
-        ========================== -->
+        <!-- UPLOAD -->
 
         <div class="admin-card">
 
-            <h3>Upload or Replace Media</h3>
+            <h3 id="upload-title">
+                Add Website Media
+            </h3>
+
+            <p class="help-text">
+                You can select multiple images and videos at the same time.
+            </p>
 
 
             <label for="media-area">
@@ -107,13 +107,13 @@
                 <option value="about">
                     About Section
                 </option>
-    
+
                 <option value="swimming">
                     Swimming
                 </option>
-                 
+
                 <option value="sports">
-                    Sports Video
+                    Sports
                 </option>
 
                 <option value="events">
@@ -123,9 +123,11 @@
                 <option value="restaurant">
                     Restaurant
                 </option>
-                <option value="restaurant 2">
-                    Restaurant 
+
+                <option value="restaurant-2">
+                    Restaurant 2
                 </option>
+
                 <option value="food">
                     Food
                 </option>
@@ -173,40 +175,32 @@
             </select>
 
 
-            <label for="media-type">
-                Media Type
-            </label>
-
-            <select id="media-type">
-
-                <option value="">
-                    Select media type
-                </option>
-
-                <option value="image">
-                    Image
-                </option>
-
-                <option value="video">
-                    Video
-                </option>
-
-            </select>
-
-
             <label for="media-file">
-                Choose File
+                Choose Images / Videos
             </label>
 
             <input
                 type="file"
                 id="media-file"
                 accept="image/*,video/*"
+                multiple
             >
+
+            <p class="file-help">
+                You can select multiple files.
+                Images and videos can be mixed together.
+            </p>
 
 
             <button id="upload-button">
-                Upload / Replace
+                Upload Media
+            </button>
+
+
+            <button id="cancel-replace-button"
+                    class="cancel-button"
+                    style="display:none;">
+                Cancel Replace
             </button>
 
 
@@ -215,9 +209,7 @@
         </div>
 
 
-        <!-- =========================
-             CURRENT MEDIA
-        ========================== -->
+        <!-- CURRENT MEDIA -->
 
         <div class="admin-card">
 
@@ -227,7 +219,7 @@
                     <h3>Current Website Media</h3>
 
                     <p>
-                        Replace or delete anything currently being used.
+                        Every image and video currently stored for your website.
                     </p>
                 </div>
 

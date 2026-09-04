@@ -1,818 +1,251 @@
-// ==========================================
-// KITEEZI RECREATIONAL CENTER
-// JAVASCRIPT
-// ==========================================
+// ======================================================
+// SUPABASE SETUP
+// ======================================================
 
-// ==========================================
-// SUPABASE
-// ==========================================
-
-const SUPABASE_URL =
-    "https://pkvctsfdqyzlcryikcox.supabase.co";
+const SUPABASE_URL = "https://pkvctsfdqyzlcryikcox.supabase.co";
 
 const SUPABASE_KEY =
     "sb_publishable__pq1skdZvbMRm_R67-xYmw_Ogsm4r00";
 
-const supabaseClient =
-    supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
 
-// ==========================================
-// SUBMIT REVIEW
-// ==========================================
+const WEBSITE_STORAGE_URL =
+    SUPABASE_URL + "/storage/v1/object/public/website-images";
 
-async function submitReview(name, review, rating) {
 
-    try {
+// ======================================================
+// REVIEWS
+// ======================================================
 
-        const response = await fetch(
-            `${SUPABASE_URL}/rest/v1/reviews`,
-            {
-                method: "POST",
+const reviewForm = document.getElementById("review-form");
 
-                headers: {
-                    "apikey": SUPABASE_KEY,
+if (reviewForm) {
+    reviewForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
 
-                    "Authorization":
-                        `Bearer ${SUPABASE_KEY}`,
+        const name = document.getElementById("review-name").value.trim();
+        const message = document.getElementById("review-message").value.trim();
 
-                    "Content-Type":
-                        "application/json",
+        if (!name || !message) {
+            alert("Please enter your name and review.");
+            return;
+        }
 
-                    "Prefer":
-                        "return=representation"
-                },
-
-                body: JSON.stringify({
+        const { error } = await supabaseClient
+            .from("reviews")
+            .insert([
+                {
                     name: name,
-                    rating: rating,
-                    review: review
-                })
-            }
-        );
+                    message: message
+                }
+            ]);
 
+        if (error) {
+            console.error(error);
+            alert("Could not submit your review.");
+            return;
+        }
 
-        const result = await response.text();
+        alert("Thank you for your review!");
 
+        reviewForm.reset();
 
-    if (!response.ok) {
-    console.error(
-        "Supabase error:",
-        response.status,
-        result
-    );
-
-    alert(
-        "Your review could not be submitted. " +
-        "Please try again."
-    );
-
-    return false;
+        loadReviews();
+    });
 }
 
-
-        console.log(
-            "Review submitted:",
-            result
-        );
-
-
-        alert(
-            "Thank you! Your review has been submitted."
-        );
-
-
-        return true;
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Connection error:",
-            error
-        );
-
-        alert(
-            "Unable to connect to the review system. " +
-            "Please try again."
-        );
-
-        return false;
-    }
-}
-
-
-// ==========================================
-// LOAD REVIEWS
-// ==========================================
 
 async function loadReviews() {
 
     const reviewsContainer =
-        document.getElementById(
-            "reviews-container"
-        );
+        document.getElementById("reviews-container");
 
+    if (!reviewsContainer) return;
 
-    if (!reviewsContainer) {
+    const { data, error } = await supabaseClient
+        .from("reviews")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("Error loading reviews:", error);
         return;
     }
 
+    reviewsContainer.innerHTML = "";
 
-    try {
-
-        const response = await fetch(
-            `${SUPABASE_URL}/rest/v1/reviews?select=*&order=created_at.desc`,
-            {
-                method: "GET",
-
-                headers: {
-                    "apikey": SUPABASE_KEY,
-
-                    "Authorization":
-                        `Bearer ${SUPABASE_KEY}`
-                }
-            }
-        );
-
-
-        if (!response.ok) {
-
-            const errorText =
-                await response.text();
-
-            console.error(
-                "Could not load reviews:",
-                errorText
-            );
-
-            reviewsContainer.innerHTML =
-                `<p class="no-reviews">
-                    Reviews could not be loaded.
-                </p>`;
-
-            return;
-        }
-
-
-        const reviews =
-            await response.json();
-
-
-        reviewsContainer.innerHTML = "";
-
-
-        if (reviews.length === 0) {
-
-            reviewsContainer.innerHTML =
-                `<p class="no-reviews">
-                    No reviews yet. Be the first to leave a review!
-                </p>`;
-
-            return;
-        }
-
-
-        reviews.forEach(function(item) {
-
-            const reviewElement =
-                document.createElement("div");
-
-
-            reviewElement.className =
-                "review";
-
-
-            const nameElement =
-                document.createElement("h3");
-
-            nameElement.textContent =
-                item.name;
-
-
-            const ratingElement =
-                document.createElement("p");
-
-            ratingElement.className =
-                "review-rating";
-
-            ratingElement.textContent =
-                "⭐".repeat(Number(item.rating));
-
-
-            const textElement =
-                document.createElement("p");
-
-            textElement.className =
-                "review-text";
-
-            textElement.textContent =
-                item.review;
-
-
-            const dateElement =
-                document.createElement("p");
-
-            dateElement.className =
-                "review-date";
-
-
-            if (item.created_at) {
-
-                const date =
-                    new Date(item.created_at);
-
-                dateElement.textContent =
-                    date.toLocaleDateString(
-                        "en-UG",
-                        {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric"
-                        }
-                    );
-            }
-
-
-            reviewElement.appendChild(
-                nameElement
-            );
-
-            reviewElement.appendChild(
-                ratingElement
-            );
-
-            reviewElement.appendChild(
-                textElement
-            );
-
-            reviewElement.appendChild(
-                dateElement
-            );
-
-
-            reviewsContainer.appendChild(
-                reviewElement
-            );
-
-        });
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Error loading reviews:",
-            error
-        );
-
+    if (!data || data.length === 0) {
         reviewsContainer.innerHTML =
-            `<p class="no-reviews">
-                Unable to load reviews.
-            </p>`;
+            "<p>No reviews yet.</p>";
+        return;
     }
+
+    data.forEach(review => {
+
+        const card = document.createElement("div");
+
+        card.className = "review-card";
+
+        card.innerHTML = `
+            <h3>${escapeHTML(review.name)}</h3>
+            <p>${escapeHTML(review.message)}</p>
+        `;
+
+        reviewsContainer.appendChild(card);
+    });
 }
 
 
-// ==========================================
-// REVIEW FORM
-// ==========================================
+function escapeHTML(text) {
 
-const reviewForm =
-    document.getElementById(
-        "review-form"
-    );
+    const div = document.createElement("div");
 
+    div.textContent = text;
 
-if (reviewForm) {
-
-    reviewForm.addEventListener(
-        "submit",
-        async function(event) {
-
-            event.preventDefault();
-
-
-            const name =
-                document
-                    .getElementById(
-                        "review-name"
-                    )
-                    .value
-                    .trim();
-
-
-            const review =
-                document
-                    .getElementById(
-                        "review-text"
-                    )
-                    .value
-                    .trim();
-
-
-            const rating =
-                Number(
-                    document
-                        .getElementById(
-                            "review-rating"
-                        )
-                        .value
-                );
-
-
-            if (
-                !name ||
-                !review ||
-                !rating
-            ) {
-
-                alert(
-                    "Please complete all review fields."
-                );
-
-                return;
-            }
-
-
-            const successful =
-                await submitReview(
-                    name,
-                    review,
-                    rating
-                );
-
-
-            if (successful) {
-
-                reviewForm.reset();
-
-                await loadReviews();
-            }
-
-        }
-    );
+    return div.innerHTML;
 }
 
-
-// ==========================================
-// LOAD REVIEWS WHEN PAGE OPENS
-// ==========================================
 
 loadReviews();
 
 
-// ==========================================
-// IMAGE LIGHTBOX
-// ==========================================
+// ======================================================
+// LIGHTBOX
+// ======================================================
 
-function openImage(imageSource) {
+function openImage(src) {
 
     const lightbox =
-        document.getElementById(
-            "lightbox"
-        );
+        document.getElementById("lightbox");
 
     const image =
-        document.getElementById(
-            "lightbox-image"
-        );
+        document.getElementById("lightbox-image");
 
     const video =
-        document.getElementById(
-            "lightbox-video"
-        );
+        document.getElementById("lightbox-video");
 
+    if (!lightbox || !image) return;
 
-    image.src =
-        imageSource;
+    image.src = src;
 
+    image.style.display = "block";
 
-    image.style.display =
-        "block";
+    if (video) {
+        video.pause();
+        video.src = "";
+        video.style.display = "none";
+    }
 
-
-    video.style.display =
-        "none";
-
-
-    lightbox.style.display =
-        "flex";
+    lightbox.style.display = "flex";
 }
 
 
-// ==========================================
-// VIDEO LIGHTBOX
-// ==========================================
-
-function openVideo(videoSource) {
+function openVideo(src) {
 
     const lightbox =
-        document.getElementById(
-            "lightbox"
-        );
+        document.getElementById("lightbox");
 
     const image =
-        document.getElementById(
-            "lightbox-image"
-        );
+        document.getElementById("lightbox-image");
 
     const video =
-        document.getElementById(
-            "lightbox-video"
-        );
+        document.getElementById("lightbox-video");
 
+    if (!lightbox || !video) return;
 
-    video.src =
-        videoSource;
+    if (image) {
+        image.src = "";
+        image.style.display = "none";
+    }
 
+    video.src = src;
 
-    video.style.display =
-        "block";
+    video.style.display = "block";
 
+    lightbox.style.display = "flex";
 
-    image.style.display =
-        "none";
-
-
-    lightbox.style.display =
-        "flex";
-
-
-    video.play();
+    video.play().catch(() => {});
 }
 
-
-// ==========================================
-// CLOSE LIGHTBOX
-// ==========================================
 
 function closeLightbox() {
 
     const lightbox =
-        document.getElementById(
-            "lightbox"
-        );
+        document.getElementById("lightbox");
 
     const image =
-        document.getElementById(
-            "lightbox-image"
-        );
+        document.getElementById("lightbox-image");
 
     const video =
-        document.getElementById(
-            "lightbox-video"
-        );
+        document.getElementById("lightbox-video");
 
+    if (!lightbox) return;
 
-    lightbox.style.display =
-        "none";
+    lightbox.style.display = "none";
 
+    if (image) {
+        image.src = "";
+    }
 
-    image.src =
-        "";
-
-
-    video.pause();
-
-
-    video.src =
-        "";
+    if (video) {
+        video.pause();
+        video.src = "";
+    }
 }
 
 
-// ==========================================
-// CLOSE LIGHTBOX BY BACKGROUND
-// ==========================================
+// Close when clicking outside the media
 
 const lightbox =
-    document.getElementById(
-        "lightbox"
-    );
-
+    document.getElementById("lightbox");
 
 if (lightbox) {
 
-    lightbox.addEventListener(
-        "click",
-        function(event) {
+    lightbox.addEventListener("click", function (e) {
 
-            if (
-                event.target === this
-            ) {
-
-                closeLightbox();
-            }
-
+        if (e.target === lightbox) {
+            closeLightbox();
         }
-    );
+
+    });
 }
-// ==========================================
-// WEBSITE MEDIA MANAGEMENT
-// IMAGES + VIDEOS
-// ==========================================
-
-const WEBSITE_STORAGE_URL =
-    SUPABASE_URL +
-    "/storage/v1/object/public/website-images";
 
 
-async function getWebsiteMedia(
-    area,
-    position = "main"
-) {
+// ======================================================
+// WEBSITE MEDIA
+// ======================================================
 
-    const { data, error } =
-        await supabaseClient
-            .from("website_images")
-            .select("file_path, media_type")
-            .eq("area", area)
-            .eq("position", position)
-            .maybeSingle();
+async function getWebsiteMedia(area) {
 
+    const { data, error } = await supabaseClient
+        .from("website_images")
+        .select("id, file_path, media_type, area, position")
+        .eq("area", area)
+        .order("position", { ascending: true });
 
     if (error) {
 
         console.error(
-            "Media loading error:",
+            "Error loading media for:",
+            area,
             error
         );
 
-        return null;
+        return [];
     }
 
-
-    return data;
+    return data || [];
 }
 
 
-// ==========================================
-// LOAD IMAGE
-// ==========================================
+// ======================================================
+// CREATE MEDIA ELEMENT
+// ======================================================
 
-async function loadWebsiteImage(
-    area,
-    elementId
-) {
+function createMediaElement(media) {
 
-    const element =
-        document.getElementById(elementId);
-
-
-    if (!element) {
-        return;
-    }
-
-
-    const media =
-        await getWebsiteMedia(area);
-
-
-    if (!media) {
-        return;
-    }
-
-
-    if (
-        media.media_type &&
-        media.media_type !== "image"
-    ) {
-        return;
-    }
-
-
-    element.src =
-        WEBSITE_STORAGE_URL +
-        "/" +
-        media.file_path;
-}
-
-
-// ==========================================
-// LOAD VIDEO
-// ==========================================
-
-async function loadWebsiteVideo(
-    area,
-    elementId
-) {
-
-    const video =
-        document.getElementById(elementId);
-
-
-    if (!video) {
-        return;
-    }
-
-
-    const media =
-        await getWebsiteMedia(area);
-
-
-    if (!media) {
-        return;
-    }
-
-
-    if (
-        media.media_type &&
-        media.media_type !== "video"
-    ) {
-        return;
-    }
-
-
-    video.src =
-        WEBSITE_STORAGE_URL +
-        "/" +
-        media.file_path;
-
-
-    video.load();
-}
-
-
-// ==========================================
-// LOAD HERO BACKGROUND
-// ==========================================
-
-async function loadHeroBackground() {
-
-    const hero =
-        document.getElementById("home");
-
-
-    if (!hero) {
-        return;
-    }
-
-
-    const media =
-        await getWebsiteMedia("hero");
-
-
-    if (!media) {
-        return;
-    }
-
-
-    if (
-        media.media_type &&
-        media.media_type !== "image"
-    ) {
-        return;
-    }
-
-
-    const imageURL =
-        WEBSITE_STORAGE_URL +
-        "/" +
-        media.file_path;
-
-
-    hero.style.backgroundImage =
-        `
-        linear-gradient(
-            rgba(0, 0, 0, 0.55),
-            rgba(0, 0, 0, 0.55)
-        ),
-        url("${imageURL}")
-        `;
-}
-
-
-// ==========================================
-// LOAD MAIN WEBSITE MEDIA
-// ==========================================
-
-async function loadManagedMedia() {
-
-    // Hero
-
-    await loadHeroBackground();
-
-
-    // About
-
-    await loadWebsiteImage(
-        "about",
-        "about-image"
-    );
-
-
-    // Swimming
-
-    await loadWebsiteImage(
-        "swimming",
-        "swimming-image"
-    );
-
-
-    // Sports video
-
-    await loadWebsiteVideo(
-        "sports",
-        "sports-video"
-    );
-
-
-    // Events
-
-    await loadWebsiteImage(
-        "events",
-        "events-image"
-    );
-
-
-    // Restaurant
-
-    await loadWebsiteImage(
-        "restaurant",
-        "restaurant-image"
-    );
-
-
-    // Food
-
-    await loadWebsiteImage(
-        "food",
-        "food-image"
-    );
-
-
-    // Menu images
-
-    await loadWebsiteImage(
-        "coffee",
-        "coffee-image"
-    );
-
-
-    await loadWebsiteImage(
-        "snacks",
-        "snacks-image"
-    );
-
-
-    await loadWebsiteImage(
-        "goat",
-        "goat-image"
-    );
-
-
-    await loadWebsiteImage(
-        "liver",
-        "liver-image"
-    );
-
-
-    await loadWebsiteImage(
-        "chicken",
-        "chicken-image"
-    );
-
-
-    await loadWebsiteImage(
-        "burger",
-        "burger-image"
-    );
-
-
-    await loadWebsiteImage(
-        "rice",
-        "rice-image"
-    );
-
-
-    await loadWebsiteImage(
-        "pizza",
-        "pizza-image"
-    );
-
-
-    await loadWebsiteImage(
-        "fish",
-        "fish-image"
-    );
-
-
-    // Logo
-
-    await loadWebsiteImage(
-        "logo",
-        "website-logo"
-    );
-
-}
-
-
-loadManagedMedia();
-
-function openWhatsApp() {
-    window.location.href =
-        "https://wa.me/256756749854?text=Hello%20I%20would%20like%20to%20make%20an%20inquiry";
-}
+    const wrapper =
+        document.createElement("

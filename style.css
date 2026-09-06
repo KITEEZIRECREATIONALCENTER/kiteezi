@@ -1847,11 +1847,11 @@ footer {
 .social-links {
     display: flex;
     justify-content: center;
-    gap: 25px;
+    gap: 35px;
 }
 
 .social-links a {
-    font-size: 40px;
+    font-size: 50px;
     text-decoration: none;
 }
 

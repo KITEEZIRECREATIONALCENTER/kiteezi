@@ -1843,7 +1843,15 @@ footer {
     }
 
 }
-.social icons{
-        font-size: 50px;
     }
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+}
+
+.social-links a {
+    font-size: 40px;
+    text-decoration: none;
+}
 

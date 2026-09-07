@@ -1,0 +1,9 @@
+//NAVIGATION//
+.navbar {
+  widith: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  background: #222;
+}

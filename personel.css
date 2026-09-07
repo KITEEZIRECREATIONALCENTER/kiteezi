@@ -61,6 +61,7 @@ select {
   display: flex;
   list-style: none;
   gap: 25px;
+  margin-left: auto;
 }
 .nav-links a:hover {
   color: #ffd700;
@@ -80,15 +81,14 @@ select {
  
 
 /* BODY*/
+
 h1 {
   font-size: 50px;
   text-transform: uppercase;
   text-align: center;
   color: gray
 }
-p {
-    display: flex;
-}
+
 
 
 

@@ -108,11 +108,11 @@ h1 {
   font-size: 30px;
   margin-bottom: 20px;
 }
-.adminstrators-img {
+.adminstrators-image {
   flex: 1;
   text-align: right;
 }
-.adminstrators-img img {
+.adminstrators-image img {
   width: 350px;
   height: auto;
   max-width: 100%;
@@ -125,10 +125,10 @@ h1 {
   .adminstrators-text {
     text-align: center;
   }
-  .adminstrators-img {
+  .adminstrators-image {
     text-align: center;
   }
-  .adminstrators-img img {
+  .adminstrators-image img {
     width: 300px;
     height: auto;
   }

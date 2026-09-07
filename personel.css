@@ -90,7 +90,49 @@ h1 {
   color: gray
 }
 
+.adminstrators {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 40px auto;
+  gap: 40px;
+  padding: 30px;
+  max-width: 1000px;
 
+}
+.adminstrators-text {
+  flex: 1;
+  text-align: left;
+}
+.adminstrators-text h2 {
+  font-size: 30px;
+  margin-bottom: 20px;
+}
+.adminstrators-img {
+  flex: 1;
+  text-align: right;
+}
+.adminstrators-img img {
+  width: 350px;
+  height: auto;
+  max-width: 100%;
+}
+@media (max-width: 768px) {
+  .adminstrators {
+    flex-direction: column;
+    text-align: center;
+  }
+  .adminstrators-text {
+    text-align: center;
+  }
+  .adminstrators-img {
+    text-align: center;
+  }
+  .adminstrators-img img {
+    width: 300px;
+    height: auto;
+  }
+}
 
 
 

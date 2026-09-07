@@ -1,3 +1,41 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+    background: #f7f7f7;
+    color: #222;
+}
+
+
+img,
+ {
+    max-width: 100%;
+}
+
+
+a {
+    text-decoration: none;
+}
+
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+
+
 //NAVIGATION//
 .navbar {
   widith: 100px;
@@ -6,6 +44,7 @@
   align-items: center;
   padding: 15px 40px;
   background: #222;
+  text-direction: right;
 }
 .nav-links {
   color: white;
@@ -21,6 +60,7 @@
 .nav-links a: hover {
   color: #ffd700;
 }
+  
 
 // body//
 .h1 {

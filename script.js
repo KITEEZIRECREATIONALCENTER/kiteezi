@@ -1642,3 +1642,41 @@ function sendOrder() {
 // ======================================================
 
 updateOrder();
+
+
+document.querySelectorAll(".carousel")
+.forEach(carousel => {
+    const images =
+        carsousel.querySelectorAll("img");
+    let index =0;
+    let startX = 0;
+    images.forEach((img, i) => {
+        img.style.display = i === 0 ?
+            "block" : "none";
+    });
+
+    carousel.addEventListener("touchstart"
+                              , e => {
+                                  startX = e.touches[0].clientX;
+                              });
+    carousel.addEventListener("touchend",
+                              e => {
+                                  const endX =
+                                      e.changedTouches[0].cleintX;
+                                  conts distance =endX -startX;
+                                  if (Math.abs(distance) >50) {
+                                      if (distance <0) {
+                                          index = (index + 1) %
+                                              image.length;
+                                      } else{
+                                          index = (index - 1 + image.length) % image.length;
+                                      }
+                                      images.forEach(img => {
+                                          img.style.display =
+                                              "none";
+                                      })
+
+                                      images[index].style.display = "block";
+                                  }
+                              });
+});

@@ -910,7 +910,9 @@ async function loadManagedMedia() {
 }
 
 
-loadManagedMedia();
+loadManagedMedia(). then(function() {
+    initializecarousels();
+})
 
 
 // ======================================================
@@ -1647,6 +1649,8 @@ updateOrder();
 // SWIPE CAROUSEL
 // ======================================================
 
+function initializeCarousels() {
+    
 document.querySelectorAll(".carousel").forEach(function(carousel) {
 
     const images =
@@ -1735,3 +1739,4 @@ document.querySelectorAll(".carousel").forEach(function(carousel) {
     );
 
 });
+}

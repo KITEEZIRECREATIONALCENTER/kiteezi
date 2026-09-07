@@ -1648,33 +1648,51 @@ document.querySelectorAll(".carousel")
 .forEach(carousel => {
     const images =
         carsousel.querySelectorAll("img");
+    //Dont activate a carousel with only one image
+    if (images.length <2) return;
+    
     let index =0;
     let startX = 0;
+    
+    //Show only the first image
     images.forEach((img, i) => {
         img.style.display = i === 0 ?
             "block" : "none";
     });
+    //Finger touches the screen
 
     carousel.addEventListener("touchstart"
-                              , e => {
+                              , function (e)  {
                                   startX = e.touches[0].clientX;
                               });
+
+    //Finger leaves the screen 
     carousel.addEventListener("touchend",
-                              e => {
+                              function (e) {
                                   const endX =
                                       e.changedTouches[0].cleintX;
                                   conts distance =endX -startX;
-                                  if (Math.abs(distance) >50) {
+                                  // Ignore tiny movements
+                                  
+                                  if (Math.abs(distance) >50)
+                                  return;
+                                  //Swipe LEFT
                                       if (distance <0) {
                                           index = (index + 1) %
                                               image.length;
-                                      } else{
+                                      } 
+                                      
+                                      // Swipe RIGHT
+                                      else{
                                           index = (index - 1 + image.length) % image.length;
                                       }
+
+                                  //Hide all images
                                       images.forEach(img => {
                                           img.style.display =
                                               "none";
                                       })
+                                  //Show the new image
 
                                       images[index].style.display = "block";
                                   }

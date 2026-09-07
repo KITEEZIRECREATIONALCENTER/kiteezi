@@ -40,6 +40,7 @@ select {
 }
 
 /*NAVIGATION*/
+
 .navbar {
   width: 100px;
   display: flex;
@@ -47,7 +48,7 @@ select {
   align-items: center;
   padding: 15px 40px;
   background: #222;
-  text-align: right;
+  text-align: left;
 }
 .nav-links {
   color: white;
@@ -84,7 +85,9 @@ h1 {
   text-align: center;
   color: gray
 }
-
+p {
+    display: flex;
+}
 
 
 

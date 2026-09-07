@@ -45,11 +45,24 @@ select {
 .navbar {
   width: 100px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: 15px 40px;
   background: #222;
-  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+}
+
+
+.logo-area img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
 }
 .nav-links {
   color: white;
@@ -60,24 +73,12 @@ select {
 .nav-links {
   display: flex;
   list-style: none;
-  gap: 25px;
-  margin-right: auto;
+  margin-left: auto;
 }
 .nav-links a:hover {
   color: #ffd700;
 }
- .logo-area {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-
-.logo-area img {
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
-}
+ 
  
 
 /* BODY*/

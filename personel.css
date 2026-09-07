@@ -8,6 +8,12 @@
 html {
     scroll-behavior: smooth;
 }
+ position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+
 
 
 body {
@@ -48,7 +54,7 @@ select {
 }
 .nav-links {
   color: white;
-  text direction: none;
+  text-direction: none;
   font-size: 22px;
   font-weight: bold;
 }
@@ -60,7 +66,19 @@ select {
 .nav-links a: hover {
   color: #ffd700;
 }
-  
+ .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+
+.logo-area img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+}
+ 
 
 // body//
 .h1 {

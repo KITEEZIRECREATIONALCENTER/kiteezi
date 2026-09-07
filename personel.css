@@ -61,7 +61,7 @@ select {
   display: flex;
   list-style: none;
   gap: 25px;
-  margin-left: auto;
+  margin-right: auto;
 }
 .nav-links a:hover {
   color: #ffd700;

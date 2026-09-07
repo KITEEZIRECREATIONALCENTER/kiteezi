@@ -7,3 +7,34 @@
   padding: 15px 40px;
   background: #222;
 }
+.nav-link {
+  color: white;
+  text direction: none;
+  font-size: 22px;
+  font-weight: bold;
+}
+.nav-link {
+  display: flex;
+  list-style: none;
+  gap: 25px;
+}
+.nav-link a: hover {
+  color: #ffd700;
+}
+
+// body//
+.h1 {
+  font-size: 50px;
+  font-transfomation: uppercase;
+  text-direction: center;
+  color: gray
+
+
+
+
+
+
+
+
+
+

@@ -1,9 +1,14 @@
-// ======================================================
-// SUPABASE
-// ======================================================
+/* =========================================================
+   KITEEZI RECREATIONAL CENTER
+   PUBLIC WEBSITE JAVASCRIPT
+========================================================= */
 
-const SUPABASE_URL =
-    "https://pkvctsfdqyzlcryikcox.supabase.co";
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL = "https://pkvctsfdqyzlcryikcox.supabase.co";
 
 const SUPABASE_KEY =
     "sb_publishable__pq1skdZvbMRm_R67-xYmw_Ogsm4r00";
@@ -14,123 +19,798 @@ const supabaseClient =
         SUPABASE_KEY
     );
 
-
-// ======================================================
-// WEBSITE STORAGE
-// ======================================================
-
-const WEBSITE_STORAGE_URL =
-    SUPABASE_URL +
-    "/storage/v1/object/public/website-images";
+const STORAGE_PUBLIC_URL =
+    `${SUPABASE_URL}/storage/v1/object/public/website-images`;
 
 
-// ======================================================
-// REVIEWS
-// ======================================================
+/* =========================================================
+   GLOBALS
+========================================================= */
 
-async function submitReview(event) {
+const carouselStates = new Map();
 
-    event.preventDefault();
-
-
-    const name =
-        document.getElementById("review-name").value.trim();
-
-    const rating =
-        document.getElementById("review-rating").value;
-
-    const review =
-        document.getElementById("review-text").value.trim();
+let lightboxItems = [];
+let lightboxIndex = 0;
 
 
-    if (!name || !rating || !review) {
+/* =========================================================
+   DOM READY
+========================================================= */
 
-        alert("Please complete all review fields.");
+document.addEventListener("DOMContentLoaded", async () => {
+
+    setupNavigation();
+
+    setupReviewForm();
+
+    setupLightbox();
+
+    updateYear();
+
+    await loadManagedMedia();
+
+    await loadReviews();
+
+    if (document.querySelector(".menu-page")) {
+        await loadMenuPage();
+    }
+
+    if (document.querySelector(".personnel-page")) {
+        await loadPersonnel();
+    }
+});
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function setupNavigation() {
+
+    const toggle = document.getElementById("nav-toggle");
+    const links = document.getElementById("nav-links");
+
+    if (!toggle || !links) {
+        return;
+    }
+
+    toggle.addEventListener("click", () => {
+        links.classList.toggle("open");
+    });
+
+    links.querySelectorAll("a").forEach(link => {
+
+        link.addEventListener("click", () => {
+            links.classList.remove("open");
+        });
+
+    });
+}
+
+
+/* =========================================================
+   YEAR
+========================================================= */
+
+function updateYear() {
+
+    const year = document.getElementById("current-year");
+
+    if (year) {
+        year.textContent = new Date().getFullYear();
+    }
+}
+
+
+/* =========================================================
+   STORAGE URL
+========================================================= */
+
+function getPublicStorageUrl(filePath) {
+
+    if (!filePath) {
+        return "";
+    }
+
+    if (
+        filePath.startsWith("http://") ||
+        filePath.startsWith("https://")
+    ) {
+        return filePath;
+    }
+
+    return `${STORAGE_PUBLIC_URL}/${filePath}`;
+}
+
+
+/* =========================================================
+   GET MEDIA
+========================================================= */
+
+async function getWebsiteMedia(area) {
+
+    const { data, error } = await supabaseClient
+        .from("website_images")
+        .select("*")
+        .eq("area", area)
+        .order("position", {
+            ascending: true
+        });
+
+    if (error) {
+        console.error(
+            `Could not load ${area} media:`,
+            error
+        );
+
+        return [];
+    }
+
+    return data || [];
+}
+
+
+/* =========================================================
+   LOAD MANAGED MEDIA
+========================================================= */
+
+async function loadManagedMedia() {
+
+    const galleries =
+        document.querySelectorAll(
+            ".media-gallery[data-media-area]"
+        );
+
+    if (!galleries.length) {
+        return;
+    }
+
+    for (const gallery of galleries) {
+
+        const area =
+            gallery.dataset.mediaArea;
+
+        const managedMedia =
+            await getWebsiteMedia(area);
+
+        if (!managedMedia.length) {
+
+            setupExistingCarousel(gallery);
+
+            continue;
+        }
+
+        makeCarousel(
+            gallery,
+            managedMedia
+        );
+    }
+}
+
+
+/* =========================================================
+   MAKE CAROUSEL
+========================================================= */
+
+function makeCarousel(container, items) {
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = "";
+
+    const normalizedItems =
+        items
+            .filter(item => item.file_path)
+            .map(item => {
+
+                const mediaType =
+                    String(
+                        item.media_type || ""
+                    ).toLowerCase();
+
+                const isVideo =
+                    mediaType === "video" ||
+                    /\.(mp4|webm|ogg|mov|m4v)$/i.test(
+                        item.file_path
+                    );
+
+                return {
+                    id: item.id,
+                    url: getPublicStorageUrl(
+                        item.file_path
+                    ),
+                    type: isVideo
+                        ? "video"
+                        : "image"
+                };
+
+            });
+
+    if (!normalizedItems.length) {
+        return;
+    }
+
+    normalizedItems.forEach((item, index) => {
+
+        const slide =
+            document.createElement("div");
+
+        slide.className =
+            "media-slide" +
+            (index === 0
+                ? " active"
+                : "");
+
+        slide.dataset.index = index;
+
+        if (item.type === "video") {
+
+            const video =
+                document.createElement("video");
+
+            video.src = item.url;
+
+            video.muted = true;
+            video.loop = true;
+            video.autoplay = index === 0;
+            video.playsInline = true;
+            video.preload = "metadata";
+
+            slide.appendChild(video);
+
+        } else {
+
+            const image =
+                document.createElement("img");
+
+            image.src = item.url;
+
+            image.alt =
+                "Kiteezi Recreational Center";
+
+            image.loading =
+                index === 0
+                    ? "eager"
+                    : "lazy";
+
+            slide.appendChild(image);
+        }
+
+        slide.addEventListener(
+            "click",
+            () => {
+
+                if (
+                    carouselStates.has(container)
+                ) {
+
+                    const state =
+                        carouselStates.get(
+                            container
+                        );
+
+                    openLightbox(
+                        state.items,
+                        state.index
+                    );
+                }
+            }
+        );
+
+        container.appendChild(slide);
+
+    });
+
+    addCarouselControls(
+        container,
+        normalizedItems
+    );
+
+    carouselStates.set(
+        container,
+        {
+            items: normalizedItems,
+            index: 0
+        }
+    );
+
+    updateCarousel(container);
+
+    setupCarouselSwipe(container);
+}
+
+
+/* =========================================================
+   EXISTING / FALLBACK CAROUSEL
+========================================================= */
+
+function setupExistingCarousel(container) {
+
+    const slides =
+        Array.from(
+            container.querySelectorAll(
+                ".media-slide"
+            )
+        );
+
+    if (!slides.length) {
+
+        container.innerHTML = `
+            <div class="media-placeholder">
+                No media available yet.
+            </div>
+        `;
 
         return;
     }
 
+    const items =
+        slides.map(slide => {
 
-    try {
+            const image =
+                slide.querySelector("img");
 
-        const response =
-            await fetch(
-                SUPABASE_URL +
-                "/rest/v1/reviews",
-                {
+            const video =
+                slide.querySelector("video");
 
-                    method: "POST",
+            if (video) {
 
-                    headers: {
+                return {
+                    url: video.currentSrc ||
+                        video.src,
+                    type: "video"
+                };
 
-                        "Content-Type":
-                            "application/json",
+            }
 
-                        "apikey":
-                            SUPABASE_KEY,
+            return {
+                url: image
+                    ? image.currentSrc ||
+                      image.src
+                    : "",
+                type: "image"
+            };
 
-                        "Authorization":
-                            "Bearer " + SUPABASE_KEY,
+        });
 
-                        "Prefer":
-                            "return=representation"
+    slides.forEach(
+        (slide, index) => {
 
-                    },
+            slide.dataset.index = index;
 
-                    body: JSON.stringify({
+            slide.addEventListener(
+                "click",
+                () => {
 
-                        name: name,
+                    const state =
+                        carouselStates.get(
+                            container
+                        );
 
-                        rating: Number(rating),
-
-                        review: review
-
-                    })
-
+                    if (state) {
+                        openLightbox(
+                            state.items,
+                            state.index
+                        );
+                    }
                 }
             );
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Unable to submit review."
-            );
-
         }
+    );
 
+    addCarouselControls(
+        container,
+        items
+    );
 
-        alert(
-            "Thank you! Your review has been submitted."
-        );
+    carouselStates.set(
+        container,
+        {
+            items,
+            index: 0
+        }
+    );
 
+    updateCarousel(container);
 
-        document
-            .getElementById("review-form")
-            .reset();
-
-
-        loadReviews();
-
-    }
-
-
-    catch (error) {
-
-        console.error(error);
-
-        alert(
-            "There was a problem submitting your review."
-        );
-
-    }
-
+    setupCarouselSwipe(container);
 }
 
 
-// ======================================================
-// LOAD REVIEWS
-// ======================================================
+/* =========================================================
+   CAROUSEL CONTROLS
+========================================================= */
+
+function addCarouselControls(
+    container,
+    items
+) {
+
+    container
+        .querySelectorAll(
+            ".carousel-arrow, .carousel-dots, .carousel-counter"
+        )
+        .forEach(element => element.remove());
+
+    if (items.length <= 1) {
+
+        container.classList.add(
+            "single-item"
+        );
+
+        return;
+    }
+
+    container.classList.remove(
+        "single-item"
+    );
+
+
+    const previous =
+        document.createElement("button");
+
+    previous.className =
+        "carousel-arrow carousel-prev";
+
+    previous.type = "button";
+
+    previous.setAttribute(
+        "aria-label",
+        "Previous image"
+    );
+
+    previous.innerHTML = "❮";
+
+    previous.addEventListener(
+        "click",
+        event => {
+
+            event.stopPropagation();
+
+            changeCarousel(
+                container,
+                -1
+            );
+        }
+    );
+
+
+    const next =
+        document.createElement("button");
+
+    next.className =
+        "carousel-arrow carousel-next";
+
+    next.type = "button";
+
+    next.setAttribute(
+        "aria-label",
+        "Next image"
+    );
+
+    next.innerHTML = "❯";
+
+    next.addEventListener(
+        "click",
+        event => {
+
+            event.stopPropagation();
+
+            changeCarousel(
+                container,
+                1
+            );
+        }
+    );
+
+
+    const dots =
+        document.createElement("div");
+
+    dots.className =
+        "carousel-dots";
+
+    items.forEach(
+        (_, index) => {
+
+            const dot =
+                document.createElement("button");
+
+            dot.className =
+                "carousel-dot" +
+                (index === 0
+                    ? " active"
+                    : "");
+
+            dot.type = "button";
+
+            dot.setAttribute(
+                "aria-label",
+                `Go to image ${index + 1}`
+            );
+
+            dot.addEventListener(
+                "click",
+                event => {
+
+                    event.stopPropagation();
+
+                    const state =
+                        carouselStates.get(
+                            container
+                        );
+
+                    if (!state) {
+                        return;
+                    }
+
+                    state.index = index;
+
+                    updateCarousel(
+                        container
+                    );
+                }
+            );
+
+            dots.appendChild(dot);
+        }
+    );
+
+
+    const counter =
+        document.createElement("div");
+
+    counter.className =
+        "carousel-counter";
+
+    container.appendChild(previous);
+    container.appendChild(next);
+    container.appendChild(dots);
+    container.appendChild(counter);
+}
+
+
+/* =========================================================
+   UPDATE CAROUSEL
+========================================================= */
+
+function updateCarousel(container) {
+
+    const state =
+        carouselStates.get(container);
+
+    if (!state) {
+        return;
+    }
+
+    const slides =
+        container.querySelectorAll(
+            ".media-slide"
+        );
+
+    slides.forEach(
+        (slide, index) => {
+
+            slide.classList.toggle(
+                "active",
+                index === state.index
+            );
+
+            const video =
+                slide.querySelector("video");
+
+            if (video) {
+
+                if (index === state.index) {
+
+                    video.currentTime = 0;
+
+                    video.play().catch(
+                        () => {}
+                    );
+
+                } else {
+
+                    video.pause();
+                }
+            }
+        }
+    );
+
+
+    const dots =
+        container.querySelectorAll(
+            ".carousel-dot"
+        );
+
+    dots.forEach(
+        (dot, index) => {
+
+            dot.classList.toggle(
+                "active",
+                index === state.index
+            );
+        }
+    );
+
+
+    const counter =
+        container.querySelector(
+            ".carousel-counter"
+        );
+
+    if (counter) {
+
+        counter.textContent =
+            `${state.index + 1} / ${state.items.length}`;
+    }
+}
+
+
+/* =========================================================
+   CHANGE CAROUSEL
+========================================================= */
+
+function changeCarousel(
+    container,
+    direction
+) {
+
+    const state =
+        carouselStates.get(container);
+
+    if (!state) {
+        return;
+    }
+
+    const total =
+        state.items.length;
+
+    state.index =
+        (state.index + direction + total) %
+        total;
+
+    updateCarousel(container);
+}
+
+
+/* =========================================================
+   SWIPE + MOUSE DRAG
+========================================================= */
+
+function setupCarouselSwipe(container) {
+
+    let startX = 0;
+    let startY = 0;
+    let dragging = false;
+
+    container.addEventListener(
+        "touchstart",
+        event => {
+
+            const touch =
+                event.touches[0];
+
+            startX = touch.clientX;
+            startY = touch.clientY;
+
+        },
+        {
+            passive: true
+        }
+    );
+
+
+    container.addEventListener(
+        "touchend",
+        event => {
+
+            const touch =
+                event.changedTouches[0];
+
+            const differenceX =
+                touch.clientX - startX;
+
+            const differenceY =
+                touch.clientY - startY;
+
+            if (
+                Math.abs(differenceX) > 50 &&
+                Math.abs(differenceX) >
+                Math.abs(differenceY)
+            ) {
+
+                changeCarousel(
+                    container,
+                    differenceX < 0
+                        ? 1
+                        : -1
+                );
+            }
+
+        },
+        {
+            passive: true
+        }
+    );
+
+
+    container.addEventListener(
+        "mousedown",
+        event => {
+
+            startX = event.clientX;
+            dragging = true;
+
+            container.style.cursor =
+                "grabbing";
+        }
+    );
+
+
+    container.addEventListener(
+        "mouseup",
+        event => {
+
+            if (!dragging) {
+                return;
+            }
+
+            dragging = false;
+
+            container.style.cursor = "";
+
+            const difference =
+                event.clientX - startX;
+
+            if (Math.abs(difference) > 50) {
+
+                changeCarousel(
+                    container,
+                    difference < 0
+                        ? 1
+                        : -1
+                );
+            }
+        }
+    );
+
+
+    container.addEventListener(
+        "mouseleave",
+        () => {
+
+            dragging = false;
+
+            container.style.cursor = "";
+        }
+    );
+}
+
+
+/* =========================================================
+   REVIEWS
+========================================================= */
+
+function setupReviewForm() {
+
+    const form =
+        document.getElementById(
+            "review-form"
+        );
+
+    if (!form) {
+        return;
+    }
+
+    form.addEventListener(
+        "submit",
+        submitReview
+    );
+}
+
 
 async function loadReviews() {
 
@@ -139,64 +819,68 @@ async function loadReviews() {
             "reviews-container"
         );
 
-
     if (!container) {
         return;
     }
 
-
-    try {
-
-        const response =
-            await fetch(
-                SUPABASE_URL +
-                "/rest/v1/reviews?select=*&order=created_at.desc",
-                {
-
-                    headers: {
-
-                        "apikey":
-                            SUPABASE_KEY,
-
-                        "Authorization":
-                            "Bearer " + SUPABASE_KEY
-
-                    }
-
-                }
-            );
+    container.innerHTML =
+        `<div class="loading-message">
+            Loading reviews...
+        </div>`;
 
 
-        if (!response.ok) {
-
-            throw new Error(
-                "Could not load reviews."
-            );
-
-        }
-
-
-        const reviews =
-            await response.json();
+    const { data, error } =
+        await supabaseClient
+            .from("reviews")
+            .select("*")
+            .eq("approved", true)
+            .order("created_at", {
+                ascending: false
+            });
 
 
-        container.innerHTML = "";
+    if (error) {
+
+        console.error(
+            "Review loading error:",
+            error
+        );
+
+        container.innerHTML =
+            `<div class="empty-message">
+                Reviews are currently unavailable.
+            </div>`;
+
+        return;
+    }
 
 
-        reviews.forEach(function(review) {
+    if (!data || !data.length) {
 
-            const reviewElement =
-                document.createElement("div");
+        container.innerHTML =
+            `<div class="empty-message">
+                No approved reviews yet. Be the first to leave one!
+            </div>`;
+
+        return;
+    }
 
 
-            reviewElement.className =
-                "review-card";
+    container.innerHTML =
+        data.map(review => {
 
+            const rating =
+                Math.max(
+                    1,
+                    Math.min(
+                        5,
+                        Number(review.rating) || 0
+                    )
+                );
 
             const stars =
-                "⭐".repeat(
-                    Number(review.rating) || 0
-                );
+                "★".repeat(rating) +
+                "☆".repeat(5 - rating);
 
 
             const date =
@@ -204,108 +888,1044 @@ async function loadReviews() {
                     ? new Date(
                         review.created_at
                     ).toLocaleDateString(
-                        "en-UG"
+                        "en-UG",
+                        {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric"
+                        }
                     )
                     : "";
 
 
-            reviewElement.innerHTML = `
+            return `
+                <article class="review-card">
 
-                <h3>
-                    ${escapeHTML(review.name)}
-                </h3>
+                    <div class="review-header">
 
-                <div class="review-stars">
-                    ${stars}
-                </div>
+                        <span class="review-name">
+                            ${escapeHTML(
+                                review.name ||
+                                "Guest"
+                            )}
+                        </span>
 
-                <p>
-                    ${escapeHTML(review.review)}
-                </p>
+                        <span class="review-stars">
+                            ${stars}
+                        </span>
 
-                <small>
-                    ${date}
-                </small>
+                    </div>
 
+                    <p class="review-text">
+                        ${escapeHTML(
+                            review.review || ""
+                        )}
+                    </p>
+
+                    ${
+                        date
+                            ? `<small class="review-date">
+                                ${date}
+                               </small>`
+                            : ""
+                    }
+
+                </article>
             `;
 
+        }).join("");
+}
 
-            container.appendChild(
-                reviewElement
-            );
 
-        });
+/* =========================================================
+   SUBMIT REVIEW
+========================================================= */
 
+async function submitReview(event) {
+
+    event.preventDefault();
+
+    const form =
+        event.currentTarget;
+
+    const name =
+        document.getElementById(
+            "review-name"
+        ).value.trim();
+
+    const rating =
+        Number(
+            document.getElementById(
+                "review-rating"
+            ).value
+        );
+
+    const review =
+        document.getElementById(
+            "review-text"
+        ).value.trim();
+
+    const status =
+        document.getElementById(
+            "review-status"
+        );
+
+
+    if (!name || !rating || !review) {
+
+        status.textContent =
+            "Please complete all fields.";
+
+        return;
     }
 
 
-    catch (error) {
+    status.textContent =
+        "Submitting review...";
+
+
+    const { error } =
+        await supabaseClient
+            .from("reviews")
+            .insert({
+                name,
+                rating,
+                review,
+                approved: false
+            });
+
+
+    if (error) {
 
         console.error(
-            "Review loading error:",
+            "Review submission error:",
             error
         );
 
-    }
+        status.textContent =
+            "Unable to submit your review. Please try again.";
 
-}
-
-
-// ======================================================
-// ESCAPE HTML
-// ======================================================
-
-function escapeHTML(value) {
-
-    const div =
-        document.createElement("div");
-
-    div.textContent =
-        value ?? "";
-
-    return div.innerHTML;
-
-}
-
-
-// ======================================================
-// REVIEW FORM
-// ======================================================
-
-const reviewForm =
-    document.getElementById(
-        "review-form"
-    );
-
-
-if (reviewForm) {
-
-    reviewForm.addEventListener(
-        "submit",
-        submitReview
-    );
-
-}
-
-
-loadReviews();
-
-
-// ======================================================
-// LIGHTBOX
-// ======================================================
-
-function openImage(imageSource) {
-
-    if (!imageSource) {
         return;
     }
+
+
+    form.reset();
+
+    status.textContent =
+        "Thank you! Your review has been submitted for approval.";
+
+    setTimeout(() => {
+
+        status.textContent = "";
+
+    }, 6000);
+}
+
+
+/* =========================================================
+   MENU
+========================================================= */
+
+async function loadMenuPage() {
+
+    const menuContainer =
+        document.getElementById(
+            "menu-items-container"
+        );
+
+    if (!menuContainer) {
+        return;
+    }
+
+
+    const { data, error } =
+        await supabaseClient
+            .from("menu_items")
+            .select("*")
+            .order("position", {
+                ascending: true
+            });
+
+
+    if (error) {
+
+        console.error(
+            "Menu loading error:",
+            error
+        );
+
+        menuContainer.innerHTML =
+            `<div class="menu-empty">
+                Unable to load the menu.
+            </div>`;
+
+        return;
+    }
+
+
+    const items = data || [];
+
+    renderMenuItems(
+        items,
+        menuContainer
+    );
+
+    setupMenuSearch(
+        items,
+        menuContainer
+    );
+
+    setupMenuCategoryButtons(
+        items,
+        menuContainer
+    );
+
+    await loadMenuMedia();
+}
+
+
+/* =========================================================
+   MENU MEDIA
+========================================================= */
+
+async function loadMenuMedia() {
+
+    const galleries =
+        document.querySelectorAll(
+            ".menu-media-gallery[data-media-area]"
+        );
+
+    for (const gallery of galleries) {
+
+        const area =
+            gallery.dataset.mediaArea;
+
+        const media =
+            await getWebsiteMedia(area);
+
+        if (media.length) {
+
+            makeCarousel(
+                gallery,
+                media
+            );
+
+        } else {
+
+            setupExistingCarousel(
+                gallery
+            );
+        }
+    }
+}
+
+
+/* =========================================================
+   RENDER MENU
+========================================================= */
+
+function renderMenuItems(
+    items,
+    container
+) {
+
+    if (!items.length) {
+
+        container.innerHTML =
+            `<div class="menu-empty">
+                No menu items are available yet.
+            </div>`;
+
+        return;
+    }
+
+
+    const categories = {};
+
+    items.forEach(item => {
+
+        const category =
+            String(
+                item.category || "other"
+            ).toLowerCase();
+
+        if (!categories[category]) {
+            categories[category] = [];
+        }
+
+        categories[category].push(item);
+    });
+
+
+    const categoryNames = {
+        breakfast: "Breakfast",
+        snacks: "Snacks",
+        goat: "Goat",
+        liver: "Liver",
+        chicken: "Chicken",
+        burgers: "Burgers",
+        accompaniments: "Accompaniments",
+        pizzas: "Pizzas",
+        fish: "Fish"
+    };
+
+
+    container.innerHTML =
+        Object.keys(categories)
+            .map(category => {
+
+                const title =
+                    categoryNames[category] ||
+                    capitalize(category);
+
+
+                return `
+                    <section
+                        class="menu-section"
+                        data-category="${escapeHTML(category)}"
+                    >
+
+                        <div class="menu-section-heading">
+                            <p class="eyebrow">
+                                KITEeZI MENU
+                            </p>
+
+                            <h2>
+                                ${escapeHTML(title)}
+                            </h2>
+                        </div>
+
+                        <div class="menu-grid">
+
+                            ${categories[category]
+                                .map(
+                                    menuItemHTML
+                                )
+                                .join("")}
+
+                        </div>
+
+                    </section>
+                `;
+
+            }).join("");
+
+
+    attachOrderButtons();
+}
+
+
+/* =========================================================
+   MENU ITEM HTML
+========================================================= */
+
+function menuItemHTML(item) {
+
+    const price =
+        Number(item.price);
+
+    const formattedPrice =
+        Number.isFinite(price)
+            ? `UGX ${price.toLocaleString()}`
+            : escapeHTML(
+                item.price || ""
+            );
+
+
+    return `
+        <article
+            class="menu-item"
+            data-name="${escapeHTML(
+                item.name || ""
+            )}"
+            data-category="${escapeHTML(
+                String(
+                    item.category || ""
+                ).toLowerCase()
+            )}"
+        >
+
+            <div class="menu-item-content">
+
+                <h3>
+                    ${escapeHTML(
+                        item.name || ""
+                    )}
+                </h3>
+
+                ${
+                    item.description
+                        ? `<p>
+                            ${escapeHTML(
+                                item.description
+                            )}
+                           </p>`
+                        : ""
+                }
+
+                <strong class="menu-price">
+                    ${formattedPrice}
+                </strong>
+
+            </div>
+
+            <button
+                type="button"
+                class="order-item-btn"
+                data-item-name="${escapeHTML(
+                    item.name || ""
+                )}"
+                data-item-price="${Number.isFinite(price) ? price : 0}"
+            >
+                Order
+            </button>
+
+        </article>
+    `;
+}
+
+
+/* =========================================================
+   MENU SEARCH
+========================================================= */
+
+function setupMenuSearch(
+    items,
+    container
+) {
+
+    const search =
+        document.getElementById(
+            "menu-search"
+        );
+
+    if (!search) {
+        return;
+    }
+
+    search.addEventListener(
+        "input",
+        () => {
+
+            const query =
+                search.value
+                    .trim()
+                    .toLowerCase();
+
+            const menuItems =
+                container.querySelectorAll(
+                    ".menu-item"
+                );
+
+            menuItems.forEach(item => {
+
+                const name =
+                    (
+                        item.dataset.name ||
+                        ""
+                    ).toLowerCase();
+
+                const category =
+                    (
+                        item.dataset.category ||
+                        ""
+                    ).toLowerCase();
+
+                const description =
+                    item.textContent.toLowerCase();
+
+                item.style.display =
+                    !query ||
+                    name.includes(query) ||
+                    category.includes(query) ||
+                    description.includes(query)
+                        ? ""
+                        : "none";
+            });
+
+            hideEmptyMenuSections();
+
+        }
+    );
+}
+
+
+/* =========================================================
+   CATEGORY FILTER
+========================================================= */
+
+function setupMenuCategoryButtons(
+    items,
+    container
+) {
+
+    const buttons =
+        document.querySelectorAll(
+            ".menu-category-btn"
+        );
+
+    buttons.forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                buttons.forEach(
+                    btn =>
+                        btn.classList.remove(
+                            "active"
+                        )
+                );
+
+                button.classList.add(
+                    "active"
+                );
+
+                const category =
+                    button.dataset.category;
+
+                const sections =
+                    container.querySelectorAll(
+                        ".menu-section"
+                    );
+
+                sections.forEach(section => {
+
+                    const sectionCategory =
+                        section.dataset.category;
+
+                    section.style.display =
+                        category === "all" ||
+                        category === sectionCategory
+                            ? ""
+                            : "none";
+
+                });
+
+                container
+                    .querySelectorAll(
+                        ".menu-item"
+                    )
+                    .forEach(item => {
+
+                        item.style.display =
+                            "";
+
+                    });
+
+                const search =
+                    document.getElementById(
+                        "menu-search"
+                    );
+
+                if (search) {
+                    search.value = "";
+                }
+
+                hideEmptyMenuSections();
+            }
+        );
+    });
+}
+
+
+/* =========================================================
+   HIDE EMPTY MENU SECTIONS
+========================================================= */
+
+function hideEmptyMenuSections() {
+
+    document
+        .querySelectorAll(
+            ".menu-section"
+        )
+        .forEach(section => {
+
+            const visibleItems =
+                Array.from(
+                    section.querySelectorAll(
+                        ".menu-item"
+                    )
+                )
+                .filter(
+                    item =>
+                        item.style.display !==
+                        "none"
+                );
+
+            if (
+                section.style.display !==
+                "none"
+            ) {
+
+                section.style.display =
+                    visibleItems.length
+                        ? ""
+                        : "none";
+            }
+
+        });
+}
+
+
+/* =========================================================
+   ORDERING
+========================================================= */
+
+let selectedItemName = "";
+let selectedItemPrice = 0;
+
+
+function attachOrderButtons() {
+
+    document
+        .querySelectorAll(
+            ".order-item-btn"
+        )
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    selectedItemName =
+                        button.dataset.itemName ||
+                        "";
+
+                    selectedItemPrice =
+                        Number(
+                            button.dataset.itemPrice
+                        ) || 0;
+
+                    openOrderDrawer();
+                }
+            );
+
+        });
+}
+
+
+function openOrderDrawer() {
+
+    const drawer =
+        document.getElementById(
+            "order-section"
+        );
+
+    const backdrop =
+        document.getElementById(
+            "order-backdrop"
+        );
+
+    const selected =
+        document.getElementById(
+            "selected-item"
+        );
+
+    const total =
+        document.getElementById(
+            "total"
+        );
+
+
+    if (!drawer) {
+        return;
+    }
+
+
+    if (selected) {
+
+        selected.textContent =
+            selectedItemName;
+    }
+
+
+    if (total) {
+
+        total.textContent =
+            `UGX ${selectedItemPrice.toLocaleString()}`;
+    }
+
+
+    drawer.classList.add("open");
+
+    if (backdrop) {
+        backdrop.classList.add("open");
+    }
+
+    document.body.classList.add(
+        "no-scroll"
+    );
+}
+
+
+function closeOrderDrawer() {
+
+    const drawer =
+        document.getElementById(
+            "order-section"
+        );
+
+    const backdrop =
+        document.getElementById(
+            "order-backdrop"
+        );
+
+    if (drawer) {
+        drawer.classList.remove("open");
+    }
+
+    if (backdrop) {
+        backdrop.classList.remove("open");
+    }
+
+    document.body.classList.remove(
+        "no-scroll"
+    );
+}
+
+
+/* =========================================================
+   SPECIAL MENU FUNCTIONS
+========================================================= */
+
+function chooseChipsSausage() {
+
+    const choice =
+        prompt(
+            "Choose size:\n1. Small - UGX 13,000\n2. Large - UGX 15,000"
+        );
+
+    if (choice === "1") {
+
+        selectedItemName =
+            "Chips & Sausages Small";
+
+        selectedItemPrice = 13000;
+
+        openOrderDrawer();
+
+    } else if (choice === "2") {
+
+        selectedItemName =
+            "Chips & Sausages Large";
+
+        selectedItemPrice = 15000;
+
+        openOrderDrawer();
+    }
+}
+
+
+function chooseAccompaniment() {
+
+    const choice =
+        prompt(
+            "Choose accompaniment:\nWhite Rice\nVegetable Rice\nEgg Fried Rice\nChips\nPotato Wedges\nPosho\nMashed Potatoes"
+        );
+
+    if (!choice) {
+        return;
+    }
+
+    selectedItemName =
+        `Accompaniment - ${choice}`;
+
+    selectedItemPrice = 0;
+
+    openOrderDrawer();
+}
+
+
+function chooseLiverAccompaniment() {
+
+    chooseAccompaniment();
+}
+
+
+/* =========================================================
+   ORDER DRAWER EVENTS
+========================================================= */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target.matches(
+                "#order-close"
+            )
+        ) {
+
+            closeOrderDrawer();
+        }
+
+
+        if (
+            event.target.matches(
+                "#order-backdrop"
+            )
+        ) {
+
+            closeOrderDrawer();
+        }
+
+
+        if (
+            event.target.matches(
+                "#send-whatsapp"
+            )
+        ) {
+
+            sendOrderToWhatsApp();
+        }
+
+    }
+);
+
+
+/* =========================================================
+   WHATSAPP ORDER
+========================================================= */
+
+function sendOrderToWhatsApp() {
+
+    const customerName =
+        document.getElementById(
+            "customerName"
+        )?.value.trim();
+
+    const phone =
+        document.getElementById(
+            "phone"
+        )?.value.trim();
+
+    const deliveryType =
+        document.getElementById(
+            "deliveryType"
+        )?.value;
+
+    const location =
+        document.getElementById(
+            "location"
+        )?.value.trim();
+
+    const message =
+        document.getElementById(
+            "message"
+        )?.value.trim();
+
+
+    if (!customerName || !phone) {
+
+        alert(
+            "Please enter your name and phone number."
+        );
+
+        return;
+    }
+
+
+    let text =
+        `Hello Kiteezi Recreational Center,%0A%0A`;
+
+    text +=
+        `I would like to order:%0A`;
+
+    text +=
+        `${encodeURIComponent(
+            selectedItemName
+        )}%0A`;
+
+    if (selectedItemPrice > 0) {
+
+        text +=
+            `Price: UGX ${selectedItemPrice.toLocaleString()}%0A`;
+    }
+
+
+    text +=
+        `%0ACustomer: ${encodeURIComponent(
+            customerName
+        )}%0A`;
+
+    text +=
+        `Phone: ${encodeURIComponent(
+            phone
+        )}%0A`;
+
+    if (deliveryType) {
+
+        text +=
+            `Order type: ${encodeURIComponent(
+                deliveryType
+            )}%0A`;
+    }
+
+    if (location) {
+
+        text +=
+            `Location: ${encodeURIComponent(
+                location
+            )}%0A`;
+    }
+
+    if (message) {
+
+        text +=
+            `Additional message: ${encodeURIComponent(
+                message
+            )}%0A`;
+    }
+
+
+    const whatsappUrl =
+        `https://wa.me/256709763803?text=${text}`;
+
+
+    window.open(
+        whatsappUrl,
+        "_blank"
+    );
+}
+
+
+/* =========================================================
+   LIGHTBOX
+========================================================= */
+
+function setupLightbox() {
+
+    const lightbox =
+        document.getElementById(
+            "lightbox"
+        );
+
+    if (!lightbox) {
+        return;
+    }
+
+
+    document
+        .getElementById(
+            "lightbox-close"
+        )
+        ?.addEventListener(
+            "click",
+            closeLightbox
+        );
+
+
+    document
+        .getElementById(
+            "lightbox-prev"
+        )
+        ?.addEventListener(
+            "click",
+            () => {
+
+                changeLightbox(-1);
+            }
+        );
+
+
+    document
+        .getElementById(
+            "lightbox-next"
+        )
+        ?.addEventListener(
+            "click",
+            () => {
+
+                changeLightbox(1);
+            }
+        );
+
+
+    lightbox.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target === lightbox
+            ) {
+
+                closeLightbox();
+            }
+        }
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                !lightbox.classList.contains(
+                    "open"
+                )
+            ) {
+                return;
+            }
+
+            if (event.key === "Escape") {
+                closeLightbox();
+            }
+
+            if (event.key === "ArrowLeft") {
+                changeLightbox(-1);
+            }
+
+            if (event.key === "ArrowRight") {
+                changeLightbox(1);
+            }
+        }
+    );
+}
+
+
+function openLightbox(
+    items,
+    index
+) {
+
+    if (!items || !items.length) {
+        return;
+    }
+
+    lightboxItems = items;
+
+    lightboxIndex =
+        Math.max(
+            0,
+            Math.min(
+                index || 0,
+                items.length - 1
+            )
+        );
 
 
     const lightbox =
         document.getElementById(
             "lightbox"
         );
+
+    if (!lightbox) {
+        return;
+    }
+
+
+    lightbox.classList.add("open");
+
+    document.body.classList.add(
+        "no-scroll"
+    );
+
+    renderLightbox();
+}
+
+
+function renderLightbox() {
 
     const image =
         document.getElementById(
@@ -317,74 +1937,56 @@ function openImage(imageSource) {
             "lightbox-video"
         );
 
+    if (!image || !video) {
+        return;
+    }
 
-    image.src =
-        imageSource;
 
-    image.style.display =
-        "block";
+    const item =
+        lightboxItems[
+            lightboxIndex
+        ];
 
+    image.style.display = "none";
+
+    video.style.display = "none";
 
     video.pause();
 
-    video.removeAttribute(
-        "src"
-    );
+    video.removeAttribute("src");
 
-    video.style.display =
-        "none";
+    if (item.type === "video") {
 
+        video.src = item.url;
 
-    lightbox.style.display =
-        "flex";
+        video.style.display = "block";
 
+    } else {
+
+        image.src = item.url;
+
+        image.style.display = "block";
+    }
 }
 
 
-function openVideo(videoSource) {
+function changeLightbox(
+    direction
+) {
 
-    if (!videoSource) {
+    if (!lightboxItems.length) {
         return;
     }
 
+    lightboxIndex =
+        (
+            lightboxIndex +
+            direction +
+            lightboxItems.length
+        ) %
+        lightboxItems.length;
 
-    const lightbox =
-        document.getElementById(
-            "lightbox"
-        );
-
-    const image =
-        document.getElementById(
-            "lightbox-image"
-        );
-
-    const video =
-        document.getElementById(
-            "lightbox-video"
-        );
-
-
-    image.src = "";
-
-    image.style.display =
-        "none";
-
-
-    video.src =
-        videoSource;
-
-    video.style.display =
-        "block";
-
-
-    lightbox.style.display =
-        "flex";
-
-
-    video.play().catch(
-        function() {}
-    );
-
+    renderLightbox();
 }
 
 
@@ -395,1348 +1997,279 @@ function closeLightbox() {
             "lightbox"
         );
 
-    const image =
-        document.getElementById(
-            "lightbox-image"
-        );
-
     const video =
         document.getElementById(
             "lightbox-video"
         );
 
+    if (video) {
+        video.pause();
+    }
 
-    lightbox.style.display =
-        "none";
+    if (lightbox) {
+        lightbox.classList.remove(
+            "open"
+        );
+    }
 
-
-    image.src =
-        "";
-
-
-    video.pause();
-
-    video.src =
-        "";
-
-}
-
-
-const lightbox =
-    document.getElementById(
-        "lightbox"
+    document.body.classList.remove(
+        "no-scroll"
     );
-
-
-if (lightbox) {
-
-    lightbox.addEventListener(
-        "click",
-        function(event) {
-
-            if (
-                event.target === lightbox
-            ) {
-
-                closeLightbox();
-
-            }
-
-        }
-    );
-
 }
 
 
-// ======================================================
-// WEBSITE MEDIA MANAGEMENT
-//
-// IMAGES + VIDEOS
-// MULTIPLE MEDIA PER AREA
-// ======================================================
+/* =========================================================
+   PERSONNEL
+========================================================= */
 
-
-// ======================================================
-// GET ALL WEBSITE MEDIA
-// ======================================================
-
-async function getWebsiteMedia(area) {
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("website_images")
-            .select(
-                "id, file_path, media_type, area, position"
-            )
-            .eq(
-                "area",
-                area
-            )
-            .order(
-                "position",
-                {
-                    ascending: true
-                }
-            );
-
-
-    if (error) {
-
-        console.error(
-            "Media loading error:",
-            error
-        );
-
-        return [];
-
-    }
-
-
-    return data || [];
-
-}
-
-
-// ======================================================
-// CREATE MEDIA ELEMENT
-// ======================================================
-
-function createManagedMedia(media) {
-
-    const wrapper =
-        document.createElement(
-            "div"
-        );
-
-
-    wrapper.className =
-        "managed-media";
-
-
-    const mediaURL =
-        WEBSITE_STORAGE_URL +
-        "/" +
-        media.file_path;
-
-
-    // IMAGE
-
-    if (
-        media.media_type === "image" ||
-        media.media_type?.startsWith("image/")
-    ) {
-
-        const image =
-            document.createElement(
-                "img"
-            );
-
-
-        image.src =
-            mediaURL;
-
-
-        image.alt =
-            "Kiteezi Recreational Center";
-
-
-        image.loading =
-            "lazy";
-
-
-        image.onclick =
-            function() {
-
-                openImage(
-                    mediaURL
-                );
-
-            };
-
-
-        wrapper.appendChild(
-            image
-        );
-
-    }
-
-
-    // VIDEO
-
-    else if (
-        media.media_type === "video" ||
-        media.media_type?.startsWith("video/")
-    ) {
-
-        const video =
-            document.createElement(
-                "video"
-            );
-
-
-        video.src =
-            mediaURL;
-
-
-        video.controls =
-            true;
-
-
-        video.preload =
-            "metadata";
-
-
-        video.onclick =
-            function() {
-
-                openVideo(
-                    mediaURL
-                );
-
-            };
-
-
-        wrapper.appendChild(
-            video
-        );
-
-    }
-
-
-    return wrapper;
-
-}
-
-
-// ======================================================
-// LOAD MEDIA GALLERY
-// ======================================================
-
-async function loadMediaGallery(
-    area,
-    containerId
-) {
+async function loadPersonnel() {
 
     const container =
         document.getElementById(
-            containerId
+            "personnel-container"
         );
-
 
     if (!container) {
         return;
     }
 
 
-    const media =
-        await getWebsiteMedia(
-            area
-        );
-
-
-    // Keep original fallback
-
-    if (!media.length) {
-        return;
-    }
-
-
-    // Remove fallback
-
-    container.innerHTML =
-        "";
-
-
-    media.forEach(
-        function(item) {
-
-            const element =
-                createManagedMedia(
-                    item
-                );
-
-
-            container.appendChild(
-                element
-            );
-
-        }
-    );
-
-}
-
-
-// ======================================================
-// LOAD HERO BACKGROUND
-// ======================================================
-
-async function loadHeroBackground() {
-
-    const hero =
-        document.getElementById(
-            "home"
-        );
-
-
-    if (!hero) {
-        return;
-    }
-
-
-    const media =
-        await getWebsiteMedia(
-            "hero"
-        );
-
-
-    if (!media.length) {
-        return;
-    }
-
-
-    const image =
-        media.find(
-            function(item) {
-
-                return (
-
-                    item.media_type === "image" ||
-
-                    item.media_type?.startsWith(
-                        "image/"
-                    )
-
-                );
-
-            }
-        );
-
-
-    if (!image) {
-        return;
-    }
-
-
-    const imageURL =
-        WEBSITE_STORAGE_URL +
-        "/" +
-        image.file_path;
-
-
-    hero.style.backgroundImage =
-        `
-        linear-gradient(
-            rgba(0, 0, 0, 0.55),
-            rgba(0, 0, 0, 0.55)
-        ),
-        url("${imageURL}")
-        `;
-
-}
-
-
-// ======================================================
-// LOAD MENU MEDIA
-// ======================================================
-
-async function loadMenuMedia() {
-
-    const containers =
-        document.querySelectorAll(
-            "[data-media-area]"
-        );
-
-
-    for (
-        const container of containers
-    ) {
-
-        const area =
-            container.dataset.mediaArea;
-
-
-        if (!area) {
-            continue;
-        }
-
-
-        const media =
-            await getWebsiteMedia(
-                area
-            );
-
-
-        // Keep fallback if
-        // nothing exists.
-
-        if (!media.length) {
-            continue;
-        }
-
-
-        container.innerHTML =
-            "";
-
-
-        media.forEach(
-            function(item) {
-
-                const element =
-                    createManagedMedia(
-                        item
-                    );
-
-
-                container.appendChild(
-                    element
-                );
-
-            }
-        );
-
-    }
-
-}
-
-
-// ======================================================
-// LOAD MAIN WEBSITE MEDIA
-// ======================================================
-
-async function loadManagedMedia() {
-
-
-    // HERO
-
-    await loadHeroBackground();
-
-
-    // ABOUT
-
-    await loadMediaGallery(
-        "about",
-        "about-media"
-    );
-
-
-    // SWIMMING
-
-    await loadMediaGallery(
-        "swimming",
-        "swimming-media"
-    );
-
-
-    // SPORTS
-
-    await loadMediaGallery(
-        "sports",
-        "sports-media"
-    );
-
-
-    // EVENTS
-
-    await loadMediaGallery(
-        "events",
-        "events-media"
-    );
-
-
-    // RESTAURANT
-
-    await loadMediaGallery(
-        "restaurant",
-        "restaurant-media"
-    );
-
-
-    // MENU
-
-    await loadMenuMedia();
-
-
-    // LOGO
-
-    const logoMedia =
-        await getWebsiteMedia(
-            "logo"
-        );
-
-
-    const logo =
-        document.getElementById(
-            "website-logo"
-        );
-
-
-    if (
-        logo &&
-        logoMedia.length
-    ) {
-
-        const logoImage =
-            logoMedia.find(
-                function(item) {
-
-                    return (
-
-                        item.media_type === "image" ||
-
-                        item.media_type?.startsWith(
-                            "image/"
-                        )
-
-                    );
-
-                }
-            );
-
-
-        if (logoImage) {
-
-            logo.src =
-                WEBSITE_STORAGE_URL +
-                "/" +
-                logoImage.file_path;
-
-        }
-
-    }
-
-}
-
-
-loadManagedMedia(). then(function() {
-    initializecarousels();
-})
-
-
-// ======================================================
-// MENU SEARCH
-// ======================================================
-
-const menuSearch =
-    document.getElementById(
-        "menu-search"
-    );
-
-
-if (menuSearch) {
-
-    menuSearch.addEventListener(
-        "input",
-        function() {
-
-            filterMenu(
-                this.value
-            );
-
-        }
-    );
-
-}
-
-
-// ======================================================
-// SHOW MENU CATEGORY
-// ======================================================
-
-function showCategory(
-    category,
-    button
-) {
-
-    const sections =
-        document.querySelectorAll(
-            ".menu-section"
-        );
-
-
-    const buttons =
-        document.querySelectorAll(
-            ".categories button"
-        );
-
-
-    buttons.forEach(
-        function(item) {
-
-            item.classList.remove(
-                "active"
-            );
-
-        }
-    );
-
-
-    if (button) {
-
-        button.classList.add(
-            "active"
-        );
-
-    }
-
-
-    let visible =
-        0;
-
-
-    sections.forEach(
-        function(section) {
-
-            const sectionCategory =
-                section.dataset.category;
-
-
-            if (
-                category === "all" ||
-                sectionCategory === category
-            ) {
-
-                section.style.display =
-                    "block";
-
-                visible++;
-
-            }
-
-            else {
-
-                section.style.display =
-                    "none";
-
-            }
-
-        }
-    );
-
-
-    const noFood =
-        document.getElementById(
-            "no-food"
-        );
-
-
-    if (noFood) {
-
-        noFood.style.display =
-            visible === 0
-                ? "block"
-                : "none";
-
-    }
-
-}
-
-
-// ======================================================
-// MENU SEARCH FILTER
-// ======================================================
-
-function filterMenu(searchTerm) {
-
-    const term =
-        searchTerm
-            .toLowerCase()
-            .trim();
-
-
-    const sections =
-        document.querySelectorAll(
-            ".menu-section"
-        );
-
-
-    let found =
-        false;
-
-
-    sections.forEach(
-        function(section) {
-
-            const text =
-                section.innerText
-                    .toLowerCase();
-
-
-            if (
-                !term ||
-                text.includes(term)
-            ) {
-
-                section.style.display =
-                    "block";
-
-                found =
-                    true;
-
-            }
-
-            else {
-
-                section.style.display =
-                    "none";
-
-            }
-
-        }
-    );
-
-
-    const noFood =
-        document.getElementById(
-            "no-food"
-        );
-
-
-    if (noFood) {
-
-        noFood.style.display =
-            found
-                ? "none"
-                : "block";
-
-    }
-
-}
-
-
-// ======================================================
-// ORDER SYSTEM
-// ======================================================
-
-let order = [];
-
-
-// ======================================================
-// ADD TO ORDER
-// ======================================================
-
-function addToOrder(
-    name,
-    price
-) {
-
-    order.push({
-
-        name: name,
-
-        price: Number(price)
-
-    });
-
-
-    updateOrder();
-
-
-    showAddedMessage();
-
-}
-
-
-// ======================================================
-// CHIPS & SAUSAGES
-// ======================================================
-
-function chooseChipsSausage() {
-
-    const choice =
-        prompt(
-            "Choose size:\n1. Small - UGX 13,000\n2. Large - UGX 15,000"
-        );
-
-
-    if (choice === "1") {
-
-        addToOrder(
-            "Chips & Sausages - Small",
-            13000
-        );
-
-    }
-
-
-    else if (choice === "2") {
-
-        addToOrder(
-            "Chips & Sausages - Large",
-            15000
-        );
-
-    }
-
-}
-
-
-// ======================================================
-// GOAT ACCOMPANIMENT
-// ======================================================
-
-function chooseAccompaniment() {
-
-    const choice =
-        prompt(
-            "Choose accompaniment:\n1. UGX 5,000\n2. UGX 7,000\n3. UGX 10,000"
-        );
-
-
-    const prices = {
-
-        "1": 5000,
-
-        "2": 7000,
-
-        "3": 10000
-
-    };
-
-
-    if (prices[choice]) {
-
-        addToOrder(
-            "Goat Accompaniment",
-            prices[choice]
-        );
-
-    }
-
-}
-
-
-// ======================================================
-// LIVER ACCOMPANIMENT
-// ======================================================
-
-function chooseLiverAccompaniment() {
-
-    const choice =
-        prompt(
-            "Choose accompaniment:\n1. UGX 2,000\n2. UGX 5,000\n3. UGX 10,000"
-        );
-
-
-    const prices = {
-
-        "1": 2000,
-
-        "2": 5000,
-
-        "3": 10000
-
-    };
-
-
-    if (prices[choice]) {
-
-        addToOrder(
-            "Liver Accompaniment",
-            prices[choice]
-        );
-
-    }
-
-}
-
-
-// ======================================================
-// UPDATE ORDER
-// ======================================================
-
-function updateOrder() {
-
-    const selectedItem =
-        document.getElementById(
-            "selected-item"
-        );
-
-
-    const orderCount =
-        document.getElementById(
-            "order-count"
-        );
-
-
-    const totalElement =
-        document.getElementById(
-            "total"
-        );
-
-
-    if (!selectedItem) {
-        return;
-    }
-
-
-    selectedItem.innerHTML =
-        "";
-
-
-    let total =
-        0;
-
-
-    order.forEach(
-        function(item, index) {
-
-            total +=
-                item.price;
-
-
-            const itemElement =
-                document.createElement(
-                    "div"
-                );
-
-
-            itemElement.className =
-                "selected-order-item";
-
-
-            itemElement.innerHTML = `
-
-                <span>
-                    ${escapeHTML(item.name)}
-                    <br>
-                    <small>
-                        UGX ${item.price.toLocaleString()}
-                    </small>
-                </span>
-
-                <button
-                    onclick="removeFromOrder(${index})"
-                >
-                    ×
-                </button>
-
-            `;
-
-
-            selectedItem.appendChild(
-                itemElement
-            );
-
-        }
-    );
-
-
-    if (orderCount) {
-
-        orderCount.textContent =
-            order.length;
-
-    }
-
-
-    if (totalElement) {
-
-        totalElement.textContent =
-            "UGX " +
-            total.toLocaleString();
-
-    }
-
-}
-
-
-// ======================================================
-// REMOVE ORDER ITEM
-// ======================================================
-
-function removeFromOrder(index) {
-
-    order.splice(
-        index,
-        1
-    );
-
-
-    updateOrder();
-
-}
-
-
-// ======================================================
-// OPEN ORDER
-// ======================================================
-
-function openOrder() {
-
-    const section =
-        document.getElementById(
-            "order-section"
-        );
-
-
-    const backdrop =
-        document.getElementById(
-            "order-backdrop"
-        );
-
-
-    if (section) {
-
-        section.classList.add(
-            "open"
-        );
-
-    }
-
-
-    if (backdrop) {
-
-        backdrop.classList.add(
-            "open"
-        );
-
-    }
-
-}
-
-
-// ======================================================
-// CLOSE ORDER
-// ======================================================
-
-function closeOrder() {
-
-    const section =
-        document.getElementById(
-            "order-section"
-        );
-
-
-    const backdrop =
-        document.getElementById(
-            "order-backdrop"
-        );
-
-
-    if (section) {
-
-        section.classList.remove(
-            "open"
-        );
-
-    }
-
-
-    if (backdrop) {
-
-        backdrop.classList.remove(
-            "open"
-        );
-
-    }
-
-}
-
-
-// ======================================================
-// ADDED MESSAGE
-// ======================================================
-
-function showAddedMessage() {
-
-    const message =
-        document.getElementById(
-            "added-message"
-        );
-
-
-    if (!message) {
-        return;
-    }
-
-
-    message.classList.add(
-        "show"
-    );
-
-
-    setTimeout(
-        function() {
-
-            message.classList.remove(
-                "show"
-            );
-
-        },
-        1500
-    );
-
-}
-
-
-// ======================================================
-// SEND ORDER
-// ======================================================
-
-function sendOrder() {
-
-    if (!order.length) {
-
-        alert(
-            "Please add at least one item to your order."
-        );
-
-        return;
-
-    }
-
-
-    const customerName =
-        document.getElementById(
-            "customerName"
-        ).value.trim();
-
-
-    const phone =
-        document.getElementById(
-            "phone"
-        ).value.trim();
-
-
-    const location =
-        document.getElementById(
-            "location"
-        ).value.trim();
-
-
-    const deliveryType =
-        document.getElementById(
-            "deliveryType"
-        ).value;
-
-
-    const message =
-        document.getElementById(
-            "message"
-        ).value.trim();
-
-
-    if (!customerName || !phone) {
-
-        alert(
-            "Please enter your name and phone number."
-        );
-
-        return;
-
-    }
-
-
-    let total =
-        0;
-
-
-    let orderText =
-        "Hello Kiteezi Recreational Center!%0A%0A";
-
-
-    orderText +=
-        "*NEW ORDER*%0A%0A";
-
-
-    orderText +=
-        "Name: " +
-        encodeURIComponent(
-            customerName
-        ) +
-        "%0A";
-
-
-    orderText +=
-        "Phone: " +
-        encodeURIComponent(
-            phone
-        ) +
-        "%0A";
-
-
-    orderText +=
-        "Order type: " +
-        encodeURIComponent(
-            deliveryType
-        ) +
-        "%0A";
-
-
-    if (location) {
-
-        orderText +=
-            "Location: " +
-            encodeURIComponent(
-                location
-            ) +
-            "%0A";
-
-    }
-
-
-    orderText +=
-        "%0A*ITEMS*%0A";
-
-
-    order.forEach(
-        function(item, index) {
-
-            total +=
-                item.price;
-
-
-            orderText +=
-                encodeURIComponent(
-                    (index + 1) +
-                    ". " +
-                    item.name +
-                    " - UGX " +
-                    item.price.toLocaleString()
-                ) +
-                "%0A";
-
-        }
-    );
-
-
-    orderText +=
-        "%0A*TOTAL: UGX " +
-        total.toLocaleString() +
-        "*%0A";
-
-
-    if (message) {
-
-        orderText +=
-            "%0AMessage: " +
-            encodeURIComponent(
-                message
-            );
-
-    }
-
-
-    const whatsappNumber =
-        "256709763803";
-
-
-    const whatsappURL =
-        "https://wa.me/" +
-        whatsappNumber +
-        "?text=" +
-        orderText;
-
-
-    window.open(
-        whatsappURL,
-        "_blank"
-    );
-
-}
-
-
-// ======================================================
-// INITIAL ORDER
-// ======================================================
-
-updateOrder();
-
-// ======================================================
-// SWIPE CAROUSEL
-// ======================================================
-
-function initializeCarousels() {
-    
-document.querySelectorAll(".carousel").forEach(function(carousel) {
-
-    const images =
-        carousel.querySelectorAll("img");
-
-    // Do not activate a carousel with only one image
-    if (images.length < 2) {
-        return;
-    }
-
-    let index = 0;
-    let startX = 0;
-
-    // Show only the first image
-    images.forEach(function(img, i) {
-
-        img.style.display =
-            i === 0 ? "block" : "none";
-
-    });
-
-
-    // Finger touches the screen
-    carousel.addEventListener(
-        "touchstart",
-        function(e) {
-
-            startX =
-                e.touches[0].clientX;
-
-        },
-        { passive: true }
-    );
-
-
-    // Finger leaves the screen
-    carousel.addEventListener(
-        "touchend",
-        function(e) {
-
-            const endX =
-                e.changedTouches[0].clientX;
-
-            const distance =
-                endX - startX;
-
-
-            // Ignore tiny movements
-            if (Math.abs(distance) < 50) {
-                return;
-            }
-
-
-            // Swipe LEFT
-            if (distance < 0) {
-
-                index =
-                    (index + 1) % images.length;
-
-            }
-
-            // Swipe RIGHT
-            else {
-
-                index =
-                    (index - 1 + images.length) %
-                    images.length;
-
-            }
-
-
-            // Hide all images
-            images.forEach(function(img) {
-
-                img.style.display =
-                    "none";
-
+    const { data, error } =
+        await supabaseClient
+            .from("personnel")
+            .select("*")
+            .order("display_order", {
+                ascending: true
             });
 
 
-            // Show selected image
-            images[index].style.display =
-                "block";
+    if (error) {
 
+        console.error(
+            "Personnel loading error:",
+            error
+        );
+
+        container.innerHTML =
+            `<div class="empty-team">
+                Personnel information is currently unavailable.
+            </div>`;
+
+        return;
+    }
+
+
+    const people =
+        data || [];
+
+
+    if (!people.length) {
+
+        container.innerHTML =
+            `<div class="empty-team">
+                Personnel information will be added soon.
+            </div>`;
+
+        return;
+    }
+
+
+    const administrators = [];
+
+    const departments = [];
+
+
+    people.forEach(person => {
+
+        const position =
+            String(
+                person.position || ""
+            ).toLowerCase();
+
+
+        if (
+            /ceo|founder|general manager|managing director|director|administrator/
+                .test(position)
+        ) {
+
+            administrators.push(person);
+
+        } else {
+
+            departments.push(person);
         }
-    );
 
-});
+    });
+
+
+    container.innerHTML = "";
+
+
+    if (administrators.length) {
+
+        const adminSection =
+            document.createElement(
+                "section"
+            );
+
+        adminSection.className =
+            "administrators";
+
+        adminSection.innerHTML =
+            administrators
+                .map(
+                    personnelCardHTML
+                )
+                .join("");
+
+        container.appendChild(
+            adminSection
+        );
+    }
+
+
+    if (departments.length) {
+
+        const departmentSection =
+            document.createElement(
+                "section"
+            );
+
+        departmentSection.className =
+            "departments";
+
+        departmentSection.innerHTML = `
+            <h1>Our Departments</h1>
+
+            ${departments
+                .map(
+                    personnelCardHTML
+                )
+                .join("")}
+        `;
+
+        container.appendChild(
+            departmentSection
+        );
+    }
+}
+
+
+/* =========================================================
+   PERSONNEL CARD
+========================================================= */
+
+function personnelCardHTML(person) {
+
+    const photo =
+        person.photo_url
+            ? getPublicStorageUrl(
+                person.photo_url
+            )
+            : "";
+
+
+    return `
+        <article class="administrator">
+
+            <div class="administrator-image">
+
+                ${
+                    photo
+                        ? `<img
+                            src="${escapeHTML(photo)}"
+                            alt="${escapeHTML(
+                                person.name || "Personnel"
+                            )}"
+                            loading="lazy"
+                           >`
+                        : `<div class="no-photo">
+                            No photo available
+                           </div>`
+                }
+
+            </div>
+
+            <div class="administrator-text">
+
+                <h2>
+                    ${escapeHTML(
+                        person.name || ""
+                    )}
+                </h2>
+
+                <h3>
+                    ${escapeHTML(
+                        person.position || ""
+                    )}
+                </h3>
+
+                ${
+                    person.description
+                        ? `<p>
+                            ${escapeHTML(
+                                person.description
+                            )}
+                           </p>`
+                        : ""
+                }
+
+                ${
+                    person.phone
+                        ? `<a
+                            class="contact"
+                            href="tel:${escapeHTML(
+                                person.phone
+                            )}"
+                           >
+                            Contact
+                           </a>`
+                        : ""
+                }
+
+            </div>
+
+        </article>
+    `;
+}
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function escapeHTML(value) {
+
+    return String(value ?? "")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+}
+
+
+function capitalize(value) {
+
+    if (!value) {
+        return "";
+    }
+
+    return value.charAt(0).toUpperCase() +
+        value.slice(1);
 }

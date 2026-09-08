@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!--font awesome-->
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <title>Kiteezi Recreational Center</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -16,55 +15,25 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
          NAVIGATION
     ========================== -->
 
-    <nav>
-
+    <nav class="navbar">
         <div class="logo-area">
-
-            <a href="index.html">
-
-                <img
-                    id="website-logo"
-                    src="images/LOGO.png"
-                    alt="Kiteezi Recreational Center Logo"
-                >
-
-            </a>
-
-            <h2>RECREATIONAL CENTER</h2>
-
+            <img src="images/LOGO.png" alt="Kiteezi Recreational Center Logo">
+            <h1>Kiteezi Recreational Center</h1>
         </div>
 
+        <button class="nav-toggle" id="nav-toggle" aria-label="Open navigation">
+            ☰
+        </button>
 
-        <ul>
-
-            <li>
-                <a href="#home">Home</a>
-            </li>
-
-            <li>
-                <a href="#about">About</a>
-            </li>
-<li>
-    <a href="personel.html">Personnel<a/>
-    </li>
-            <li>
-                <a href="#facilities">Facilities</a>
-            </li>
-
-            <li>
-                <a href="menu.html">Menu</a>
-            </li>
-
-            <li>
-                <a href="#reviews">Reviews</a>
-            </li>
-
-            <li>
-                <a href="#contact">Contact</a>
-            </li>
-
+        <ul class="nav-links" id="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="personel.html">Personnel</a></li>
+            <li><a href="#facilities">Facilities</a></li>
+            <li><a href="menu.html">Menu</a></li>
+            <li><a href="#reviews">Reviews</a></li>
+            <li><a href="#contact">Contact</a></li>
         </ul>
-
     </nav>
 
 
@@ -72,81 +41,51 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
          HERO
     ========================== -->
 
-    <section class="hero" id="home">
+    <header id="home" class="hero">
+        <div class="hero-overlay"></div>
 
         <div class="hero-content">
+            <p class="eyebrow">WELCOME TO</p>
 
-            <h1>
-                Welcome to Kiteezi Recreational Center
-            </h1>
+            <h2>Kiteezi Recreational Center</h2>
 
             <p>
-                Relax. Play. Connect. Create unforgettable memories.
+                Your destination for relaxation, great food,
+                swimming, sports, events and memorable moments.
             </p>
 
-            <a
-                href="#facilities"
-                class="button"
-            >
-                Explore Our Facilities
-            </a>
-
-            <a
-                href="#contact"
-                class="button secondary"
-            >
-                Contact Us
-            </a>
-
+            <div class="hero-buttons">
+                <a href="menu.html" class="btn primary-btn">View Our Menu</a>
+                <a href="#contact" class="btn secondary-btn">Contact Us</a>
+            </div>
         </div>
-
-    </section>
+    </header>
 
 
     <!-- =========================
          ABOUT
     ========================== -->
 
-    <section id="about">
-
-        <h2>
-            About Kiteezi Recreational Center
-        </h2>
-
-        <div class="about">
-
-            <div
-                id="about-media"
-                class="media-gallery carousel"
-            >
-
-                <img
-                    src="images/full view.jpg"
-                    alt="Kiteezi Recreational Center"
-                    onclick="openImage(this.src)"
-                >
-
-            </div>
-
-
-            <div class="about-text">
-
-                <p>
-                    Welcome to Kiteezi Recreational Center, your destination for relaxation, entertainment, sports and unforgettable experiences.
-                </p>
-
-                <p>
-                    Whether you are looking for a place to relax with friends, enjoy recreational activities, celebrate special occasions or spend quality time with family, Kiteezi is the place to be.
-                </p>
-
-                <p class="opening-hours">
-                    🕙 Open every day from 10:00 AM to 10:00 PM
-                </p>
-
-            </div>
-
+    <section id="about" class="section">
+        <div class="section-heading">
+            <p class="eyebrow">ABOUT US</p>
+            <h2>A Place To Relax, Eat & Enjoy</h2>
+            <p>
+                Kiteezi Recreational Center provides a welcoming
+                environment for individuals, families, friends and
+                groups looking for quality recreation and hospitality.
+            </p>
         </div>
 
+        <div
+            id="about-media"
+            class="media-gallery carousel"
+            data-media-area="about"
+        >
+            <div class="media-slide fallback-slide active">
+                <img src="images/full view.jpg" alt="Kiteezi Recreational Center">
+            </div>
+        </div>
     </section>
 
 
@@ -154,144 +93,126 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
          FACILITIES
     ========================== -->
 
-    <section id="facilities">
+    <section id="facilities" class="section facilities-section">
 
-        <h2>
-            Our Facilities
-        </h2>
-
-
-        <div class="cards">
-
-
-            <!-- SWIMMING -->
-
-            <div class="card">
-
-                <div
-                    id="swimming-media"
-                    class="media-gallery  carousel"
-                >
-
-                    <img
-                        src="images/sky view.webp"
-                        alt="Swimming area"
-                        onclick="openImage(this.src)"
-                    >
-
-                </div>
+        <div class="section-heading">
+            <p class="eyebrow">OUR FACILITIES</p>
+            <h2>Something For Everyone</h2>
+            <p>
+                Explore the facilities and experiences available
+                at Kiteezi Recreational Center.
+            </p>
+        </div>
 
 
-                <h3>
-                    Swimming
-                </h3>
+        <!-- Swimming -->
+
+        <div class="facility-card">
+            <div class="facility-text">
+                <p class="eyebrow">SWIMMING</p>
+                <h3>Swimming & Relaxation</h3>
 
                 <p>
-                    Enjoy a refreshing swim in a relaxing environment suitable for friends and family.
+                    Enjoy our swimming facilities in a relaxed
+                    and welcoming environment.
                 </p>
-
             </div>
 
+            <div
+                id="swimming-media"
+                class="media-gallery carousel"
+                data-media-area="swimming"
+            >
+                <div class="media-slide fallback-slide active">
+                    <img src="images/sky view.webp" alt="Swimming facility">
+                </div>
+            </div>
+        </div>
 
-            <!-- SPORTS -->
 
-            <div class="card">
+        <!-- Sports -->
 
-                <div
-                    id="sports-media"
-                    class="media-gallery carousel"
-                >
+        <div class="facility-card reverse">
+            <div class="facility-text">
+                <p class="eyebrow">SPORTS</p>
+                <h3>Sports & Recreation</h3>
 
+                <p>
+                    Take part in recreational activities and
+                    enjoy the spacious surroundings.
+                </p>
+            </div>
+
+            <div
+                id="sports-media"
+                class="media-gallery carousel"
+                data-media-area="sports"
+            >
+                <div class="media-slide fallback-slide active">
                     <video
                         src="videos/gardens.mp4"
-                        controls
-                        onclick="openVideo(this.src)"
+                        muted
+                        autoplay
+                        loop
+                        playsinline
                     ></video>
-
                 </div>
+            </div>
+        </div>
 
 
-                <h3>
-                    Sports & Recreation
-                </h3>
+        <!-- Events -->
+
+        <div class="facility-card">
+            <div class="facility-text">
+                <p class="eyebrow">EVENTS</p>
+                <h3>Events & Celebrations</h3>
 
                 <p>
-                    Enjoy outdoor activities, games and recreational experiences in our spacious environment.
+                    Our space is suitable for celebrations,
+                    gatherings, parties and special occasions.
                 </p>
-
             </div>
 
-
-            <!-- EVENTS -->
-
-            <div class="card">
-
-                <div
-                    id="events-media"
-                    class="media-gallery  carousel"
-                >
-
-                    <img
-                        src=""
-                        alt=""
-                        onclick="openImage(this.src)"
-                    >
-
-                </div>
-
-
-                <h3>
-                    Events
-                </h3>
-
-                <p>
-                    Our recreational center provides a great environment for celebrations, parties and special occasions.
-                </p>
-
+            <div
+                id="events-media"
+                class="media-gallery carousel"
+                data-media-area="events"
+            >
             </div>
+        </div>
 
 
-            <!-- RESTAURANT -->
+        <!-- Restaurant -->
 
-            <div class="card">
-
-                <div
-                    id="restaurant-media"
-                    class="media-gallery carousel"
-                >
-
-                    <img
-                        src="images/food.webp"
-                        alt="Restaurant area"
-                        onclick="openImage(this.src)"
-                    >
-
-                    <img
-                        src="pizza.jpg"
-                        alt="Good food"
-                        onclick="openImage(this.src)"
-                    >
-
-                </div>
-
-
-                <h3>
-                    Restaurant
-                </h3>
+        <div class="facility-card reverse">
+            <div class="facility-text">
+                <p class="eyebrow">RESTAURANT</p>
+                <h3>Food & Dining</h3>
 
                 <p>
-                    Enjoy delicious meals, refreshments and snacks prepared for you at our restaurant.
+                    Enjoy freshly prepared meals, snacks,
+                    pizzas, burgers and more.
                 </p>
 
-                <a
-                    href="menu.html"
-                    class="button"
-                >
-                    View Menu
+                <a href="menu.html" class="btn primary-btn">
+                    Explore Menu
                 </a>
-
             </div>
 
+            <div
+                id="restaurant-media"
+                class="media-gallery carousel"
+                data-media-area="restaurant"
+            >
+                <div class="media-slide fallback-slide active">
+                    <img src="images/food.webp" alt="Food at Kiteezi Recreational Center">
+                </div>
+
+                <div class="media-slide fallback-slide">
+                    <img src="images/pizza.jpg" alt="Pizza">
+                </div>
+            </div>
         </div>
 
     </section>
@@ -301,70 +222,67 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
          REVIEWS
     ========================== -->
 
-    <section id="reviews">
+    <section id="reviews" class="section reviews-section">
 
-        <h2>
-            Customer Reviews
-        </h2>
+        <div class="section-heading">
+            <p class="eyebrow">CUSTOMER REVIEWS</p>
+            <h2>What Our Guests Say</h2>
+            <p>
+                Share your experience with Kiteezi Recreational Center.
+            </p>
+        </div>
 
+        <div class="reviews-layout">
 
-        <form id="review-form">
+            <form id="review-form" class="review-form">
 
-            <input
-                type="text"
-                id="review-name"
-                placeholder="Your name"
-                required
-            >
+                <h3>Leave A Review</h3>
 
+                <label for="review-name">Your Name</label>
 
-            <select
-                id="review-rating"
-                required
-            >
+                <input
+                    type="text"
+                    id="review-name"
+                    placeholder="Enter your name"
+                    required
+                >
 
-                <option value="">
-                    Select rating
-                </option>
+                <label for="review-rating">Rating</label>
 
-                <option value="5">
-                    ⭐⭐⭐⭐⭐
-                </option>
+                <select id="review-rating" required>
+                    <option value="">Select rating</option>
+                    <option value="5">★★★★★ - Excellent</option>
+                    <option value="4">★★★★☆ - Very Good</option>
+                    <option value="3">★★★☆☆ - Good</option>
+                    <option value="2">★★☆☆☆ - Fair</option>
+                    <option value="1">★☆☆☆☆ - Poor</option>
+                </select>
 
-                <option value="4">
-                    ⭐⭐⭐⭐
-                </option>
+                <label for="review-text">Your Review</label>
 
-                <option value="3">
-                    ⭐⭐⭐
-                </option>
+                <textarea
+                    id="review-text"
+                    rows="6"
+                    placeholder="Tell us about your experience..."
+                    required
+                ></textarea>
 
-                <option value="2">
-                    ⭐⭐
-                </option>
+                <button type="submit" class="btn primary-btn">
+                    Submit Review
+                </button>
 
-                <option value="1">
-                    ⭐
-                </option>
+                <p id="review-status" class="form-status"></p>
 
-            </select>
-
-
-            <textarea
-                id="review-text"
-                placeholder="Write your review..."
-                required
-            ></textarea>
+            </form>
 
 
-            <button type="submit">
-                Submit Review
-            </button>
+            <div id="reviews-container" class="reviews-container">
+                <div class="loading-message">
+                    Loading reviews...
+                </div>
+            </div>
 
-        </form>
-
-
-        <div id="reviews-container"></div>
+        </div>
 
     </section>
 
@@ -373,66 +291,84 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
          CONTACT
     ========================== -->
 
-    <section id="contact">
+    <section id="contact" class="contact-section">
 
-        <h2>
-            Contact Us
-        </h2>
+        <div class="section-heading light-heading">
+            <p class="eyebrow">CONTACT US</p>
+            <h2>Come Visit Us</h2>
+        </div>
 
+        <div class="contact-grid">
 
-        <div class="contact-container">
+            <div class="contact-card">
+                <span class="contact-icon">📍</span>
+                <h3>Location</h3>
+                <p>
+                    Kiteezi, opposite Shell Kiteezi,
+                    Uganda
+                </p>
+            </div>
 
-            <p>
-                📍 Kiteezi, opposite Shell Kiteezi, Uganda
-            </p>
-          
-            <p>
-                📞 +256766529086 / +256709763803
-            </p>
+            <div class="contact-card">
+                <span class="contact-icon">📞</span>
+                <h3>Phone</h3>
+                <p>
+                    <a href="tel:+256766529086">+256 766 529086</a><br>
+                    <a href="tel:+256709763803">+256 709 763803</a>
+                </p>
+            </div>
 
-            <p>
-                ✉️ krecreationalcenter@gmail.com
-            </p>
+            <div class="contact-card">
+                <span class="contact-icon">✉</span>
+                <h3>Email</h3>
+                <p>
+                    <a href="mailto:krecreationalcenter@gmail.com">
+                        krecreationalcenter@gmail.com
+                    </a>
+                </p>
+            </div>
 
-
-            <div class="contact-buttons">
-
-                <a
-                    href="tel:+256766529086"
-                    class="button"
-                >
-                    Call Us
-                </a>
-
-<div class="social-links">
+            <div class="contact-card">
+                <span class="contact-icon">💬</span>
+                <h3>WhatsApp</h3>
                 <a
                     href="https://wa.me/256709763803"
                     target="_blank"
-                    aria-label="whatsapp">
-                    <i class="fa-brands fa-whatsapp"></i>
+                    rel="noopener"
+                    class="contact-button"
+                >
+                    Chat With Us
                 </a>
-<a
-    href="https://www.instagram.com/Kiteezi_recreational_center"
-    target="_blank"
-    aria-label="instagram">
-    <i class="fa-brands fa-instagram"></i>
-    </a>
-
-    
-    <a
-        href="https://www.tiktok.com/@Kiteezirecreationalcenter"
-                    target="_blank"
-                    aria-label="tiktok">
-                   <i class="fa-brands fa-tiktok"></i> 
-                    </a>
-                <a
-                    href="https://m.facebook.com/Kiteezi-Recreational-center"
-                    target="_blank"
-                    aria-label="facebook">
-                   <i class="fa-brands fa-facebook"></i>
-                    </a>
-</div>
             </div>
+
+        </div>
+
+
+        <div class="social-links">
+
+            <a
+                href="https://www.instagram.com/Kiteezi_recreational_center"
+                target="_blank"
+                rel="noopener"
+            >
+                Instagram
+            </a>
+
+            <a
+                href="https://www.tiktok.com/@Kiteezirecreationalcenter"
+                target="_blank"
+                rel="noopener"
+            >
+                TikTok
+            </a>
+
+            <a
+                href="https://m.facebook.com/Kiteezi-Recreational-center"
+                target="_blank"
+                rel="noopener"
+            >
+                Facebook
+            </a>
 
         </div>
 
@@ -444,11 +380,11 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     ========================== -->
 
     <footer>
-
         <p>
-            © 2026 Kiteezi Recreational Center. All rights reserved.
+            © <span id="current-year"></span>
+            Kiteezi Recreational Center.
+            All Rights Reserved.
         </p>
-
     </footer>
 
 
@@ -456,42 +392,53 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
          LIGHTBOX
     ========================== -->
 
-    <div
-        id="lightbox"
-        class="lightbox"
-    >
+    <div id="lightbox" class="lightbox">
 
-        <span
-            class="close-lightbox"
-            onclick="closeLightbox()"
+        <button
+            id="lightbox-close"
+            class="lightbox-close"
+            aria-label="Close"
         >
-            &times;
-        </span>
+            ×
+        </button>
 
-
-        <img
-            id="lightbox-image"
-            src=""
-            alt=""
+        <button
+            id="lightbox-prev"
+            class="lightbox-arrow lightbox-prev"
+            aria-label="Previous"
         >
+            ❮
+        </button>
 
+        <div class="lightbox-content">
 
-        <video
-            id="lightbox-video"
-            controls
-        ></video>
+            <img
+                id="lightbox-image"
+                src=""
+                alt=""
+            >
+
+            <video
+                id="lightbox-video"
+                controls
+                playsinline
+            ></video>
+
+        </div>
+
+        <button
+            id="lightbox-next"
+            class="lightbox-arrow lightbox-next"
+            aria-label="Next"
+        >
+            ❯
+        </button>
 
     </div>
 
 
-    <!-- =========================
-         SUPABASE
-    ========================== -->
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script src="script.js"></script>
 
 </body>
-
 </html>

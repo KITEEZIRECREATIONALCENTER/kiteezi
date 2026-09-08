@@ -4,140 +4,482 @@
     padding: 0;
 }
 
-
 html {
     scroll-behavior: smooth;
-}
-
-.navbar {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
 }
 
 body {
     font-family: Arial, Helvetica, sans-serif;
     line-height: 1.6;
-    background: #f7f7f7;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f7f7f7,
+            #eeeeee
+        );
+
     color: #222;
 }
 
-
 img {
     max-width: 100%;
+    display: block;
 }
-
 
 a {
     text-decoration: none;
 }
 
 
-button,
-input,
-textarea,
-select {
-    font: inherit;
-}
-
-/*NAVIGATION*/
+/* =========================
+   NAVBAR
+========================= */
 
 .navbar {
-  width: 100px;
-  display: flex;
-  align-items: center;
-  padding: 15px 40px;
-  background: #222;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+    width: 100%;
+    min-height: 75px;
+
+    padding: 10px 5%;
+
+    background: #111;
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    position: sticky;
+    top: 0;
+
+    z-index: 1000;
+
+    box-shadow:
+        0 4px 20px rgba(0,0,0,.2);
 }
 
 .logo-area {
     display: flex;
     align-items: center;
+    gap: 12px;
 }
-
 
 .logo-area img {
     width: 60px;
     height: 60px;
+
     object-fit: contain;
 }
-.nav-links {
-  color: white;
-  text-decoration: none;
-  font-size: 22px;
-  font-weight: bold;
+
+.logo-area h1 {
+    font-size: 19px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
 }
+
 .nav-links {
-  display: flex;
-  list-style: none;
-  margin-left: auto;
+    display: flex;
+
+    list-style: none;
+
+    gap: 22px;
 }
+
+.nav-links a {
+    color: white;
+
+    font-weight: bold;
+
+    transition:
+        color .25s ease;
+}
+
 .nav-links a:hover {
-  color: #ffd700;
-}
- 
- 
-
-/* BODY*/
-
-h1 {
-  font-size: 50px;
-  text-transform: uppercase;
-  text-align: center;
-  color: gray
+    color: #f5b400;
 }
 
-.adminstrators {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 40px auto;
-  gap: 40px;
-  padding: 30px;
-  max-width: 1000px;
+.nav-toggle {
+    display: none;
 
+    background: none;
+    border: 0;
+
+    color: white;
+
+    font-size: 28px;
+
+    cursor: pointer;
 }
-.adminstrators-text {
-  flex: 1;
-  text-align: left;
-}
-.adminstrators-text h2 {
-  font-size: 30px;
-  margin-bottom: 20px;
-}
-.adminstrators-image {
-  flex: 1;
-  text-align: right;
-}
-.adminstrators-image img {
-  width: 350px;
-  height: auto;
-  max-width: 100%;
-}
-@media (max-width: 768px) {
-  .adminstrators {
-    flex-direction: column;
+
+
+/* =========================
+   INTRO
+========================= */
+
+.personnel-intro {
+    max-width: 900px;
+
+    margin: auto;
+
+    padding:
+        70px 5% 40px;
+
     text-align: center;
-  }
-  .adminstrators-text {
-    text-align: center;
-  }
-  .adminstrators-image {
-    text-align: center;
-  }
-  .adminstrators-image img {
-    width: 300px;
-    height: auto;
-  }
+}
+
+.personnel-intro h1 {
+    font-size:
+        clamp(
+            30px,
+            5vw,
+            48px
+        );
+
+    margin-bottom: 20px;
+
+    color: #111;
+}
+
+.personnel-intro p:not(.eyebrow) {
+    color: #666;
+
+    font-size: 17px;
+
+    line-height: 1.8;
+}
+
+.eyebrow {
+    font-size: 12px;
+
+    font-weight: 800;
+
+    letter-spacing: 2px;
+
+    color: #d99800;
+
+    margin-bottom: 8px;
+
+    text-transform: uppercase;
 }
 
 
+/* =========================
+   PERSONNEL CONTAINER
+========================= */
+
+.personnel-container {
+    width: 100%;
+}
+
+.administrators,
+.departments {
+    max-width: 1150px;
+
+    margin:
+        0 auto 50px;
+
+    padding:
+        20px 5%;
+}
+
+.departments > h1 {
+    text-align: center;
+
+    font-size: 34px;
+
+    margin-bottom: 35px;
+
+    color: #111;
+}
 
 
+/* =========================
+   PERSONNEL CARD
+========================= */
+
+.administrator {
+    display: grid;
+
+    grid-template-columns:
+        minmax(280px, 42%)
+        1fr;
+
+    gap: 40px;
+
+    align-items: center;
+
+    background: white;
+
+    padding: 30px;
+
+    margin-bottom: 30px;
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,.08);
+
+    border:
+        1px solid #eee;
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+}
+
+.administrator:hover {
+    transform:
+        translateY(-4px);
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.12);
+}
 
 
+/* =========================
+   PHOTO
+========================= */
+
+.administrator-image {
+    width: 100%;
+
+    height: 350px;
+
+    overflow: hidden;
+
+    border-radius: 15px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #eee,
+            #ddd
+        );
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+.administrator-image img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+.no-photo {
+    color: #888;
+
+    font-weight: bold;
+
+    text-align: center;
+
+    padding: 20px;
+}
 
 
+/* =========================
+   TEXT
+========================= */
+
+.administrator-text h2 {
+    font-size: 27px;
+
+    margin-bottom: 8px;
+
+    color: #111;
+}
+
+.administrator-text h3 {
+    font-size: 15px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+
+    color: #f0aa00;
+
+    margin-bottom: 18px;
+}
+
+.administrator-text p {
+    color: #555;
+
+    line-height: 1.8;
+
+    margin-bottom: 20px;
+
+    white-space: pre-line;
+}
+
+
+/* =========================
+   CONTACT BUTTON
+========================= */
+
+.administrator-text .contact {
+    display: inline-flex;
+
+    align-items: center;
+
+    padding:
+        10px 17px;
+
+    border-radius: 8px;
+
+    background: #111;
+
+    color: white;
+
+    font-weight: bold;
+
+    transition:
+        background .2s ease,
+        transform .2s ease;
+}
+
+.administrator-text .contact:hover {
+    background: #f5b400;
+
+    color: #111;
+
+    transform:
+        translateY(-2px);
+}
+
+
+/* =========================
+   EMPTY
+========================= */
+
+.empty-team {
+    max-width: 900px;
+
+    margin:
+        20px auto 70px;
+
+    padding: 40px;
+
+    background: white;
+
+    border-radius: 18px;
+
+    color: #777;
+
+    text-align: center;
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,.06);
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+footer {
+    background: #111;
+
+    color: white;
+
+    text-align: center;
+
+    padding: 25px;
+
+    margin-top: 40px;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width: 768px) {
+
+    .navbar {
+        padding:
+            12px 20px;
+    }
+
+    .nav-toggle {
+        display: block;
+    }
+
+    .nav-links {
+        display: none;
+
+        width: 100%;
+
+        position: absolute;
+
+        top: 75px;
+        left: 0;
+
+        padding: 10px 20px 20px;
+
+        background: #111;
+
+        flex-direction: column;
+
+        gap: 0;
+    }
+
+    .nav-links.open {
+        display: flex;
+    }
+
+    .nav-links li {
+        border-bottom:
+            1px solid #333;
+    }
+
+    .nav-links a {
+        display: block;
+
+        padding: 12px 0;
+    }
+
+    .logo-area h1 {
+        font-size: 15px;
+    }
+
+    .administrator {
+        grid-template-columns: 1fr;
+
+        padding: 20px;
+
+        gap: 25px;
+    }
+
+    .administrator-image {
+        height: 300px;
+    }
+
+    .administrator-text {
+        text-align: center;
+    }
+
+    .administrator-text h2 {
+        font-size: 23px;
+    }
+
+    .administrator-text p {
+        font-size: 15px;
+    }
+
+    .personnel-intro {
+        padding-top: 45px;
+    }
+
+    .personnel-intro h1 {
+        font-size: 30px;
+    }
+
+    .departments > h1 {
+        font-size: 28px;
+    }
+}

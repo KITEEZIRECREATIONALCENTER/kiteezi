@@ -601,16 +601,6 @@
     </div>
 
 
-    <button
-        id="cart-button"
-        class="cart-button"
-        type="button"
-        aria-label="Open shopping cart"
-    >
-        Cart <span id="cart-count">0</span>
-    </button>
-
-
     <!-- MENU -->
 
     <main
@@ -651,25 +641,25 @@
         <div class="order-selected">
 
             <strong>
-                Your Cart
+                Selected Item
             </strong>
 
-            <div id="cart-items">
-                <p class="cart-empty">Your cart is empty.</p>
-            </div>
+            <p id="selected-item">
+                No item selected
+            </p>
 
         </div>
 
 
         <div class="order-form-group">
 
-            <label for="customerName">
+            <label for="customer-name">
                 Your Name
             </label>
 
             <input
-                id="customerName"
                 type="text"
+                id="customer-name"
                 placeholder="Enter your name"
             >
 
@@ -678,13 +668,13 @@
 
         <div class="order-form-group">
 
-            <label for="phone">
+            <label for="customer-phone">
                 Phone Number
             </label>
 
             <input
-                id="phone"
                 type="tel"
+                id="customer-phone"
                 placeholder="07XXXXXXXX"
             >
 
@@ -693,22 +683,22 @@
 
         <div class="order-form-group">
 
-            <label for="deliveryType">
+            <label for="order-type">
                 Order Type
             </label>
 
-            <select id="deliveryType">
+            <select id="order-type">
 
-                <option value="Pickup">
-                    Pickup
+                <option value="Dine In">
+                    Dine In
+                </option>
+
+                <option value="Takeaway">
+                    Takeaway
                 </option>
 
                 <option value="Delivery">
                     Delivery
-                </option>
-
-                <option value="Dine In">
-                    Dine In
                 </option>
 
             </select>
@@ -718,14 +708,14 @@
 
         <div class="order-form-group">
 
-            <label for="location">
+            <label for="order-location">
                 Location
             </label>
 
             <input
-                id="location"
                 type="text"
-                placeholder="Location / table number"
+                id="order-location"
+                placeholder="Table number or delivery location"
             >
 
         </div>
@@ -733,12 +723,12 @@
 
         <div class="order-form-group">
 
-            <label for="message">
+            <label for="order-message">
                 Additional Message
             </label>
 
             <textarea
-                id="message"
+                id="order-message"
                 rows="4"
                 placeholder="Any special instructions?"
             ></textarea>
@@ -747,7 +737,7 @@
 
 
         <div id="total">
-            UGX 0
+            Total: UGX 0
         </div>
 
 
@@ -764,6 +754,8 @@
 
     </aside>
 
+
+    <!-- FOOTER -->
 
     <footer>
 

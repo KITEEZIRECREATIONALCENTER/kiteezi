@@ -2210,7 +2210,9 @@ let cart = JSON.parse(localStorage.getItem("kiteeziCart")) || [];
 
 function addToCart(name, price) {
 
-    const existingItem = cart.find(item => item.name === name);
+    const existingItem = cart.find(
+        item => item.name === name
+    );
 
     if (existingItem) {
 
@@ -2228,6 +2230,7 @@ function addToCart(name, price) {
 
     saveCart();
     updateCart();
+
 }
 
 
@@ -2247,9 +2250,15 @@ function saveCart() {
 
 function updateCart() {
 
-    const cartItems = document.getElementById("cart-items");
-    const cartCount = document.getElementById("cart-count");
-    const cartTotal = document.getElementById("cart-total");
+    const cartItems =
+        document.getElementById("cart-items");
+
+    const cartCount =
+        document.getElementById("cart-count");
+
+    const cartTotal =
+        document.getElementById("cart-total");
+
 
     if (!cartItems) return;
 
@@ -2257,12 +2266,17 @@ function updateCart() {
     /* COUNT */
 
     const totalQuantity = cart.reduce(
-        (total, item) => total + item.quantity,
+        (total, item) =>
+            total + item.quantity,
         0
     );
 
+
     if (cartCount) {
-        cartCount.textContent = totalQuantity;
+
+        cartCount.textContent =
+            totalQuantity;
+
     }
 
 
@@ -2274,10 +2288,14 @@ function updateCart() {
             '<p class="empty-cart">Your cart is empty.</p>';
 
         if (cartTotal) {
-            cartTotal.textContent = "UGX 0";
+
+            cartTotal.textContent =
+                "UGX 0";
+
         }
 
         return;
+
     }
 
 
@@ -2296,11 +2314,15 @@ function updateCart() {
         total += subtotal;
 
 
-        const div = document.createElement("div");
+        const div =
+            document.createElement("div");
 
-        div.className = "cart-item";
+        div.className =
+            "cart-item";
+
 
         div.innerHTML = `
+
             <div class="cart-item-info">
 
                 <div class="cart-item-name">
@@ -2312,6 +2334,7 @@ function updateCart() {
                 </div>
 
             </div>
+
 
             <div class="cart-quantity">
 
@@ -2333,9 +2356,11 @@ function updateCart() {
 
             </div>
 
+
             <strong>
                 UGX ${subtotal.toLocaleString()}
             </strong>
+
 
             <button
                 class="cart-remove"
@@ -2343,7 +2368,9 @@ function updateCart() {
             >
                 ×
             </button>
+
         `;
+
 
         cartItems.appendChild(div);
 
@@ -2362,17 +2389,23 @@ function updateCart() {
 
 /* CHANGE QUANTITY */
 
-function changeCartQuantity(index, change) {
+function changeCartQuantity(
+    index,
+    change
+) {
 
     if (!cart[index]) return;
 
+
     cart[index].quantity += change;
+
 
     if (cart[index].quantity <= 0) {
 
         cart.splice(index, 1);
 
     }
+
 
     saveCart();
     updateCart();
@@ -2386,7 +2419,9 @@ function removeFromCart(index) {
 
     if (!cart[index]) return;
 
+
     cart.splice(index, 1);
+
 
     saveCart();
     updateCart();
@@ -2394,27 +2429,39 @@ function removeFromCart(index) {
 }
 
 
-/* OPEN / CLOSE */
+/* OPEN CART */
 
 function openCart() {
 
     const drawer =
-        document.getElementById("cart-drawer");
+        document.getElementById(
+            "cart-drawer"
+        );
+
 
     if (drawer) {
+
         drawer.classList.add("active");
+
     }
 
 }
 
 
+/* CLOSE CART */
+
 function closeCart() {
 
     const drawer =
-        document.getElementById("cart-drawer");
+        document.getElementById(
+            "cart-drawer"
+        );
+
 
     if (drawer) {
+
         drawer.classList.remove("active");
+
     }
 
 }
@@ -2422,57 +2469,44 @@ function closeCart() {
 
 /* CART BUTTON */
 
-document.addEventListener("click", function(event) {
+document.addEventListener(
+    "click",
+    function(event) {
 
-    if (event.target.closest("#cart-button")) {
+        if (
+            event.target.closest(
+                "#cart-button"
+            )
+        ) {
 
-        openCart();
+            openCart();
+
+        }
+
+
+        if (
+            event.target.closest(
+                "#cart-close"
+            )
+        ) {
+
+            closeCart();
+
+        }
+
+
+        if (
+            event.target.closest(
+                "#cart-backdrop"
+            )
+        ) {
+
+            closeCart();
+
+        }
 
     }
-
-    if (event.target.closest("#cart-close")) {
-
-        closeCart();
-
-    }
-
-    if (event.target.closest("#cart-backdrop")) {
-
-        closeCart();
-
-    }
-
-});
-
-
-/* CONNECT EXISTING ORDER BUTTONS */
-
-function attachCartButtons() {
-
-    document.querySelectorAll(".order-item-btn")
-        .forEach(button => {
-
-            if (button.dataset.cartAttached) return;
-
-            button.dataset.cartAttached = "true";
-
-            button.addEventListener("click", function() {
-
-                const name =
-                    this.dataset.itemName;
-
-                const price =
-                    Number(this.dataset.itemPrice);
-
-                if (!name) return;
-
-                addToCart(name, price);
-
-            });
-
-        });
-
-}
+);
 
 
 /* WHATSAPP */
@@ -2493,20 +2527,24 @@ function sendCartToWhatsApp() {
             "cart-customer-name"
         )?.value.trim() || "";
 
+
     const phone =
         document.getElementById(
             "cart-customer-phone"
         )?.value.trim() || "";
+
 
     const orderType =
         document.getElementById(
             "cart-order-type"
         )?.value || "";
 
+
     const location =
         document.getElementById(
             "cart-location"
         )?.value.trim() || "";
+
 
     const message =
         document.getElementById(
@@ -2516,8 +2554,10 @@ function sendCartToWhatsApp() {
 
     let total = 0;
 
+
     let orderText =
         "Hello Kiteezi Recreational Center!%0A%0A";
+
 
     orderText +=
         "*NEW ORDER*%0A%0A";
@@ -2526,9 +2566,12 @@ function sendCartToWhatsApp() {
     cart.forEach(item => {
 
         const subtotal =
-            item.price * item.quantity;
+            item.price *
+            item.quantity;
+
 
         total += subtotal;
+
 
         orderText +=
             `• ${encodeURIComponent(item.name)} x${item.quantity} - UGX ${subtotal.toLocaleString()}%0A`;
@@ -2547,12 +2590,14 @@ function sendCartToWhatsApp() {
 
     }
 
+
     if (phone) {
 
         orderText +=
             `Phone: ${encodeURIComponent(phone)}%0A`;
 
     }
+
 
     if (orderType) {
 
@@ -2561,12 +2606,14 @@ function sendCartToWhatsApp() {
 
     }
 
+
     if (location) {
 
         orderText +=
             `Location: ${encodeURIComponent(location)}%0A`;
 
     }
+
 
     if (message) {
 
@@ -2579,27 +2626,37 @@ function sendCartToWhatsApp() {
     const whatsappNumber =
         "256709763803";
 
+
     const url =
         `https://wa.me/${whatsappNumber}?text=${orderText}`;
 
-    window.open(url, "_blank");
+
+    window.open(
+        url,
+        "_blank"
+    );
 
 }
 
 
 /* WHATSAPP BUTTON */
 
-document.addEventListener("click", function(event) {
+document.addEventListener(
+    "click",
+    function(event) {
 
-    if (
-        event.target.closest("#cart-whatsapp")
-    ) {
+        if (
+            event.target.closest(
+                "#cart-whatsapp"
+            )
+        ) {
 
-        sendCartToWhatsApp();
+            sendCartToWhatsApp();
+
+        }
 
     }
-
-});
+);
 
 
 /* INITIALIZE */
@@ -2609,8 +2666,6 @@ document.addEventListener(
     function() {
 
         updateCart();
-
-        attachCartButtons();
 
     }
 );

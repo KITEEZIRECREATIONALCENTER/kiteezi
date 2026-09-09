@@ -614,7 +614,6 @@
 
     </main>
 
-
     <!-- ORDER BACKDROP -->
 
     <div id="order-backdrop"></div>
@@ -645,7 +644,7 @@
             </strong>
 
             <p id="selected-item">
-                No item selected
+                -
             </p>
 
         </div>
@@ -653,13 +652,13 @@
 
         <div class="order-form-group">
 
-            <label for="customer-name">
+            <label for="customerName">
                 Your Name
             </label>
 
             <input
+                id="customerName"
                 type="text"
-                id="customer-name"
                 placeholder="Enter your name"
             >
 
@@ -668,13 +667,13 @@
 
         <div class="order-form-group">
 
-            <label for="customer-phone">
+            <label for="phone">
                 Phone Number
             </label>
 
             <input
+                id="phone"
                 type="tel"
-                id="customer-phone"
                 placeholder="07XXXXXXXX"
             >
 
@@ -683,22 +682,22 @@
 
         <div class="order-form-group">
 
-            <label for="order-type">
+            <label for="deliveryType">
                 Order Type
             </label>
 
-            <select id="order-type">
+            <select id="deliveryType">
 
-                <option value="Dine In">
-                    Dine In
-                </option>
-
-                <option value="Takeaway">
-                    Takeaway
+                <option value="Pickup">
+                    Pickup
                 </option>
 
                 <option value="Delivery">
                     Delivery
+                </option>
+
+                <option value="Dine In">
+                    Dine In
                 </option>
 
             </select>
@@ -708,14 +707,14 @@
 
         <div class="order-form-group">
 
-            <label for="order-location">
+            <label for="location">
                 Location
             </label>
 
             <input
+                id="location"
                 type="text"
-                id="order-location"
-                placeholder="Table number or delivery location"
+                placeholder="Location / table number"
             >
 
         </div>
@@ -723,12 +722,12 @@
 
         <div class="order-form-group">
 
-            <label for="order-message">
+            <label for="message">
                 Additional Message
             </label>
 
             <textarea
-                id="order-message"
+                id="message"
                 rows="4"
                 placeholder="Any special instructions?"
             ></textarea>
@@ -737,7 +736,7 @@
 
 
         <div id="total">
-            Total: UGX 0
+            UGX 0
         </div>
 
 
@@ -754,8 +753,6 @@
 
     </aside>
 
-
-    <!-- FOOTER -->
 
     <footer>
 

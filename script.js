@@ -1475,115 +1475,41 @@ function hideEmptyMenuSections() {
 let selectedItemName = "";
 let selectedItemPrice = 0;
 
-
 function attachOrderButtons() {
 
     document
-        .querySelectorAll(
-            ".order-item-btn"
-        )
+        .querySelectorAll(".order-item-btn")
         .forEach(button => {
 
             button.addEventListener(
                 "click",
                 () => {
 
-                    selectedItemName =
-                        button.dataset.itemName ||
-                        "";
+                    const itemName =
+                        button.dataset.itemName || "";
 
-                    selectedItemPrice =
-                        Number(
-                            button.dataset.itemPrice
-                        ) || 0;
+                    const itemPrice =
+                        Number(button.dataset.itemPrice) || 0;
 
-                    openOrderDrawer();
+                    if (!itemName) {
+                        return;
+                    }
+
+                    /* ADD ITEM TO CART */
+                    addToCart(
+                        itemName,
+                        itemPrice
+                    );
+
+                    /* OPEN CART */
+                    openCart();
+
                 }
             );
 
         });
+
 }
-
-
-function openOrderDrawer() {
-
-    const drawer =
-        document.getElementById(
-            "order-section"
-        );
-
-    const backdrop =
-        document.getElementById(
-            "order-backdrop"
-        );
-
-    const selected =
-        document.getElementById(
-            "selected-item"
-        );
-
-    const total =
-        document.getElementById(
-            "total"
-        );
-
-
-    if (!drawer) {
-        return;
-    }
-
-
-    if (selected) {
-
-        selected.textContent =
-            selectedItemName;
-    }
-
-
-    if (total) {
-
-        total.textContent =
-            `UGX ${selectedItemPrice.toLocaleString()}`;
-    }
-
-
-    drawer.classList.add("open");
-
-    if (backdrop) {
-        backdrop.classList.add("open");
-    }
-
-    document.body.classList.add(
-        "no-scroll"
-    );
-}
-
-
-function closeOrderDrawer() {
-
-    const drawer =
-        document.getElementById(
-            "order-section"
-        );
-
-    const backdrop =
-        document.getElementById(
-            "order-backdrop"
-        );
-
-    if (drawer) {
-        drawer.classList.remove("open");
-    }
-
-    if (backdrop) {
-        backdrop.classList.remove("open");
-    }
-
-    document.body.classList.remove(
-        "no-scroll"
-    );
-}
-
 
 /* =========================================================
    SPECIAL MENU FUNCTIONS

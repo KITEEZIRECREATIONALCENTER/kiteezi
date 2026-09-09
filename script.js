@@ -1,1687 +1,581 @@
-/* =========================================================
-   KITEEZI RECREATIONAL CENTER
-   PUBLIC WEBSITE JAVASCRIPT
-========================================================= */
+/* script.js */
 
+const SUPABASE_URL = "https://YOUR-SUPABASE-URL.supabase.co";
+const SUPABASE_ANON_KEY = "YOUR-SUPABASE-ANON-KEY";
 
-/* =========================================================
-   SUPABASE
-========================================================= */
+let supabaseClient = null;
 
-const SUPABASE_URL = "https://pkvctsfdqyzlcryikcox.supabase.co";
-
-const SUPABASE_KEY =
-    "sb_publishable__pq1skdZvbMRm_R67-xYmw_Ogsm4r00";
-
-const supabaseClient =
-    supabase.createClient(
+if (
+    typeof window !== "undefined" &&
+    window.supabase &&
+    SUPABASE_URL &&
+    SUPABASE_ANON_KEY &&
+    !SUPABASE_URL.includes("YOUR-SUPABASE")
+) {
+    supabaseClient = window.supabase.createClient(
         SUPABASE_URL,
-        SUPABASE_KEY
+        SUPABASE_ANON_KEY
     );
-
-const STORAGE_PUBLIC_URL =
-    `${SUPABASE_URL}/storage/v1/object/public/website-images`;
-
-
-/* =========================================================
-   GLOBALS
-========================================================= */
-
-const carouselStates = new Map();
-
-let lightboxItems = [];
-let lightboxIndex = 0;
-
-
-/* =========================================================
-   DOM READY
-========================================================= */
-
-document.addEventListener("DOMContentLoaded", async () => {
-
-    setupNavigation();
-
-    setupReviewForm();
-
-    setupLightbox();
-
-    updateYear();
-
-    await loadManagedMedia();
-
-    await loadReviews();
-
-    if (document.querySelector(".menu-page")) {
-        await loadMenuPage();
-    }
-
-    if (document.querySelector(".personnel-page")) {
-        await loadPersonnel();
-    }
-});
-
-
-/* =========================================================
-   NAVIGATION
-========================================================= */
-
-function setupNavigation() {
-
-    const toggle = document.getElementById("nav-toggle");
-    const links = document.getElementById("nav-links");
-
-    if (!toggle || !links) {
-        return;
-    }
-
-    toggle.addEventListener("click", () => {
-        links.classList.toggle("open");
-    });
-
-    links.querySelectorAll("a").forEach(link => {
-
-        link.addEventListener("click", () => {
-            links.classList.remove("open");
-        });
-
-    });
 }
 
 
 /* =========================================================
-   YEAR
+   CART
 ========================================================= */
 
-function updateYear() {
+let cart = [];
 
-    const year = document.getElementById("current-year");
-
-    if (year) {
-        year.textContent = new Date().getFullYear();
-    }
-}
+const CART_STORAGE_KEY = "kiteeziCart";
 
 
-/* =========================================================
-   STORAGE URL
-========================================================= */
+function loadCart() {
 
-function getPublicStorageUrl(filePath) {
+    try {
 
-    if (!filePath) {
-        return "";
-    }
+        const savedCart =
+            localStorage.getItem(CART_STORAGE_KEY);
 
-    if (
-        filePath.startsWith("http://") ||
-        filePath.startsWith("https://")
-    ) {
-        return filePath;
-    }
+        if (savedCart) {
+            cart = JSON.parse(savedCart);
+        }
 
-    return `${STORAGE_PUBLIC_URL}/${filePath}`;
-}
+        if (!Array.isArray(cart)) {
+            cart = [];
+        }
 
+    } catch (error) {
 
-/* =========================================================
-   GET MEDIA
-========================================================= */
-
-async function getWebsiteMedia(area) {
-
-    const { data, error } = await supabaseClient
-        .from("website_images")
-        .select("*")
-        .eq("area", area)
-        .order("position", {
-            ascending: true
-        });
-
-    if (error) {
         console.error(
-            `Could not load ${area} media:`,
+            "Could not load cart:",
             error
         );
 
-        return [];
+        cart = [];
     }
-
-    return data || [];
 }
 
 
-/* =========================================================
-   LOAD MANAGED MEDIA
-========================================================= */
+function saveCart() {
 
-async function loadManagedMedia() {
+    try {
 
-    const galleries =
-        document.querySelectorAll(
-            ".media-gallery[data-media-area]"
+        localStorage.setItem(
+            CART_STORAGE_KEY,
+            JSON.stringify(cart)
         );
 
-    if (!galleries.length) {
-        return;
-    }
+    } catch (error) {
 
-    for (const gallery of galleries) {
-
-        const area =
-            gallery.dataset.mediaArea;
-
-        const managedMedia =
-            await getWebsiteMedia(area);
-
-        if (!managedMedia.length) {
-
-            setupExistingCarousel(gallery);
-
-            continue;
-        }
-
-        makeCarousel(
-            gallery,
-            managedMedia
+        console.error(
+            "Could not save cart:",
+            error
         );
     }
 }
 
 
-/* =========================================================
-   MAKE CAROUSEL
-========================================================= */
+function formatPrice(price) {
 
-function makeCarousel(container, items) {
+    const number = Number(price) || 0;
 
-    if (!container) {
+    return number.toLocaleString("en-US");
+}
+
+
+function addToCart(name, price) {
+
+    const itemName = String(name || "").trim();
+
+    const itemPrice =
+        Number(price) || 0;
+
+    if (!itemName) {
         return;
     }
 
-    container.innerHTML = "";
-
-    const normalizedItems =
-        items
-            .filter(item => item.file_path)
-            .map(item => {
-
-                const mediaType =
-                    String(
-                        item.media_type || ""
-                    ).toLowerCase();
-
-                const isVideo =
-                    mediaType === "video" ||
-                    /\.(mp4|webm|ogg|mov|m4v)$/i.test(
-                        item.file_path
-                    );
-
-                return {
-                    id: item.id,
-                    url: getPublicStorageUrl(
-                        item.file_path
-                    ),
-                    type: isVideo
-                        ? "video"
-                        : "image"
-                };
-
-            });
-
-    if (!normalizedItems.length) {
-        return;
-    }
-
-    normalizedItems.forEach((item, index) => {
-
-        const slide =
-            document.createElement("div");
-
-        slide.className =
-            "media-slide" +
-            (index === 0
-                ? " active"
-                : "");
-
-        slide.dataset.index = index;
-
-        if (item.type === "video") {
-
-            const video =
-                document.createElement("video");
-
-            video.src = item.url;
-
-            video.muted = true;
-            video.loop = true;
-            video.autoplay = index === 0;
-            video.playsInline = true;
-            video.preload = "metadata";
-
-            slide.appendChild(video);
-
-        } else {
-
-            const image =
-                document.createElement("img");
-
-            image.src = item.url;
-
-            image.alt =
-                "Kiteezi Recreational Center";
-
-            image.loading =
-                index === 0
-                    ? "eager"
-                    : "lazy";
-
-            slide.appendChild(image);
-        }
-
-        slide.addEventListener(
-            "click",
-            () => {
-
-                if (
-                    carouselStates.has(container)
-                ) {
-
-                    const state =
-                        carouselStates.get(
-                            container
-                        );
-
-                    openLightbox(
-                        state.items,
-                        state.index
-                    );
-                }
-            }
+    const existingItem =
+        cart.find(
+            item =>
+                item.name.toLowerCase() ===
+                itemName.toLowerCase() &&
+                Number(item.price) === itemPrice
         );
 
-        container.appendChild(slide);
+    if (existingItem) {
 
-    });
+        existingItem.quantity += 1;
 
-    addCarouselControls(
-        container,
-        normalizedItems
+    } else {
+
+        cart.push({
+            name: itemName,
+            price: itemPrice,
+            quantity: 1
+        });
+    }
+
+    saveCart();
+    updateCart();
+    showAddedMessage(itemName);
+
+    openOrderDrawer();
+}
+
+
+function changeCartQuantity(index, amount) {
+
+    if (!cart[index]) {
+        return;
+    }
+
+    cart[index].quantity += amount;
+
+    if (cart[index].quantity <= 0) {
+        cart.splice(index, 1);
+    }
+
+    saveCart();
+    updateCart();
+}
+
+
+function removeFromCart(index) {
+
+    if (!cart[index]) {
+        return;
+    }
+
+    cart.splice(index, 1);
+
+    saveCart();
+    updateCart();
+}
+
+
+function getCartCount() {
+
+    return cart.reduce(
+        (total, item) =>
+            total + Number(item.quantity || 0),
+        0
     );
-
-    carouselStates.set(
-        container,
-        {
-            items: normalizedItems,
-            index: 0
-        }
-    );
-
-    updateCarousel(container);
-
-    setupCarouselSwipe(container);
 }
 
 
-/* =========================================================
-   EXISTING / FALLBACK CAROUSEL
-========================================================= */
+function getCartTotal() {
 
-function setupExistingCarousel(container) {
+    return cart.reduce(
+        (total, item) =>
+            total +
+            (
+                Number(item.price) || 0
+            ) *
+            (
+                Number(item.quantity) || 0
+            ),
+        0
+    );
+}
 
-    const slides =
-        Array.from(
-            container.querySelectorAll(
-                ".media-slide"
-            )
-        );
 
-    if (!slides.length) {
+function updateCart() {
 
-        container.innerHTML = `
-            <div class="media-placeholder">
-                No media available yet.
-            </div>
+    const cartItems =
+        document.getElementById("cart-items");
+
+    const cartCount =
+        document.getElementById("cart-count");
+
+    const orderTotal =
+        document.getElementById("order-total");
+
+
+    if (cartCount) {
+
+        cartCount.textContent =
+            getCartCount();
+    }
+
+
+    if (orderTotal) {
+
+        orderTotal.textContent =
+            formatPrice(getCartTotal());
+    }
+
+
+    if (!cartItems) {
+        return;
+    }
+
+
+    if (cart.length === 0) {
+
+        cartItems.innerHTML = `
+            <p class="cart-empty">
+                Your cart is empty.
+            </p>
         `;
 
         return;
     }
 
-    const items =
-        slides.map(slide => {
 
-            const image =
-                slide.querySelector("img");
+    cartItems.innerHTML =
+        cart.map(
+            (item, index) => {
 
-            const video =
-                slide.querySelector("video");
+                const quantity =
+                    Number(item.quantity) || 0;
 
-            if (video) {
+                const price =
+                    Number(item.price) || 0;
 
-                return {
-                    url: video.currentSrc ||
-                        video.src,
-                    type: "video"
-                };
-
-            }
-
-            return {
-                url: image
-                    ? image.currentSrc ||
-                      image.src
-                    : "",
-                type: "image"
-            };
-
-        });
-
-    slides.forEach(
-        (slide, index) => {
-
-            slide.dataset.index = index;
-
-            slide.addEventListener(
-                "click",
-                () => {
-
-                    const state =
-                        carouselStates.get(
-                            container
-                        );
-
-                    if (state) {
-                        openLightbox(
-                            state.items,
-                            state.index
-                        );
-                    }
-                }
-            );
-        }
-    );
-
-    addCarouselControls(
-        container,
-        items
-    );
-
-    carouselStates.set(
-        container,
-        {
-            items,
-            index: 0
-        }
-    );
-
-    updateCarousel(container);
-
-    setupCarouselSwipe(container);
-}
-
-
-/* =========================================================
-   CAROUSEL CONTROLS
-========================================================= */
-
-function addCarouselControls(
-    container,
-    items
-) {
-
-    container
-        .querySelectorAll(
-            ".carousel-arrow, .carousel-dots, .carousel-counter"
-        )
-        .forEach(element => element.remove());
-
-    if (items.length <= 1) {
-
-        container.classList.add(
-            "single-item"
-        );
-
-        return;
-    }
-
-    container.classList.remove(
-        "single-item"
-    );
-
-
-    const previous =
-        document.createElement("button");
-
-    previous.className =
-        "carousel-arrow carousel-prev";
-
-    previous.type = "button";
-
-    previous.setAttribute(
-        "aria-label",
-        "Previous image"
-    );
-
-    previous.innerHTML = "❮";
-
-    previous.addEventListener(
-        "click",
-        event => {
-
-            event.stopPropagation();
-
-            changeCarousel(
-                container,
-                -1
-            );
-        }
-    );
-
-
-    const next =
-        document.createElement("button");
-
-    next.className =
-        "carousel-arrow carousel-next";
-
-    next.type = "button";
-
-    next.setAttribute(
-        "aria-label",
-        "Next image"
-    );
-
-    next.innerHTML = "❯";
-
-    next.addEventListener(
-        "click",
-        event => {
-
-            event.stopPropagation();
-
-            changeCarousel(
-                container,
-                1
-            );
-        }
-    );
-
-
-    const dots =
-        document.createElement("div");
-
-    dots.className =
-        "carousel-dots";
-
-    items.forEach(
-        (_, index) => {
-
-            const dot =
-                document.createElement("button");
-
-            dot.className =
-                "carousel-dot" +
-                (index === 0
-                    ? " active"
-                    : "");
-
-            dot.type = "button";
-
-            dot.setAttribute(
-                "aria-label",
-                `Go to image ${index + 1}`
-            );
-
-            dot.addEventListener(
-                "click",
-                event => {
-
-                    event.stopPropagation();
-
-                    const state =
-                        carouselStates.get(
-                            container
-                        );
-
-                    if (!state) {
-                        return;
-                    }
-
-                    state.index = index;
-
-                    updateCarousel(
-                        container
-                    );
-                }
-            );
-
-            dots.appendChild(dot);
-        }
-    );
-
-
-    const counter =
-        document.createElement("div");
-
-    counter.className =
-        "carousel-counter";
-
-    container.appendChild(previous);
-    container.appendChild(next);
-    container.appendChild(dots);
-    container.appendChild(counter);
-}
-
-
-/* =========================================================
-   UPDATE CAROUSEL
-========================================================= */
-
-function updateCarousel(container) {
-
-    const state =
-        carouselStates.get(container);
-
-    if (!state) {
-        return;
-    }
-
-    const slides =
-        container.querySelectorAll(
-            ".media-slide"
-        );
-
-    slides.forEach(
-        (slide, index) => {
-
-            slide.classList.toggle(
-                "active",
-                index === state.index
-            );
-
-            const video =
-                slide.querySelector("video");
-
-            if (video) {
-
-                if (index === state.index) {
-
-                    video.currentTime = 0;
-
-                    video.play().catch(
-                        () => {}
-                    );
-
-                } else {
-
-                    video.pause();
-                }
-            }
-        }
-    );
-
-
-    const dots =
-        container.querySelectorAll(
-            ".carousel-dot"
-        );
-
-    dots.forEach(
-        (dot, index) => {
-
-            dot.classList.toggle(
-                "active",
-                index === state.index
-            );
-        }
-    );
-
-
-    const counter =
-        container.querySelector(
-            ".carousel-counter"
-        );
-
-    if (counter) {
-
-        counter.textContent =
-            `${state.index + 1} / ${state.items.length}`;
-    }
-}
-
-
-/* =========================================================
-   CHANGE CAROUSEL
-========================================================= */
-
-function changeCarousel(
-    container,
-    direction
-) {
-
-    const state =
-        carouselStates.get(container);
-
-    if (!state) {
-        return;
-    }
-
-    const total =
-        state.items.length;
-
-    state.index =
-        (state.index + direction + total) %
-        total;
-
-    updateCarousel(container);
-}
-
-
-/* =========================================================
-   SWIPE + MOUSE DRAG
-========================================================= */
-
-function setupCarouselSwipe(container) {
-
-    let startX = 0;
-    let startY = 0;
-    let dragging = false;
-
-    container.addEventListener(
-        "touchstart",
-        event => {
-
-            const touch =
-                event.touches[0];
-
-            startX = touch.clientX;
-            startY = touch.clientY;
-
-        },
-        {
-            passive: true
-        }
-    );
-
-
-    container.addEventListener(
-        "touchend",
-        event => {
-
-            const touch =
-                event.changedTouches[0];
-
-            const differenceX =
-                touch.clientX - startX;
-
-            const differenceY =
-                touch.clientY - startY;
-
-            if (
-                Math.abs(differenceX) > 50 &&
-                Math.abs(differenceX) >
-                Math.abs(differenceY)
-            ) {
-
-                changeCarousel(
-                    container,
-                    differenceX < 0
-                        ? 1
-                        : -1
-                );
-            }
-
-        },
-        {
-            passive: true
-        }
-    );
-
-
-    container.addEventListener(
-        "mousedown",
-        event => {
-
-            startX = event.clientX;
-            dragging = true;
-
-            container.style.cursor =
-                "grabbing";
-        }
-    );
-
-
-    container.addEventListener(
-        "mouseup",
-        event => {
-
-            if (!dragging) {
-                return;
-            }
-
-            dragging = false;
-
-            container.style.cursor = "";
-
-            const difference =
-                event.clientX - startX;
-
-            if (Math.abs(difference) > 50) {
-
-                changeCarousel(
-                    container,
-                    difference < 0
-                        ? 1
-                        : -1
-                );
-            }
-        }
-    );
-
-
-    container.addEventListener(
-        "mouseleave",
-        () => {
-
-            dragging = false;
-
-            container.style.cursor = "";
-        }
-    );
-}
-
-
-/* =========================================================
-   REVIEWS
-========================================================= */
-
-function setupReviewForm() {
-
-    const form =
-        document.getElementById(
-            "review-form"
-        );
-
-    if (!form) {
-        return;
-    }
-
-    form.addEventListener(
-        "submit",
-        submitReview
-    );
-}
-
-
-async function loadReviews() {
-
-    const container =
-        document.getElementById(
-            "reviews-container"
-        );
-
-    if (!container) {
-        return;
-    }
-
-    container.innerHTML =
-        `<div class="loading-message">
-            Loading reviews...
-        </div>`;
-
-
-    const { data, error } =
-        await supabaseClient
-            .from("reviews")
-            .select("*")
-            .eq("approved", true)
-            .order("created_at", {
-                ascending: false
-            });
-
-
-    if (error) {
-
-        console.error(
-            "Review loading error:",
-            error
-        );
-
-        container.innerHTML =
-            `<div class="empty-message">
-                Reviews are currently unavailable.
-            </div>`;
-
-        return;
-    }
-
-
-    if (!data || !data.length) {
-
-        container.innerHTML =
-            `<div class="empty-message">
-                No approved reviews yet. Be the first to leave one!
-            </div>`;
-
-        return;
-    }
-
-
-    container.innerHTML =
-        data.map(review => {
-
-            const rating =
-                Math.max(
-                    1,
-                    Math.min(
-                        5,
-                        Number(review.rating) || 0
-                    )
-                );
-
-            const stars =
-                "★".repeat(rating) +
-                "☆".repeat(5 - rating);
-
-
-            const date =
-                review.created_at
-                    ? new Date(
-                        review.created_at
-                    ).toLocaleDateString(
-                        "en-UG",
-                        {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric"
-                        }
-                    )
-                    : "";
-
-
-            return `
-                <article class="review-card">
-
-                    <div class="review-header">
-
-                        <span class="review-name">
-                            ${escapeHTML(
-                                review.name ||
-                                "Guest"
-                            )}
-                        </span>
-
-                        <span class="review-stars">
-                            ${stars}
-                        </span>
-
-                    </div>
-
-                    <p class="review-text">
-                        ${escapeHTML(
-                            review.review || ""
-                        )}
-                    </p>
-
-                    ${
-                        date
-                            ? `<small class="review-date">
-                                ${date}
-                               </small>`
-                            : ""
-                    }
-
-                </article>
-            `;
-
-        }).join("");
-}
-
-
-/* =========================================================
-   SUBMIT REVIEW
-========================================================= */
-
-async function submitReview(event) {
-
-    event.preventDefault();
-
-    const form =
-        event.currentTarget;
-
-    const name =
-        document.getElementById(
-            "review-name"
-        ).value.trim();
-
-    const rating =
-        Number(
-            document.getElementById(
-                "review-rating"
-            ).value
-        );
-
-    const review =
-        document.getElementById(
-            "review-text"
-        ).value.trim();
-
-    const status =
-        document.getElementById(
-            "review-status"
-        );
-
-
-    if (!name || !rating || !review) {
-
-        status.textContent =
-            "Please complete all fields.";
-
-        return;
-    }
-
-
-    status.textContent =
-        "Submitting review...";
-
-
-    const { error } =
-        await supabaseClient
-            .from("reviews")
-            .insert({
-                name,
-                rating,
-                review,
-                approved: false
-            });
-
-
-    if (error) {
-
-        console.error(
-            "Review submission error:",
-            error
-        );
-
-        status.textContent =
-            "Unable to submit your review. Please try again.";
-
-        return;
-    }
-
-
-    form.reset();
-
-    status.textContent =
-        "Thank you! Your review has been submitted for approval.";
-
-    setTimeout(() => {
-
-        status.textContent = "";
-
-    }, 6000);
-}
-
-
-/* =========================================================
-   MENU
-========================================================= */
-
-async function loadMenuPage() {
-
-    const menuContainer =
-        document.getElementById(
-            "menu-items-container"
-        );
-
-    if (!menuContainer) {
-        return;
-    }
-
-
-    const { data, error } =
-        await supabaseClient
-            .from("menu_items")
-            .select("*")
-            .order("position", {
-                ascending: true
-            });
-
-
-    if (error) {
-
-        console.error(
-            "Menu loading error:",
-            error
-        );
-
-        menuContainer.innerHTML =
-            `<div class="menu-empty">
-                Unable to load the menu.
-            </div>`;
-
-        return;
-    }
-
-
-    const items = data || [];
-
-    renderMenuItems(
-        items,
-        menuContainer
-    );
-
-    setupMenuSearch(
-        items,
-        menuContainer
-    );
-
-    setupMenuCategoryButtons(
-        items,
-        menuContainer
-    );
-
-    await loadMenuMedia();
-}
-
-
-/* =========================================================
-   MENU MEDIA
-========================================================= */
-
-async function loadMenuMedia() {
-
-    const galleries =
-        document.querySelectorAll(
-            ".menu-media-gallery[data-media-area]"
-        );
-
-    for (const gallery of galleries) {
-
-        const area =
-            gallery.dataset.mediaArea;
-
-        const media =
-            await getWebsiteMedia(area);
-
-        if (media.length) {
-
-            makeCarousel(
-                gallery,
-                media
-            );
-
-        } else {
-
-            setupExistingCarousel(
-                gallery
-            );
-        }
-    }
-}
-
-
-/* =========================================================
-   RENDER MENU
-========================================================= */
-
-function renderMenuItems(
-    items,
-    container
-) {
-
-    if (!items.length) {
-
-        container.innerHTML =
-            `<div class="menu-empty">
-                No menu items are available yet.
-            </div>`;
-
-        return;
-    }
-
-
-    const categories = {};
-
-    items.forEach(item => {
-
-        const category =
-            String(
-                item.category || "other"
-            ).toLowerCase();
-
-        if (!categories[category]) {
-            categories[category] = [];
-        }
-
-        categories[category].push(item);
-    });
-
-
-    const categoryNames = {
-        breakfast: "Breakfast",
-        snacks: "Snacks",
-        goat: "Goat",
-        liver: "Liver",
-        chicken: "Chicken",
-        burgers: "Burgers",
-        accompaniments: "Accompaniments",
-        pizzas: "Pizzas",
-        fish: "Fish"
-    };
-
-
-    container.innerHTML =
-        Object.keys(categories)
-            .map(category => {
-
-                const title =
-                    categoryNames[category] ||
-                    capitalize(category);
-
+                const lineTotal =
+                    price * quantity;
 
                 return `
-                    <section
-                        class="menu-section"
-                        data-category="${escapeHTML(category)}"
+                    <div
+                        class="cart-item"
+                        data-cart-index="${index}"
                     >
 
-                        <div class="menu-section-heading">
-                            <p class="eyebrow">
-                                KITEeZI MENU
-                            </p>
+                        <div class="cart-item-info">
 
-                            <h2>
-                                ${escapeHTML(title)}
-                            </h2>
-                        </div>
+                            <div class="cart-item-name">
+                                ${escapeHtml(item.name)}
+                            </div>
 
-                        <div class="menu-grid">
-
-                            ${categories[category]
-                                .map(
-                                    menuItemHTML
-                                )
-                                .join("")}
+                            <div class="cart-item-price">
+                                UGX ${formatPrice(price)}
+                                each
+                                <br>
+                                <strong>
+                                    UGX ${formatPrice(lineTotal)}
+                                </strong>
+                            </div>
 
                         </div>
 
-                    </section>
+
+                        <div class="quantity-controls">
+
+                            <button
+                                type="button"
+                                class="cart-minus"
+                                data-index="${index}"
+                                aria-label="Decrease quantity"
+                            >
+                                −
+                            </button>
+
+                            <strong>
+                                ${quantity}
+                            </strong>
+
+                            <button
+                                type="button"
+                                class="cart-plus"
+                                data-index="${index}"
+                                aria-label="Increase quantity"
+                            >
+                                +
+                            </button>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="remove-cart-item"
+                            data-index="${index}"
+                            aria-label="Remove item"
+                        >
+                            ×
+                        </button>
+
+                    </div>
                 `;
-
-            }).join("");
-
-
-    attachOrderButtons();
+            }
+        ).join("");
 }
 
 
-/* =========================================================
-   MENU ITEM HTML
-========================================================= */
+function escapeHtml(value) {
 
-function menuItemHTML(item) {
-
-    const price =
-        Number(item.price);
-
-    const formattedPrice =
-        Number.isFinite(price)
-            ? `UGX ${price.toLocaleString()}`
-            : escapeHTML(
-                item.price || ""
-            );
-
-
-    return `
-        <article
-            class="menu-item"
-            data-name="${escapeHTML(
-                item.name || ""
-            )}"
-            data-category="${escapeHTML(
-                String(
-                    item.category || ""
-                ).toLowerCase()
-            )}"
-        >
-
-            <div class="menu-item-content">
-
-                <h3>
-                    ${escapeHTML(
-                        item.name || ""
-                    )}
-                </h3>
-
-                ${
-                    item.description
-                        ? `<p>
-                            ${escapeHTML(
-                                item.description
-                            )}
-                           </p>`
-                        : ""
-                }
-
-                <strong class="menu-price">
-                    ${formattedPrice}
-                </strong>
-
-            </div>
-
-            <button
-                type="button"
-                class="order-item-btn"
-                data-item-name="${escapeHTML(
-                    item.name || ""
-                )}"
-                data-item-price="${Number.isFinite(price) ? price : 0}"
-            >
-                Order
-            </button>
-
-        </article>
-    `;
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 
-/* =========================================================
-   MENU SEARCH
-========================================================= */
+function showAddedMessage(name) {
 
-function setupMenuSearch(
-    items,
-    container
-) {
+    const message =
+        document.getElementById("added-message");
 
-    const search =
-        document.getElementById(
-            "menu-search"
-        );
-
-    if (!search) {
+    if (!message) {
         return;
     }
 
-    search.addEventListener(
-        "input",
-        () => {
+    message.textContent =
+        `${name} added to cart.`;
 
-            const query =
-                search.value
-                    .trim()
-                    .toLowerCase();
+    message.classList.add("show");
 
-            const menuItems =
-                container.querySelectorAll(
-                    ".menu-item"
-                );
-
-            menuItems.forEach(item => {
-
-                const name =
-                    (
-                        item.dataset.name ||
-                        ""
-                    ).toLowerCase();
-
-                const category =
-                    (
-                        item.dataset.category ||
-                        ""
-                    ).toLowerCase();
-
-                const description =
-                    item.textContent.toLowerCase();
-
-                item.style.display =
-                    !query ||
-                    name.includes(query) ||
-                    category.includes(query) ||
-                    description.includes(query)
-                        ? ""
-                        : "none";
-            });
-
-            hideEmptyMenuSections();
-
-        }
+    clearTimeout(
+        showAddedMessage.timeout
     );
-}
 
-
-/* =========================================================
-   CATEGORY FILTER
-========================================================= */
-
-function setupMenuCategoryButtons(
-    items,
-    container
-) {
-
-    const buttons =
-        document.querySelectorAll(
-            ".menu-category-btn"
-        );
-
-    buttons.forEach(button => {
-
-        button.addEventListener(
-            "click",
+    showAddedMessage.timeout =
+        setTimeout(
             () => {
-
-                buttons.forEach(
-                    btn =>
-                        btn.classList.remove(
-                            "active"
-                        )
-                );
-
-                button.classList.add(
-                    "active"
-                );
-
-                const category =
-                    button.dataset.category;
-
-                const sections =
-                    container.querySelectorAll(
-                        ".menu-section"
-                    );
-
-                sections.forEach(section => {
-
-                    const sectionCategory =
-                        section.dataset.category;
-
-                    section.style.display =
-                        category === "all" ||
-                        category === sectionCategory
-                            ? ""
-                            : "none";
-
-                });
-
-                container
-                    .querySelectorAll(
-                        ".menu-item"
-                    )
-                    .forEach(item => {
-
-                        item.style.display =
-                            "";
-
-                    });
-
-                const search =
-                    document.getElementById(
-                        "menu-search"
-                    );
-
-                if (search) {
-                    search.value = "";
-                }
-
-                hideEmptyMenuSections();
-            }
+                message.classList.remove("show");
+            },
+            1800
         );
-    });
 }
 
 
 /* =========================================================
-   HIDE EMPTY MENU SECTIONS
+   ORDER DRAWER
 ========================================================= */
-
-function hideEmptyMenuSections() {
-
-    document
-        .querySelectorAll(
-            ".menu-section"
-        )
-        .forEach(section => {
-
-            const visibleItems =
-                Array.from(
-                    section.querySelectorAll(
-                        ".menu-item"
-                    )
-                )
-                .filter(
-                    item =>
-                        item.style.display !==
-                        "none"
-                );
-
-            if (
-                section.style.display !==
-                "none"
-            ) {
-
-                section.style.display =
-                    visibleItems.length
-                        ? ""
-                        : "none";
-            }
-
-        });
-}
-
-
-/* =========================================================
-   ORDERING
-========================================================= */
-
-let selectedItemName = "";
-let selectedItemPrice = 0;
-
-
-function attachOrderButtons() {
-
-    document
-        .querySelectorAll(
-            ".order-item-btn"
-        )
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    selectedItemName =
-                        button.dataset.itemName ||
-                        "";
-
-                    selectedItemPrice =
-                        Number(
-                            button.dataset.itemPrice
-                        ) || 0;
-
-                    openOrderDrawer();
-                }
-            );
-
-        });
-}
-
 
 function openOrderDrawer() {
 
     const drawer =
-        document.getElementById(
-            "order-section"
-        );
+        document.getElementById("order-drawer");
 
     const backdrop =
-        document.getElementById(
-            "order-backdrop"
+        document.getElementById("order-backdrop");
+
+    if (drawer) {
+
+        drawer.classList.add("active");
+
+        drawer.setAttribute(
+            "aria-hidden",
+            "false"
         );
-
-    const selected =
-        document.getElementById(
-            "selected-item"
-        );
-
-    const total =
-        document.getElementById(
-            "total"
-        );
-
-
-    if (!drawer) {
-        return;
     }
-
-
-    if (selected) {
-
-        selected.textContent =
-            selectedItemName;
-    }
-
-
-    if (total) {
-
-        total.textContent =
-            `UGX ${selectedItemPrice.toLocaleString()}`;
-    }
-
-
-    drawer.classList.add("open");
 
     if (backdrop) {
-        backdrop.classList.add("open");
+
+        backdrop.classList.add("active");
     }
 
-    document.body.classList.add(
-        "no-scroll"
-    );
+    updateCart();
 }
 
 
 function closeOrderDrawer() {
 
     const drawer =
-        document.getElementById(
-            "order-section"
-        );
+        document.getElementById("order-drawer");
 
     const backdrop =
-        document.getElementById(
-            "order-backdrop"
-        );
+        document.getElementById("order-backdrop");
 
     if (drawer) {
-        drawer.classList.remove("open");
+
+        drawer.classList.remove("active");
+
+        drawer.setAttribute(
+            "aria-hidden",
+            "true"
+        );
     }
 
     if (backdrop) {
-        backdrop.classList.remove("open");
+
+        backdrop.classList.remove("active");
+    }
+}
+
+
+/* =========================================================
+   CART EVENTS
+========================================================= */
+
+function setupCartEvents() {
+
+    const cartButton =
+        document.getElementById("cart-button");
+
+    const closeButton =
+        document.getElementById("close-order");
+
+    const backdrop =
+        document.getElementById("order-backdrop");
+
+
+    if (cartButton) {
+
+        cartButton.addEventListener(
+            "click",
+            openOrderDrawer
+        );
     }
 
-    document.body.classList.remove(
-        "no-scroll"
+
+    if (closeButton) {
+
+        closeButton.addEventListener(
+            "click",
+            closeOrderDrawer
+        );
+    }
+
+
+    if (backdrop) {
+
+        backdrop.addEventListener(
+            "click",
+            closeOrderDrawer
+        );
+    }
+
+
+    document.addEventListener(
+        "click",
+        event => {
+
+            const plusButton =
+                event.target.closest(
+                    ".cart-plus"
+                );
+
+            const minusButton =
+                event.target.closest(
+                    ".cart-minus"
+                );
+
+            const removeButton =
+                event.target.closest(
+                    ".remove-cart-item"
+                );
+
+
+            if (plusButton) {
+
+                const index =
+                    Number(
+                        plusButton.dataset.index
+                    );
+
+                changeCartQuantity(
+                    index,
+                    1
+                );
+
+                return;
+            }
+
+
+            if (minusButton) {
+
+                const index =
+                    Number(
+                        minusButton.dataset.index
+                    );
+
+                changeCartQuantity(
+                    index,
+                    -1
+                );
+
+                return;
+            }
+
+
+            if (removeButton) {
+
+                const index =
+                    Number(
+                        removeButton.dataset.index
+                    );
+
+                removeFromCart(index);
+            }
+        }
     );
+
+
+    const sendButton =
+        document.getElementById(
+            "send-whatsapp"
+        );
+
+
+    if (sendButton) {
+
+        sendButton.addEventListener(
+            "click",
+            sendOrderToWhatsApp
+        );
+    }
 }
 
 
 /* =========================================================
-   SPECIAL MENU FUNCTIONS
+   MENU ORDER BUTTONS
 ========================================================= */
 
-function chooseChipsSausage() {
+function attachOrderButtons() {
 
-    const choice =
-        prompt(
-            "Choose size:\n1. Small - UGX 13,000\n2. Large - UGX 15,000"
+    const buttons =
+        document.querySelectorAll(
+            ".order-item-btn"
         );
 
-    if (choice === "1") {
 
-        selectedItemName =
-            "Chips & Sausages Small";
+    buttons.forEach(button => {
 
-        selectedItemPrice = 13000;
+        if (button.dataset.cartAttached === "true") {
+            return;
+        }
 
-        openOrderDrawer();
-
-    } else if (choice === "2") {
-
-        selectedItemName =
-            "Chips & Sausages Large";
-
-        selectedItemPrice = 15000;
-
-        openOrderDrawer();
-    }
-}
+        button.dataset.cartAttached = "true";
 
 
-function chooseAccompaniment() {
+        button.addEventListener(
+            "click",
+            () => {
 
-    const choice =
-        prompt(
-            "Choose accompaniment:\nWhite Rice\nVegetable Rice\nEgg Fried Rice\nChips\nPotato Wedges\nPosho\nMashed Potatoes"
+                const name =
+                    button.dataset.itemName ||
+                    button.getAttribute(
+                        "data-item-name"
+                    ) ||
+                    button.closest(
+                        ".menu-item"
+                    )?.querySelector(
+                        "h3"
+                    )?.textContent ||
+                    "Menu Item";
+
+
+                const price =
+                    Number(
+                        button.dataset.itemPrice ||
+                        button.getAttribute(
+                            "data-item-price"
+                        ) ||
+                        0
+                    );
+
+
+                addToCart(
+                    name.trim(),
+                    price
+                );
+            }
         );
-
-    if (!choice) {
-        return;
-    }
-
-    selectedItemName =
-        `Accompaniment - ${choice}`;
-
-    selectedItemPrice = 0;
-
-    openOrderDrawer();
+    });
 }
-
-
-function chooseLiverAccompaniment() {
-
-    chooseAccompaniment();
-}
-
-
-/* =========================================================
-   ORDER DRAWER EVENTS
-========================================================= */
-
-document.addEventListener(
-    "click",
-    event => {
-
-        if (
-            event.target.matches(
-                "#order-close"
-            )
-        ) {
-
-            closeOrderDrawer();
-        }
-
-
-        if (
-            event.target.matches(
-                "#order-backdrop"
-            )
-        ) {
-
-            closeOrderDrawer();
-        }
-
-
-        if (
-            event.target.matches(
-                "#send-whatsapp"
-            )
-        ) {
-
-            sendOrderToWhatsApp();
-        }
-
-    }
-);
 
 
 /* =========================================================
@@ -1690,97 +584,132 @@ document.addEventListener(
 
 function sendOrderToWhatsApp() {
 
-    const customerName =
-        document.getElementById(
-            "customerName"
-        )?.value.trim();
-
-    const phone =
-        document.getElementById(
-            "phone"
-        )?.value.trim();
-
-    const deliveryType =
-        document.getElementById(
-            "deliveryType"
-        )?.value;
-
-    const location =
-        document.getElementById(
-            "location"
-        )?.value.trim();
-
-    const message =
-        document.getElementById(
-            "message"
-        )?.value.trim();
-
-
-    if (!customerName || !phone) {
+    if (cart.length === 0) {
 
         alert(
-            "Please enter your name and phone number."
+            "Your cart is empty. Please add an item first."
         );
 
         return;
     }
 
 
-    let text =
-        `Hello Kiteezi Recreational Center,%0A%0A`;
+    const name =
+        document.getElementById(
+            "customer-name"
+        )?.value.trim() || "";
 
-    text +=
-        `I would like to order:%0A`;
 
-    text +=
-        `${encodeURIComponent(
-            selectedItemName
-        )}%0A`;
+    const phone =
+        document.getElementById(
+            "customer-phone"
+        )?.value.trim() || "";
 
-    if (selectedItemPrice > 0) {
 
-        text +=
-            `Price: UGX ${selectedItemPrice.toLocaleString()}%0A`;
+    const location =
+        document.getElementById(
+            "customer-location"
+        )?.value.trim() || "";
+
+
+    const note =
+        document.getElementById(
+            "customer-note"
+        )?.value.trim() || "";
+
+
+    if (!name) {
+
+        alert(
+            "Please enter your name."
+        );
+
+        return;
     }
 
 
-    text +=
-        `%0ACustomer: ${encodeURIComponent(
-            customerName
-        )}%0A`;
+    if (!phone) {
 
-    text +=
-        `Phone: ${encodeURIComponent(
-            phone
-        )}%0A`;
+        alert(
+            "Please enter your phone number."
+        );
 
-    if (deliveryType) {
-
-        text +=
-            `Order type: ${encodeURIComponent(
-                deliveryType
-            )}%0A`;
+        return;
     }
+
+
+    let message =
+        "Hello Kiteezi Recreational Center,%0A%0A";
+
+    message +=
+        "I would like to place an order:%0A%0A";
+
+
+    cart.forEach(
+        (item, index) => {
+
+            const quantity =
+                Number(item.quantity) || 0;
+
+            const price =
+                Number(item.price) || 0;
+
+            const total =
+                quantity * price;
+
+
+            message +=
+                `${index + 1}. ${item.name}%0A`;
+
+            message +=
+                `Quantity: ${quantity}%0A`;
+
+            message +=
+                `Price: UGX ${formatPrice(price)}%0A`;
+
+            message +=
+                `Subtotal: UGX ${formatPrice(total)}%0A%0A`;
+        }
+    );
+
+
+    message +=
+        `TOTAL: UGX ${formatPrice(
+            getCartTotal()
+        )}%0A%0A`;
+
+
+    message +=
+        `Customer Name: ${name}%0A`;
+
+    message +=
+        `Phone: ${phone}%0A`;
+
 
     if (location) {
 
-        text +=
-            `Location: ${encodeURIComponent(
-                location
-            )}%0A`;
+        message +=
+            `Location: ${location}%0A`;
     }
 
-    if (message) {
 
-        text +=
-            `Additional message: ${encodeURIComponent(
-                message
-            )}%0A`;
+    if (note) {
+
+        message +=
+            `Note: ${note}%0A`;
     }
+
+
+    message +=
+        "%0AThank you.";
+
+
+    const whatsappNumber =
+        "256709763803";
 
 
     const whatsappUrl =
-        `https://wa.me/256709763803?text=${text}`;
+        `https://wa.me/${whatsappNumber}?text=${message}`;
 
 
     window.open(
@@ -1791,8 +720,132 @@ function sendOrderToWhatsApp() {
 
 
 /* =========================================================
+   SPECIAL MENU OPTIONS
+========================================================= */
+
+function chooseChipsSausage() {
+
+    const choice =
+        prompt(
+            "Choose size:%0A%0A1. Small - UGX 13,000%0A2. Large - UGX 15,000"
+        );
+
+
+    if (choice === "1") {
+
+        addToCart(
+            "Chips & Sausages - Small",
+            13000
+        );
+
+    } else if (choice === "2") {
+
+        addToCart(
+            "Chips & Sausages - Large",
+            15000
+        );
+
+    }
+}
+
+
+function chooseAccompaniment(
+    name = "Accompaniment"
+) {
+
+    addToCart(
+        name,
+        0
+    );
+}
+
+
+function chooseLiverAccompaniment(
+    name = "Liver Accompaniment"
+) {
+
+    chooseAccompaniment(
+        name
+    );
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function setupNavigation() {
+
+    const toggle =
+        document.getElementById(
+            "nav-toggle"
+        );
+
+    const links =
+        document.getElementById(
+            "nav-links"
+        );
+
+
+    if (!toggle || !links) {
+        return;
+    }
+
+
+    toggle.addEventListener(
+        "click",
+        () => {
+
+            links.classList.toggle(
+                "active"
+            );
+        }
+    );
+
+
+    links.querySelectorAll("a").forEach(
+        link => {
+
+            link.addEventListener(
+                "click",
+                () => {
+
+                    links.classList.remove(
+                        "active"
+                    );
+                }
+            );
+        }
+    );
+}
+
+
+/* =========================================================
+   YEAR
+========================================================= */
+
+function setupCurrentYear() {
+
+    const year =
+        document.getElementById(
+            "current-year"
+        );
+
+    if (year) {
+
+        year.textContent =
+            new Date().getFullYear();
+    }
+}
+
+
+/* =========================================================
    LIGHTBOX
 ========================================================= */
+
+let currentLightboxIndex = 0;
+let currentLightboxItems = [];
+
 
 function setupLightbox() {
 
@@ -1800,132 +853,6 @@ function setupLightbox() {
         document.getElementById(
             "lightbox"
         );
-
-    if (!lightbox) {
-        return;
-    }
-
-
-    document
-        .getElementById(
-            "lightbox-close"
-        )
-        ?.addEventListener(
-            "click",
-            closeLightbox
-        );
-
-
-    document
-        .getElementById(
-            "lightbox-prev"
-        )
-        ?.addEventListener(
-            "click",
-            () => {
-
-                changeLightbox(-1);
-            }
-        );
-
-
-    document
-        .getElementById(
-            "lightbox-next"
-        )
-        ?.addEventListener(
-            "click",
-            () => {
-
-                changeLightbox(1);
-            }
-        );
-
-
-    lightbox.addEventListener(
-        "click",
-        event => {
-
-            if (
-                event.target === lightbox
-            ) {
-
-                closeLightbox();
-            }
-        }
-    );
-
-
-    document.addEventListener(
-        "keydown",
-        event => {
-
-            if (
-                !lightbox.classList.contains(
-                    "open"
-                )
-            ) {
-                return;
-            }
-
-            if (event.key === "Escape") {
-                closeLightbox();
-            }
-
-            if (event.key === "ArrowLeft") {
-                changeLightbox(-1);
-            }
-
-            if (event.key === "ArrowRight") {
-                changeLightbox(1);
-            }
-        }
-    );
-}
-
-
-function openLightbox(
-    items,
-    index
-) {
-
-    if (!items || !items.length) {
-        return;
-    }
-
-    lightboxItems = items;
-
-    lightboxIndex =
-        Math.max(
-            0,
-            Math.min(
-                index || 0,
-                items.length - 1
-            )
-        );
-
-
-    const lightbox =
-        document.getElementById(
-            "lightbox"
-        );
-
-    if (!lightbox) {
-        return;
-    }
-
-
-    lightbox.classList.add("open");
-
-    document.body.classList.add(
-        "no-scroll"
-    );
-
-    renderLightbox();
-}
-
-
-function renderLightbox() {
 
     const image =
         document.getElementById(
@@ -1937,295 +864,469 @@ function renderLightbox() {
             "lightbox-video"
         );
 
-    if (!image || !video) {
+    const close =
+        document.getElementById(
+            "lightbox-close"
+        );
+
+    const previous =
+        document.getElementById(
+            "lightbox-prev"
+        );
+
+    const next =
+        document.getElementById(
+            "lightbox-next"
+        );
+
+
+    if (!lightbox) {
         return;
     }
 
 
-    const item =
-        lightboxItems[
-            lightboxIndex
-        ];
+    document.addEventListener(
+        "click",
+        event => {
 
-    image.style.display = "none";
-
-    video.style.display = "none";
-
-    video.pause();
-
-    video.removeAttribute("src");
-
-    if (item.type === "video") {
-
-        video.src = item.url;
-
-        video.style.display = "block";
-
-    } else {
-
-        image.src = item.url;
-
-        image.style.display = "block";
-    }
-}
+            const media =
+                event.target.closest(
+                    ".media-slide img, .media-slide video"
+                );
 
 
-function changeLightbox(
-    direction
-) {
-
-    if (!lightboxItems.length) {
-        return;
-    }
-
-    lightboxIndex =
-        (
-            lightboxIndex +
-            direction +
-            lightboxItems.length
-        ) %
-        lightboxItems.length;
-
-    renderLightbox();
-}
+            if (!media) {
+                return;
+            }
 
 
-function closeLightbox() {
+            const gallery =
+                media.closest(
+                    ".media-gallery"
+                );
 
-    const lightbox =
-        document.getElementById(
-            "lightbox"
+
+            if (!gallery) {
+                return;
+            }
+
+
+            currentLightboxItems =
+                Array.from(
+                    gallery.querySelectorAll(
+                        ".media-slide img, .media-slide video"
+                    )
+                );
+
+
+            currentLightboxIndex =
+                currentLightboxItems.indexOf(
+                    media
+                );
+
+
+            showLightboxItem();
+        }
+    );
+
+
+    function showLightboxItem() {
+
+        const item =
+            currentLightboxItems[
+                currentLightboxIndex
+            ];
+
+
+        if (!item) {
+            return;
+        }
+
+
+        lightbox.classList.add(
+            "active"
         );
 
-    const video =
-        document.getElementById(
-            "lightbox-video"
-        );
 
-    if (video) {
-        video.pause();
+        if (item.tagName.toLowerCase() === "img") {
+
+            image.src =
+                item.src;
+
+            image.alt =
+                item.alt || "";
+
+            image.style.display =
+                "block";
+
+            video.style.display =
+                "none";
+
+            video.pause();
+
+        } else {
+
+            video.src =
+                item.currentSrc ||
+                item.src;
+
+            video.style.display =
+                "block";
+
+            image.style.display =
+                "none";
+        }
     }
 
-    if (lightbox) {
-        lightbox.classList.remove(
-            "open"
+
+    if (close) {
+
+        close.addEventListener(
+            "click",
+            () => {
+
+                lightbox.classList.remove(
+                    "active"
+                );
+
+                video.pause();
+            }
         );
     }
 
-    document.body.classList.remove(
-        "no-scroll"
+
+    if (previous) {
+
+        previous.addEventListener(
+            "click",
+            () => {
+
+                if (
+                    currentLightboxItems.length === 0
+                ) {
+                    return;
+                }
+
+                currentLightboxIndex =
+                    (
+                        currentLightboxIndex -
+                        1 +
+                        currentLightboxItems.length
+                    ) %
+                    currentLightboxItems.length;
+
+                showLightboxItem();
+            }
+        );
+    }
+
+
+    if (next) {
+
+        next.addEventListener(
+            "click",
+            () => {
+
+                if (
+                    currentLightboxItems.length === 0
+                ) {
+                    return;
+                }
+
+                currentLightboxIndex =
+                    (
+                        currentLightboxIndex +
+                        1
+                    ) %
+                    currentLightboxItems.length;
+
+                showLightboxItem();
+            }
+        );
+    }
+
+
+    lightbox.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target ===
+                lightbox
+            ) {
+
+                lightbox.classList.remove(
+                    "active"
+                );
+
+                video.pause();
+            }
+        }
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                !lightbox.classList.contains(
+                    "active"
+                )
+            ) {
+                return;
+            }
+
+
+            if (event.key === "Escape") {
+
+                lightbox.classList.remove(
+                    "active"
+                );
+
+                video.pause();
+            }
+
+
+            if (event.key === "ArrowLeft") {
+
+                previous?.click();
+            }
+
+
+            if (event.key === "ArrowRight") {
+
+                next?.click();
+            }
+        }
     );
 }
 
 
 /* =========================================================
-   PERSONNEL
+   SUPABASE MENU
 ========================================================= */
 
-async function loadPersonnel() {
+async function loadMenu() {
 
     const container =
         document.getElementById(
-            "personnel-container"
+            "menu-container"
         );
+
 
     if (!container) {
         return;
     }
 
 
-    const { data, error } =
-        await supabaseClient
-            .from("personnel")
-            .select("*")
-            .order("display_order", {
-                ascending: true
-            });
+    if (!supabaseClient) {
+
+        attachOrderButtons();
+
+        return;
+    }
 
 
-    if (error) {
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("menu")
+            .select("*");
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (!data || data.length === 0) {
+
+            container.innerHTML = `
+                <p class="loading-message">
+                    No menu items available.
+                </p>
+            `;
+
+            return;
+        }
+
+
+        renderMenu(
+            data
+        );
+
+
+    } catch (error) {
 
         console.error(
-            "Personnel loading error:",
+            "Error loading menu:",
             error
         );
 
-        container.innerHTML =
-            `<div class="empty-team">
-                Personnel information is currently unavailable.
-            </div>`;
 
-        return;
-    }
-
-
-    const people =
-        data || [];
-
-
-    if (!people.length) {
-
-        container.innerHTML =
-            `<div class="empty-team">
-                Personnel information will be added soon.
-            </div>`;
-
-        return;
-    }
-
-
-    const administrators = [];
-
-    const departments = [];
-
-
-    people.forEach(person => {
-
-        const position =
-            String(
-                person.position || ""
-            ).toLowerCase();
-
-
-        if (
-            /ceo|founder|general manager|managing director|director|administrator/
-                .test(position)
-        ) {
-
-            administrators.push(person);
-
-        } else {
-
-            departments.push(person);
-        }
-
-    });
-
-
-    container.innerHTML = "";
-
-
-    if (administrators.length) {
-
-        const adminSection =
-            document.createElement(
-                "section"
-            );
-
-        adminSection.className =
-            "administrators";
-
-        adminSection.innerHTML =
-            administrators
-                .map(
-                    personnelCardHTML
-                )
-                .join("");
-
-        container.appendChild(
-            adminSection
-        );
-    }
-
-
-    if (departments.length) {
-
-        const departmentSection =
-            document.createElement(
-                "section"
-            );
-
-        departmentSection.className =
-            "departments";
-
-        departmentSection.innerHTML = `
-            <h1>Our Departments</h1>
-
-            ${departments
-                .map(
-                    personnelCardHTML
-                )
-                .join("")}
+        container.innerHTML = `
+            <p class="loading-message">
+                Unable to load menu at the moment.
+            </p>
         `;
-
-        container.appendChild(
-            departmentSection
-        );
     }
 }
 
 
 /* =========================================================
-   PERSONNEL CARD
+   MENU RENDERING
 ========================================================= */
 
-function personnelCardHTML(person) {
+let allMenuItems = [];
+let selectedCategory = "all";
 
-    const photo =
-        person.photo_url
-            ? getPublicStorageUrl(
-                person.photo_url
+
+function renderMenu(items) {
+
+    allMenuItems =
+        Array.isArray(items)
+            ? items
+            : [];
+
+
+    createCategories(
+        allMenuItems
+    );
+
+
+    displayMenuItems(
+        allMenuItems
+    );
+}
+
+
+function getMenuField(
+    item,
+    fields,
+    fallback = ""
+) {
+
+    for (const field of fields) {
+
+        if (
+            item &&
+            item[field] !== undefined &&
+            item[field] !== null
+        ) {
+
+            return item[field];
+        }
+    }
+
+    return fallback;
+}
+
+
+function menuItemHTML(item) {
+
+    const name =
+        getMenuField(
+            item,
+            [
+                "name",
+                "item_name",
+                "title"
+            ],
+            "Menu Item"
+        );
+
+
+    const description =
+        getMenuField(
+            item,
+            [
+                "description",
+                "details"
+            ],
+            ""
+        );
+
+
+    const price =
+        Number(
+            getMenuField(
+                item,
+                [
+                    "price",
+                    "item_price"
+                ],
+                0
             )
-            : "";
+        ) || 0;
+
+
+    const image =
+        getMenuField(
+            item,
+            [
+                "image",
+                "image_url",
+                "photo",
+                "photo_url"
+            ],
+            "images/food.webp"
+        );
+
+
+    const safeName =
+        escapeHtml(name);
+
+
+    const safeDescription =
+        escapeHtml(description);
+
+
+    const safeImage =
+        escapeHtml(image);
 
 
     return `
-        <article class="administrator">
+        <article class="menu-item">
 
-            <div class="administrator-image">
+            <img
+                class="menu-item-image"
+                src="${safeImage}"
+                alt="${safeName}"
+                onerror="this.src='images/food.webp'"
+            >
 
-                ${
-                    photo
-                        ? `<img
-                            src="${escapeHTML(photo)}"
-                            alt="${escapeHTML(
-                                person.name || "Personnel"
-                            )}"
-                            loading="lazy"
-                           >`
-                        : `<div class="no-photo">
-                            No photo available
-                           </div>`
-                }
-
-            </div>
-
-            <div class="administrator-text">
-
-                <h2>
-                    ${escapeHTML(
-                        person.name || ""
-                    )}
-                </h2>
+            <div class="menu-item-content">
 
                 <h3>
-                    ${escapeHTML(
-                        person.position || ""
-                    )}
+                    ${safeName}
                 </h3>
 
                 ${
-                    person.description
-                        ? `<p>
-                            ${escapeHTML(
-                                person.description
-                            )}
-                           </p>`
+                    description
+                        ? `
+                            <p>
+                                ${safeDescription}
+                            </p>
+                        `
                         : ""
                 }
 
-                ${
-                    person.phone
-                        ? `<a
-                            class="contact"
-                            href="tel:${escapeHTML(
-                                person.phone
-                            )}"
-                           >
-                            Contact
-                           </a>`
-                        : ""
-                }
+                <p class="menu-item-price">
+                    UGX ${formatPrice(price)}
+                </p>
+
+                <button
+                    type="button"
+                    class="order-item-btn"
+                    data-item-name="${safeName}"
+                    data-item-price="${price}"
+                >
+                    Add to Cart
+                </button>
 
             </div>
 
@@ -2234,229 +1335,769 @@ function personnelCardHTML(person) {
 }
 
 
-/* =========================================================
-   HELPERS
-========================================================= */
+function displayMenuItems(
+    items
+) {
 
-function escapeHTML(value) {
+    const container =
+        document.getElementById(
+            "menu-container"
+        );
 
-    return String(value ?? "")
-        .replace(
-            /&/g,
-            "&amp;"
+
+    if (!container) {
+        return;
+    }
+
+
+    let filtered =
+        Array.isArray(items)
+            ? items
+            : [];
+
+
+    const search =
+        document.getElementById(
+            "menu-search"
+        )?.value
+            ?.trim()
+            ?.toLowerCase() || "";
+
+
+    if (search) {
+
+        filtered =
+            filtered.filter(
+                item => {
+
+                    const name =
+                        String(
+                            getMenuField(
+                                item,
+                                [
+                                    "name",
+                                    "item_name",
+                                    "title"
+                                ],
+                                ""
+                            )
+                        ).toLowerCase();
+
+
+                    const description =
+                        String(
+                            getMenuField(
+                                item,
+                                [
+                                    "description",
+                                    "details"
+                                ],
+                                ""
+                            )
+                        ).toLowerCase();
+
+
+                    return (
+                        name.includes(search) ||
+                        description.includes(search)
+                    );
+                }
+            );
+    }
+
+
+    if (
+        selectedCategory !==
+        "all"
+    ) {
+
+        filtered =
+            filtered.filter(
+                item => {
+
+                    const category =
+                        String(
+                            getMenuField(
+                                item,
+                                [
+                                    "category",
+                                    "menu_category",
+                                    "type"
+                                ],
+                                ""
+                            )
+                        ).toLowerCase();
+
+
+                    return (
+                        category ===
+                        selectedCategory.toLowerCase()
+                    );
+                }
+            );
+    }
+
+
+    if (filtered.length === 0) {
+
+        container.innerHTML = `
+            <p class="loading-message">
+                No menu items found.
+            </p>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        filtered
+            .map(menuItemHTML)
+            .join("");
+
+
+    attachOrderButtons();
+}
+
+
+function createCategories(
+    items
+) {
+
+    const categoryContainer =
+        document.getElementById(
+            "menu-categories"
+        );
+
+
+    if (!categoryContainer) {
+        return;
+    }
+
+
+    const categories =
+        [
+            ...new Set(
+                items
+                    .map(
+                        item =>
+                            String(
+                                getMenuField(
+                                    item,
+                                    [
+                                        "category",
+                                        "menu_category",
+                                        "type"
+                                    ],
+                                    ""
+                                )
+                            ).trim()
+                    )
+                    .filter(Boolean)
+            )
+        ];
+
+
+    categoryContainer.innerHTML = `
+        <button
+            type="button"
+            class="category-button active"
+            data-category="all"
+        >
+            All
+        </button>
+
+        ${
+            categories
+                .map(
+                    category => `
+                        <button
+                            type="button"
+                            class="category-button"
+                            data-category="${escapeHtml(category)}"
+                        >
+                            ${escapeHtml(category)}
+                        </button>
+                    `
+                )
+                .join("")
+        }
+    `;
+
+
+    categoryContainer
+        .querySelectorAll(
+            ".category-button"
         )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        categoryContainer
+                            .querySelectorAll(
+                                ".category-button"
+                            )
+                            .forEach(
+                                item =>
+                                    item.classList.remove(
+                                        "active"
+                                    )
+                            );
+
+
+                        button.classList.add(
+                            "active"
+                        );
+
+
+                        selectedCategory =
+                            button.dataset.category ||
+                            "all";
+
+
+                        displayMenuItems(
+                            allMenuItems
+                        );
+                    }
+                );
+            }
         );
 }
 
 
-function capitalize(value) {
+/* =========================================================
+   MENU SEARCH
+========================================================= */
 
-    if (!value) {
-        return "";
+function setupMenuSearch() {
+
+    const search =
+        document.getElementById(
+            "menu-search"
+        );
+
+
+    if (!search) {
+        return;
     }
 
-    return value.charAt(0).toUpperCase() +
-        value.slice(1);
+
+    search.addEventListener(
+        "input",
+        () => {
+
+            displayMenuItems(
+                allMenuItems
+            );
+        }
+    );
 }
 
-let cart = [];
+
+/* =========================================================
+   REVIEWS
+========================================================= */
+
+async function loadReviews() {
+
+    const container =
+        document.getElementById(
+            "reviews-container"
+        );
 
 
-/* =========================
-   ADD ITEM TO CART
-========================= */
-
-function addToCart(name, price) {
-
-    const existingItem = cart.find(item => item.name === name);
-
-    if (existingItem) {
-
-        existingItem.quantity++;
-
-    } else {
-
-        cart.push({
-            name: name,
-            price: Number(price),
-            quantity: 1
-        });
-
+    if (!container) {
+        return;
     }
 
-    updateCart();
 
-}
-
-
-/* =========================
-   UPDATE CART
-========================= */
-
-function updateCart() {
-
-    const cartItems = document.getElementById("cart-items");
-    const cartCount = document.getElementById("cart-count");
-    const totalElement = document.getElementById("total");
-
-    if (!cartItems) return;
-
-    cartItems.innerHTML = "";
-
-    let total = 0;
-    let itemCount = 0;
-
-    if (cart.length === 0) {
-
-        cartItems.innerHTML = "<p>Your cart is empty.</p>";
-
+    if (!supabaseClient) {
+        return;
     }
 
-    cart.forEach((item, index) => {
 
-        total += item.price * item.quantity;
-        itemCount += item.quantity;
+    try {
 
-        cartItems.innerHTML += `
-            <div class="cart-item">
-
-                <div class="cart-item-info">
-
-                    <div class="cart-item-name">
-                        ${item.name}
-                    </div>
-
-                    <div class="cart-item-price">
-                        UGX ${item.price.toLocaleString()}
-                    </div>
-
-                </div>
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("reviews")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
 
 
-                <div class="quantity-controls">
-
-                    <button onclick="changeQuantity(${index}, -1)">
-                        −
-                    </button>
-
-                    <span>
-                        ${item.quantity}
-                    </span>
-
-                    <button onclick="changeQuantity(${index}, 1)">
-                        +
-                    </button>
-
-                </div>
+        if (error) {
+            throw error;
+        }
 
 
-                <button
-                    class="remove-cart-item"
-                    onclick="removeFromCart(${index})"
-                >
-                    ×
-                </button>
+        if (!data || data.length === 0) {
 
-            </div>
-        `;
+            container.innerHTML = `
+                <p>
+                    No reviews yet.
+                </p>
+            `;
 
-    });
+            return;
+        }
 
-    cartCount.textContent = itemCount;
 
-    totalElement.textContent =
-        "UGX " + total.toLocaleString();
+        container.innerHTML =
+            data
+                .map(
+                    review => {
 
+                        const name =
+                            escapeHtml(
+                                review.name ||
+                                review.customer_name ||
+                                "Guest"
+                            );
+
+
+                        const text =
+                            escapeHtml(
+                                review.review ||
+                                review.review_text ||
+                                review.text ||
+                                ""
+                            );
+
+
+                        const rating =
+                            Number(
+                                review.rating
+                            ) || 0;
+
+
+                        return `
+                            <div class="review-card">
+
+                                <h3>
+                                    ${name}
+                                </h3>
+
+                                <p>
+                                    ${"★".repeat(
+                                        Math.max(
+                                            0,
+                                            Math.min(
+                                                5,
+                                                rating
+                                            )
+                                        )
+                                    )}
+                                </p>
+
+                                <p>
+                                    ${text}
+                                </p>
+
+                            </div>
+                        `;
+                    }
+                )
+                .join("");
+
+
+    } catch (error) {
+
+        console.error(
+            "Error loading reviews:",
+            error
+        );
+    }
 }
 
 
-/* =========================
-   CHANGE QUANTITY
-========================= */
+function setupReviewForm() {
 
-function changeQuantity(index, amount) {
+    const form =
+        document.getElementById(
+            "review-form"
+        );
 
-    cart[index].quantity += amount;
 
-    if (cart[index].quantity <= 0) {
-
-        cart.splice(index, 1);
-
+    if (!form) {
+        return;
     }
 
-    updateCart();
 
+    form.addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+
+            const status =
+                document.getElementById(
+                    "review-status"
+                );
+
+
+            const name =
+                document.getElementById(
+                    "review-name"
+                )?.value.trim() || "";
+
+
+            const rating =
+                Number(
+                    document.getElementById(
+                        "review-rating"
+                    )?.value
+                );
+
+
+            const text =
+                document.getElementById(
+                    "review-text"
+                )?.value.trim() || "";
+
+
+            if (!name || !rating || !text) {
+
+                if (status) {
+
+                    status.textContent =
+                        "Please complete all fields.";
+                }
+
+                return;
+            }
+
+
+            if (!supabaseClient) {
+
+                if (status) {
+
+                    status.textContent =
+                        "Review service is unavailable.";
+                }
+
+                return;
+            }
+
+
+            try {
+
+                const {
+                    error
+                } = await supabaseClient
+                    .from("reviews")
+                    .insert([
+                        {
+                            name,
+                            rating,
+                            review: text
+                        }
+                    ]);
+
+
+                if (error) {
+                    throw error;
+                }
+
+
+                if (status) {
+
+                    status.textContent =
+                        "Thank you for your review!";
+                }
+
+
+                form.reset();
+
+                await loadReviews();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Error submitting review:",
+                    error
+                );
+
+
+                if (status) {
+
+                    status.textContent =
+                        "Unable to submit your review.";
+                }
+            }
+        }
+    );
 }
 
 
-/* =========================
-   REMOVE ITEM
-========================= */
+/* =========================================================
+   SUPABASE MEDIA
+========================================================= */
 
-function removeFromCart(index) {
+async function loadDynamicMedia() {
 
-    cart.splice(index, 1);
+    if (!supabaseClient) {
+        return;
+    }
 
-    updateCart();
 
+    const mediaAreas =
+        document.querySelectorAll(
+            "[data-media-area]"
+        );
+
+
+    for (const area of mediaAreas) {
+
+        const areaName =
+            area.dataset.mediaArea;
+
+
+        try {
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("media")
+                .select("*")
+                .eq(
+                    "area",
+                    areaName
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+            if (error) {
+                continue;
+            }
+
+
+            if (!data || data.length === 0) {
+                continue;
+            }
+
+
+            renderDynamicMedia(
+                area,
+                data
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                `Error loading ${areaName} media:`,
+                error
+            );
+        }
+    }
 }
 
 
-/* =========================
-   OPEN CART
-========================= */
+function renderDynamicMedia(
+    container,
+    items
+) {
 
-document
-    .getElementById("cart-button")
-    ?.addEventListener("click", function() {
-
-        document
-            .getElementById("order-section")
-            .classList.add("open");
-
-        document
-            .getElementById("order-backdrop")
-            .classList.add("open");
-
-    });
+    if (!container || !items.length) {
+        return;
+    }
 
 
-/* =========================
-   CLOSE CART
-========================= */
+    container.innerHTML =
+        items
+            .map(
+                (item, index) => {
 
-document
-    .getElementById("order-close")
-    ?.addEventListener("click", closeCart);
+                    const type =
+                        String(
+                            item.type ||
+                            item.media_type ||
+                            "image"
+                        ).toLowerCase();
 
-document
-    .getElementById("order-backdrop")
-    ?.addEventListener("click", closeCart);
+
+                    const url =
+                        item.url ||
+                        item.media_url ||
+                        item.image_url ||
+                        item.video_url ||
+                        "";
 
 
-function closeCart() {
+                    if (!url) {
+                        return "";
+                    }
+
+
+                    if (
+                        type === "video"
+                    ) {
+
+                        return `
+                            <div
+                                class="media-slide ${
+                                    index === 0
+                                        ? "active"
+                                        : ""
+                                }"
+                            >
+                                <video
+                                    src="${escapeHtml(url)}"
+                                    muted
+                                    autoplay
+                                    loop
+                                    playsinline
+                                ></video>
+                            </div>
+                        `;
+                    }
+
+
+                    return `
+                        <div
+                            class="media-slide ${
+                                index === 0
+                                    ? "active"
+                                    : ""
+                            }"
+                        >
+                            <img
+                                src="${escapeHtml(url)}"
+                                alt="Kiteezi Recreational Center"
+                            >
+                        </div>
+                    `;
+                }
+            )
+            .join("");
+
+
+    setupCarousels();
+}
+
+
+/* =========================================================
+   CAROUSELS
+========================================================= */
+
+function setupCarousels() {
 
     document
-        .getElementById("order-section")
-        .classList.remove("open");
+        .querySelectorAll(
+            ".media-gallery"
+        )
+        .forEach(
+            gallery => {
 
-    document
-        .getElementById("order-backdrop")
-        .classList.remove("open");
+                const slides =
+                    gallery.querySelectorAll(
+                        ".media-slide"
+                    );
 
+
+                if (slides.length <= 1) {
+                    return;
+                }
+
+
+                if (
+                    gallery.dataset.carouselReady ===
+                    "true"
+                ) {
+                    return;
+                }
+
+
+                gallery.dataset.carouselReady =
+                    "true";
+
+
+                let index = 0;
+
+
+                setInterval(
+                    () => {
+
+                        slides[
+                            index
+                        ].classList.remove(
+                            "active"
+                        );
+
+
+                        index =
+                            (
+                                index + 1
+                            ) %
+                            slides.length;
+
+
+                        slides[
+                            index
+                        ].classList.add(
+                            "active"
+                        );
+
+                    },
+                    5000
+                );
+            }
+        );
 }
+
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
+
+        loadCart();
+
+        updateCart();
+
+        setupNavigation();
+
+        setupCartEvents();
+
+        setupCurrentYear();
+
+        setupLightbox();
+
+        setupReviewForm();
+
+        setupMenuSearch();
+
+        setupCarousels();
+
+        attachOrderButtons();
+
+        await loadMenu();
+
+        await loadReviews();
+
+        await loadDynamicMedia();
+
+        updateCart();
+    }
+); 

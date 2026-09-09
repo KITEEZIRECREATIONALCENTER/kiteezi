@@ -600,6 +600,10 @@
 
     </div>
 
+<button id="cart-button" class="cart-button">
+    🛒 Cart
+    <span id="cart-count">0</span>
+</button>
 
     <!-- MENU -->
 
@@ -766,10 +770,73 @@
     </footer>
 
 
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script src="script.js"></script>
 
+    <!-- CART DRAWER -->
+<div id="cart-drawer" class="cart-drawer">
+
+    <div class="cart-backdrop" id="cart-backdrop"></div>
+
+    <div class="cart-panel">
+
+        <button id="cart-close" class="cart-close">×</button>
+
+        <h2>Your Cart</h2>
+
+        <div id="cart-items" class="cart-items">
+            <p class="empty-cart">Your cart is empty.</p>
+        </div>
+
+        <div class="cart-total">
+            <strong>Total:</strong>
+            <span id="cart-total">UGX 0</span>
+        </div>
+
+        <hr>
+
+        <h3>Customer Information</h3>
+
+        <input
+            type="text"
+            id="cart-customer-name"
+            placeholder="Your name"
+        >
+
+        <input
+            type="tel"
+            id="cart-customer-phone"
+            placeholder="Phone number"
+        >
+
+        <select id="cart-order-type">
+            <option value="">Select order type</option>
+            <option value="Dine In">Dine In</option>
+            <option value="Takeaway">Takeaway</option>
+            <option value="Delivery">Delivery</option>
+        </select>
+
+        <input
+            type="text"
+            id="cart-location"
+            placeholder="Location / table number"
+        >
+
+        <textarea
+            id="cart-message"
+            placeholder="Additional message"
+            rows="4"
+        ></textarea>
+
+        <button id="cart-whatsapp" class="btn primary-btn">
+            Send Order on WhatsApp
+        </button>
+
+    </div>
+
+</div>
 </body>
 
 </html>

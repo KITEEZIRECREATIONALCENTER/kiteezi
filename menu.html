@@ -623,158 +623,6 @@
     <div id="order-backdrop"></div>
 
 
-    <!-- ORDER DRAWER -->
-
-    <aside id="order-section">
-
-        <button
-            id="order-close"
-            type="button"
-            aria-label="Close order"
-        >
-            ×
-        </button>
-
-
-        <h2>
-            Place Your Order
-        </h2>
-
-
-        <div class="order-selected">
-
-            <strong>
-                Selected Item
-            </strong>
-
-            <p id="selected-item">
-                -
-            </p>
-
-        </div>
-
-
-        <div class="order-form-group">
-
-            <label for="customerName">
-                Your Name
-            </label>
-
-            <input
-                id="customerName"
-                type="text"
-                placeholder="Enter your name"
-            >
-
-        </div>
-
-
-        <div class="order-form-group">
-
-            <label for="phone">
-                Phone Number
-            </label>
-
-            <input
-                id="phone"
-                type="tel"
-                placeholder="07XXXXXXXX"
-            >
-
-        </div>
-
-
-        <div class="order-form-group">
-
-            <label for="deliveryType">
-                Order Type
-            </label>
-
-            <select id="deliveryType">
-
-                <option value="Pickup">
-                    Pickup
-                </option>
-
-                <option value="Delivery">
-                    Delivery
-                </option>
-
-                <option value="Dine In">
-                    Dine In
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <div class="order-form-group">
-
-            <label for="location">
-                Location
-            </label>
-
-            <input
-                id="location"
-                type="text"
-                placeholder="Location / table number"
-            >
-
-        </div>
-
-
-        <div class="order-form-group">
-
-            <label for="message">
-                Additional Message
-            </label>
-
-            <textarea
-                id="message"
-                rows="4"
-                placeholder="Any special instructions?"
-            ></textarea>
-
-        </div>
-
-
-        <div id="total">
-            UGX 0
-        </div>
-
-
-        <button
-            id="send-whatsapp"
-            class="btn primary-btn"
-            type="button"
-        >
-            Send Order on WhatsApp
-        </button>
-
-
-        <p id="added-message"></p>
-
-    </aside>
-
-
-    <footer>
-
-        <p>
-            ©
-            <span id="current-year"></span>
-            Kiteezi Recreational Center.
-            All Rights Reserved.
-        </p>
-
-    </footer>
-
-
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <script src="script.js"></script>
-
     <!-- CART DRAWER -->
 <div id="cart-drawer" class="cart-drawer">
 
@@ -837,6 +685,26 @@
     </div>
 
 </div>
+
+
+    <footer>
+
+        <p>
+            ©
+            <span id="current-year"></span>
+            Kiteezi Recreational Center.
+            All Rights Reserved.
+        </p>
+
+    </footer>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="script.js"></script>
+
+    
 </body>
 
 </html>

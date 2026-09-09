@@ -2273,3 +2273,190 @@ function capitalize(value) {
     return value.charAt(0).toUpperCase() +
         value.slice(1);
 }
+
+let cart = [];
+
+
+/* =========================
+   ADD ITEM TO CART
+========================= */
+
+function addToCart(name, price) {
+
+    const existingItem = cart.find(item => item.name === name);
+
+    if (existingItem) {
+
+        existingItem.quantity++;
+
+    } else {
+
+        cart.push({
+            name: name,
+            price: Number(price),
+            quantity: 1
+        });
+
+    }
+
+    updateCart();
+
+}
+
+
+/* =========================
+   UPDATE CART
+========================= */
+
+function updateCart() {
+
+    const cartItems = document.getElementById("cart-items");
+    const cartCount = document.getElementById("cart-count");
+    const totalElement = document.getElementById("total");
+
+    if (!cartItems) return;
+
+    cartItems.innerHTML = "";
+
+    let total = 0;
+    let itemCount = 0;
+
+    if (cart.length === 0) {
+
+        cartItems.innerHTML = "<p>Your cart is empty.</p>";
+
+    }
+
+    cart.forEach((item, index) => {
+
+        total += item.price * item.quantity;
+        itemCount += item.quantity;
+
+        cartItems.innerHTML += `
+            <div class="cart-item">
+
+                <div class="cart-item-info">
+
+                    <div class="cart-item-name">
+                        ${item.name}
+                    </div>
+
+                    <div class="cart-item-price">
+                        UGX ${item.price.toLocaleString()}
+                    </div>
+
+                </div>
+
+
+                <div class="quantity-controls">
+
+                    <button onclick="changeQuantity(${index}, -1)">
+                        −
+                    </button>
+
+                    <span>
+                        ${item.quantity}
+                    </span>
+
+                    <button onclick="changeQuantity(${index}, 1)">
+                        +
+                    </button>
+
+                </div>
+
+
+                <button
+                    class="remove-cart-item"
+                    onclick="removeFromCart(${index})"
+                >
+                    ×
+                </button>
+
+            </div>
+        `;
+
+    });
+
+    cartCount.textContent = itemCount;
+
+    totalElement.textContent =
+        "UGX " + total.toLocaleString();
+
+}
+
+
+/* =========================
+   CHANGE QUANTITY
+========================= */
+
+function changeQuantity(index, amount) {
+
+    cart[index].quantity += amount;
+
+    if (cart[index].quantity <= 0) {
+
+        cart.splice(index, 1);
+
+    }
+
+    updateCart();
+
+}
+
+
+/* =========================
+   REMOVE ITEM
+========================= */
+
+function removeFromCart(index) {
+
+    cart.splice(index, 1);
+
+    updateCart();
+
+}
+
+
+/* =========================
+   OPEN CART
+========================= */
+
+document
+    .getElementById("cart-button")
+    ?.addEventListener("click", function() {
+
+        document
+            .getElementById("order-section")
+            .classList.add("open");
+
+        document
+            .getElementById("order-backdrop")
+            .classList.add("open");
+
+    });
+
+
+/* =========================
+   CLOSE CART
+========================= */
+
+document
+    .getElementById("order-close")
+    ?.addEventListener("click", closeCart);
+
+document
+    .getElementById("order-backdrop")
+    ?.addEventListener("click", closeCart);
+
+
+function closeCart() {
+
+    document
+        .getElementById("order-section")
+        .classList.remove("open");
+
+    document
+        .getElementById("order-backdrop")
+        .classList.remove("open");
+
+}

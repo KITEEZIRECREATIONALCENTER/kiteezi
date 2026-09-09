@@ -1,270 +1,186 @@
-<!-- menu.html -->
-<!-- Full menu.html with cart integration -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Kiteezi Recreational Center - Menu</title>
+    <title>Kiteezi Recreational Centre - Menu</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <nav class="navbar">
+<nav class="navbar">
+    <div class="logo">
+        <a href="index.html">
+            <img src="logo.png" alt="Kiteezi Recreational Centre Logo">
+        </a>
+    </div>
 
-        <div class="logo-area">
-            <img src="images/LOGO.png" alt="Kiteezi Recreational Center Logo">
-            <h1>Kiteezi Recreational Center</h1>
+    <button class="menu-toggle" id="menu-toggle" type="button">
+        ☰
+    </button>
+
+    <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="personel.html">Personnel</a></li>
+        <li><a href="index.html#facilities">Facilities</a></li>
+        <li><a href="menu.html" class="active">Menu</a></li>
+        <li><a href="index.html#reviews">Reviews</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+</nav>
+
+<section class="menu-page">
+
+    <div class="menu-hero">
+        <h1>Our Menu</h1>
+
+        <p>
+            Enjoy our selection of freshly prepared meals,
+            snacks, pizzas, burgers and more.
+        </p>
+    </div>
+
+    <div class="menu-search">
+        <input
+            type="text"
+            id="menu-search"
+            placeholder="Search menu..."
+        >
+    </div>
+
+    <div class="category-buttons">
+        <button type="button" class="category-btn active" data-category="all">
+            All
+        </button>
+
+        <button type="button" class="category-btn" data-category="food">
+            Food
+        </button>
+
+        <button type="button" class="category-btn" data-category="snacks">
+            Snacks
+        </button>
+
+        <button type="button" class="category-btn" data-category="pizza">
+            Pizza
+        </button>
+
+        <button type="button" class="category-btn" data-category="burgers">
+            Burgers
+        </button>
+
+        <button type="button" class="category-btn" data-category="drinks">
+            Drinks
+        </button>
+    </div>
+
+    <!-- CART BUTTON -->
+    <button
+        id="cart-button"
+        class="cart-button"
+        type="button"
+        aria-label="Open shopping cart"
+    >
+        🛒 Cart
+        <span id="cart-count">0</span>
+    </button>
+
+    <div id="menu-container" class="menu-container">
+        <!-- Menu items are loaded by JavaScript -->
+    </div>
+
+</section>
+
+<!-- ORDER DRAWER -->
+<div id="order-drawer" class="order-drawer">
+
+    <div class="order-drawer-content">
+
+        <button
+            id="close-order"
+            class="close-order"
+            type="button"
+            aria-label="Close cart"
+        >
+            &times;
+        </button>
+
+        <h2>Your Order</h2>
+
+        <div class="order-selected">
+            <strong>Your Cart</strong>
+
+            <div id="cart-items">
+                <p class="cart-empty">
+                    Your cart is empty.
+                </p>
+            </div>
+        </div>
+
+        <div class="cart-total">
+            <strong>Total:</strong>
+            <span id="order-total">UGX 0</span>
+        </div>
+
+        <div class="customer-details">
+
+            <label for="customer-name">
+                Name
+            </label>
+
+            <input
+                type="text"
+                id="customer-name"
+                placeholder="Enter your name"
+            >
+
+            <label for="customer-phone">
+                Phone
+            </label>
+
+            <input
+                type="tel"
+                id="customer-phone"
+                placeholder="Enter your phone number"
+            >
+
+            <label for="customer-location">
+                Location
+            </label>
+
+            <input
+                type="text"
+                id="customer-location"
+                placeholder="Enter your location"
+            >
+
+            <label for="customer-note">
+                Note
+            </label>
+
+            <textarea
+                id="customer-note"
+                placeholder="Any special instructions?"
+            ></textarea>
+
         </div>
 
         <button
-            class="nav-toggle"
-            id="nav-toggle"
-            aria-label="Open navigation"
+            id="whatsapp-order"
+            class="whatsapp-order"
+            type="button"
         >
-            ☰
+            Order on WhatsApp
         </button>
 
-        <ul class="nav-links" id="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="index.html#about">About</a></li>
-            <li><a href="personel.html">Personnel</a></li>
-            <li><a href="index.html#facilities">Facilities</a></li>
-            <li><a href="menu.html">Menu</a></li>
-            <li><a href="index.html#reviews">Reviews</a></li>
-            <li><a href="index.html#contact">Contact</a></li>
-        </ul>
+    </div>
+</div>
 
-    </nav>
-
-
-    <main class="menu-page">
-
-        <section class="menu-hero">
-
-            <div class="menu-hero-overlay"></div>
-
-            <div class="menu-hero-content">
-
-                <p class="eyebrow">KITEeZI RECREATIONAL CENTER</p>
-
-                <h2>Our Menu</h2>
-
-                <p>
-                    Freshly prepared meals, snacks, drinks and more.
-                </p>
-
-            </div>
-
-        </section>
-
-
-        <section class="menu-section">
-
-            <div class="section-heading">
-
-                <p class="eyebrow">FOOD & DRINKS</p>
-
-                <h2>Choose Your Favorite</h2>
-
-                <p>
-                    Browse our menu and add as many items as you want
-                    to your cart.
-                </p>
-
-            </div>
-
-
-            <div class="menu-search-container">
-
-                <input
-                    type="text"
-                    id="menu-search"
-                    class="menu-search"
-                    placeholder="Search menu..."
-                    autocomplete="off"
-                >
-
-            </div>
-
-
-            <div
-                id="menu-categories"
-                class="menu-categories"
-            >
-            </div>
-
-
-            <!-- CART BUTTON -->
-
-            <button
-                id="cart-button"
-                class="cart-button"
-                type="button"
-                aria-label="Open shopping cart"
-            >
-                🛒 Cart
-                <span id="cart-count">0</span>
-            </button>
-
-
-            <div
-                id="menu-container"
-                class="menu-container"
-            >
-
-                <div class="loading-message">
-                    Loading menu...
-                </div>
-
-            </div>
-
-        </section>
-
-    </main>
-
-
-    <!-- =========================
-         ORDER / CART DRAWER
-    ========================== -->
-
-    <div
-        id="order-backdrop"
-        class="order-backdrop"
-    ></div>
-
-
-    <aside
-        id="order-drawer"
-        class="order-drawer"
-        aria-hidden="true"
-    >
-
-        <div class="order-header">
-
-            <h2>Your Order</h2>
-
-            <button
-                id="close-order"
-                class="close-order"
-                type="button"
-                aria-label="Close order"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div class="order-body">
-
-            <div class="order-selected">
-
-                <strong>Your Cart</strong>
-
-                <div id="cart-items">
-
-                    <p class="cart-empty">
-                        Your cart is empty.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="order-total">
-
-                <span>Total</span>
-
-                <strong>
-                    UGX <span id="order-total">0</span>
-                </strong>
-
-            </div>
-
-
-            <div class="customer-details">
-
-                <label for="customer-name">
-                    Your Name
-                </label>
-
-                <input
-                    type="text"
-                    id="customer-name"
-                    placeholder="Enter your name"
-                >
-
-
-                <label for="customer-phone">
-                    Phone Number
-                </label>
-
-                <input
-                    type="tel"
-                    id="customer-phone"
-                    placeholder="Enter your phone number"
-                >
-
-
-                <label for="customer-location">
-                    Delivery / Pickup Location
-                </label>
-
-                <input
-                    type="text"
-                    id="customer-location"
-                    placeholder="Enter location"
-                >
-
-
-                <label for="customer-note">
-                    Additional Note
-                </label>
-
-                <textarea
-                    id="customer-note"
-                    rows="3"
-                    placeholder="Any additional information..."
-                ></textarea>
-
-            </div>
-
-
-            <button
-                id="send-whatsapp"
-                class="btn primary-btn whatsapp-order-btn"
-                type="button"
-            >
-                Send Order Through WhatsApp
-            </button>
-
-        </div>
-
-    </aside>
-
-
-    <div
-        id="added-message"
-        class="added-message"
-    ></div>
-
-
-    <footer>
-        <p>
-            © <span id="current-year"></span>
-            Kiteezi Recreational Center.
-            All Rights Reserved.
-        </p>
-    </footer>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script.js"></script>
+<script src="script.js"></script>
 
 </body>
 </html>

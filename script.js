@@ -2273,3 +2273,418 @@ function capitalize(value) {
     return value.charAt(0).toUpperCase() +
         value.slice(1);
 }
+/* =========================
+   CART SYSTEM
+========================= */
+
+let cart = JSON.parse(localStorage.getItem("kiteeziCart")) || [];
+
+
+/* ADD ITEM */
+
+function addToCart(name, price) {
+
+    const existingItem = cart.find(item => item.name === name);
+
+    if (existingItem) {
+
+        existingItem.quantity++;
+
+    } else {
+
+        cart.push({
+            name: name,
+            price: Number(price),
+            quantity: 1
+        });
+
+    }
+
+    saveCart();
+    updateCart();
+}
+
+
+/* SAVE */
+
+function saveCart() {
+
+    localStorage.setItem(
+        "kiteeziCart",
+        JSON.stringify(cart)
+    );
+
+}
+
+
+/* UPDATE CART */
+
+function updateCart() {
+
+    const cartItems = document.getElementById("cart-items");
+    const cartCount = document.getElementById("cart-count");
+    const cartTotal = document.getElementById("cart-total");
+
+    if (!cartItems) return;
+
+
+    /* COUNT */
+
+    const totalQuantity = cart.reduce(
+        (total, item) => total + item.quantity,
+        0
+    );
+
+    if (cartCount) {
+        cartCount.textContent = totalQuantity;
+    }
+
+
+    /* EMPTY */
+
+    if (cart.length === 0) {
+
+        cartItems.innerHTML =
+            '<p class="empty-cart">Your cart is empty.</p>';
+
+        if (cartTotal) {
+            cartTotal.textContent = "UGX 0";
+        }
+
+        return;
+    }
+
+
+    /* ITEMS */
+
+    cartItems.innerHTML = "";
+
+    let total = 0;
+
+
+    cart.forEach((item, index) => {
+
+        const subtotal =
+            item.price * item.quantity;
+
+        total += subtotal;
+
+
+        const div = document.createElement("div");
+
+        div.className = "cart-item";
+
+        div.innerHTML = `
+            <div class="cart-item-info">
+
+                <div class="cart-item-name">
+                    ${escapeHTML(item.name)}
+                </div>
+
+                <div class="cart-item-price">
+                    UGX ${item.price.toLocaleString()}
+                </div>
+
+            </div>
+
+            <div class="cart-quantity">
+
+                <button
+                    onclick="changeCartQuantity(${index}, -1)"
+                >
+                    −
+                </button>
+
+                <span>
+                    ${item.quantity}
+                </span>
+
+                <button
+                    onclick="changeCartQuantity(${index}, 1)"
+                >
+                    +
+                </button>
+
+            </div>
+
+            <strong>
+                UGX ${subtotal.toLocaleString()}
+            </strong>
+
+            <button
+                class="cart-remove"
+                onclick="removeFromCart(${index})"
+            >
+                ×
+            </button>
+        `;
+
+        cartItems.appendChild(div);
+
+    });
+
+
+    if (cartTotal) {
+
+        cartTotal.textContent =
+            `UGX ${total.toLocaleString()}`;
+
+    }
+
+}
+
+
+/* CHANGE QUANTITY */
+
+function changeCartQuantity(index, change) {
+
+    if (!cart[index]) return;
+
+    cart[index].quantity += change;
+
+    if (cart[index].quantity <= 0) {
+
+        cart.splice(index, 1);
+
+    }
+
+    saveCart();
+    updateCart();
+
+}
+
+
+/* REMOVE */
+
+function removeFromCart(index) {
+
+    if (!cart[index]) return;
+
+    cart.splice(index, 1);
+
+    saveCart();
+    updateCart();
+
+}
+
+
+/* OPEN / CLOSE */
+
+function openCart() {
+
+    const drawer =
+        document.getElementById("cart-drawer");
+
+    if (drawer) {
+        drawer.classList.add("active");
+    }
+
+}
+
+
+function closeCart() {
+
+    const drawer =
+        document.getElementById("cart-drawer");
+
+    if (drawer) {
+        drawer.classList.remove("active");
+    }
+
+}
+
+
+/* CART BUTTON */
+
+document.addEventListener("click", function(event) {
+
+    if (event.target.closest("#cart-button")) {
+
+        openCart();
+
+    }
+
+    if (event.target.closest("#cart-close")) {
+
+        closeCart();
+
+    }
+
+    if (event.target.closest("#cart-backdrop")) {
+
+        closeCart();
+
+    }
+
+});
+
+
+/* CONNECT EXISTING ORDER BUTTONS */
+
+function attachCartButtons() {
+
+    document.querySelectorAll(".order-item-btn")
+        .forEach(button => {
+
+            if (button.dataset.cartAttached) return;
+
+            button.dataset.cartAttached = "true";
+
+            button.addEventListener("click", function() {
+
+                const name =
+                    this.dataset.itemName;
+
+                const price =
+                    Number(this.dataset.itemPrice);
+
+                if (!name) return;
+
+                addToCart(name, price);
+
+            });
+
+        });
+
+}
+
+
+/* WHATSAPP */
+
+function sendCartToWhatsApp() {
+
+    if (cart.length === 0) {
+
+        alert("Your cart is empty.");
+
+        return;
+
+    }
+
+
+    const name =
+        document.getElementById(
+            "cart-customer-name"
+        )?.value.trim() || "";
+
+    const phone =
+        document.getElementById(
+            "cart-customer-phone"
+        )?.value.trim() || "";
+
+    const orderType =
+        document.getElementById(
+            "cart-order-type"
+        )?.value || "";
+
+    const location =
+        document.getElementById(
+            "cart-location"
+        )?.value.trim() || "";
+
+    const message =
+        document.getElementById(
+            "cart-message"
+        )?.value.trim() || "";
+
+
+    let total = 0;
+
+    let orderText =
+        "Hello Kiteezi Recreational Center!%0A%0A";
+
+    orderText +=
+        "*NEW ORDER*%0A%0A";
+
+
+    cart.forEach(item => {
+
+        const subtotal =
+            item.price * item.quantity;
+
+        total += subtotal;
+
+        orderText +=
+            `• ${encodeURIComponent(item.name)} x${item.quantity} - UGX ${subtotal.toLocaleString()}%0A`;
+
+    });
+
+
+    orderText +=
+        `%0A*TOTAL: UGX ${total.toLocaleString()}*%0A%0A`;
+
+
+    if (name) {
+
+        orderText +=
+            `Name: ${encodeURIComponent(name)}%0A`;
+
+    }
+
+    if (phone) {
+
+        orderText +=
+            `Phone: ${encodeURIComponent(phone)}%0A`;
+
+    }
+
+    if (orderType) {
+
+        orderText +=
+            `Order Type: ${encodeURIComponent(orderType)}%0A`;
+
+    }
+
+    if (location) {
+
+        orderText +=
+            `Location: ${encodeURIComponent(location)}%0A`;
+
+    }
+
+    if (message) {
+
+        orderText +=
+            `%0AMessage: ${encodeURIComponent(message)}%0A`;
+
+    }
+
+
+    const whatsappNumber =
+        "256709763803";
+
+    const url =
+        `https://wa.me/${whatsappNumber}?text=${orderText}`;
+
+    window.open(url, "_blank");
+
+}
+
+
+/* WHATSAPP BUTTON */
+
+document.addEventListener("click", function(event) {
+
+    if (
+        event.target.closest("#cart-whatsapp")
+    ) {
+
+        sendCartToWhatsApp();
+
+    }
+
+});
+
+
+/* INITIALIZE */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        updateCart();
+
+        attachCartButtons();
+
+    }
+);

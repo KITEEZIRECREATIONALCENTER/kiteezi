@@ -1715,7 +1715,11 @@ function sendOrderToWhatsApp() {
     );
 }
 
-
+// CLEAR CART AFTER SENDING
+    cart = [];
+    localStorage.removeItem("cart");
+    updateCartDisplay();
+}
 /* =========================================================
    LIGHTBOX
 ========================================================= */

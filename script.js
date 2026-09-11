@@ -1663,59 +1663,176 @@ function sendOrderToWhatsApp() {
             selectedItemName
         )}%0A`;
 
-    if (selectedItemPrice > 0) {
+/* =========================================================
+   ORDER DRAWER & CART FALLBACK
+========================================================= */
 
-        text +=
-            `Price: UGX ${selectedItemPrice.toLocaleString()}%0A`;
-    }
-
-
-    text +=
-        `%0ACustomer: ${encodeURIComponent(
-            customerName
-        )}%0A`;
-
-    text +=
-        `Phone: ${encodeURIComponent(
-            phone
-        )}%0A`;
-
-    if (deliveryType) {
-
-        text +=
-            `Order type: ${encodeURIComponent(
-                deliveryType
-            )}%0A`;
-    }
-
-    if (location) {
-
-        text +=
-            `Location: ${encodeURIComponent(
-                location
-            )}%0A`;
-    }
-
-    if (message) {
-
-        text +=
-            `Additional message: ${encodeURIComponent(
-                message
-            )}%0A`;
-    }
-
-
-    const whatsappUrl =
-        `https://wa.me/256709763803?text=${text}`;
-
-
-    window.open(
-        whatsappUrl,
-        "_blank"
-    );
+function openOrderDrawer() {
+    openCart();
 }
 
-m
+function closeOrderDrawer() {
+    closeCart();
+}
+
+/* =========================================================
+   SPECIAL MENU FUNCTIONS (FIXED)
+========================================================= */
+
+function chooseChipsSausage() {
+    const choice = prompt(
+        "Choose size:\n1. Small - UGX 13,000\n2. Large - UGX 15,000"
+    );
+
+    if (choice === "1") {
+        addToCart("Chips & Sausages Small", 13000);
+        openCart();
+    } else if (choice === "2") {
+        addToCart("Chips & Sausages Large", 15000);
+        openCart();
+    }
+}
+
+function chooseAccompaniment() {
+    const choice = prompt(
+        "Choose accompaniment:\nWhite Rice\nVegetable Rice\nEgg Fried Rice\nChips\nPotato Wedges\nPosho\nMashed Potatoes"
+    );
+
+    if (!choice) return;
+
+    addToCart(`Accompaniment - ${choice}`, 0);
+    openCart();
+}
+
+function chooseLiverAccompaniment() {
+    chooseAccompaniment();
+}
+
+/* =========================================================
+   CART SYSTEM (GLOBAL SCOPE ATTACHMENT)
+========================================================= */
+
+let cart = JSON.parse(localStorage.getItem("kiteeziCart")) || [];
+
+function addToCart(name, price) {
+    if (!name) return;
+
+    const existingItem = cart.find(item => item.name === name);
+
+    if (existingItem) {
+        existingItem.quantity++;
+    } else {
+        cart.push({
+            name: name,
+            price: Number(price) || 0,
+            quantity: 1
+        });
+    }
+
+    saveCart();
+    updateCart();
+}
+
+function saveCart() {
+    localStorage.setItem("kiteeziCart", JSON.stringify(cart));
+}
+
+function updateCart() {
+    const cartItems = document.getElementById("cart-items");
+    const cartCount = document.getElementById("cart-count");
+    const cartTotal = document.getElementById("cart-total");
+
+    const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
+
+    if (cartCount) {
+        cartCount.textContent = totalQuantity;
+    }
+
+    if (!cartItems) return;
+
+    if (cart.length === 0) {
+        cartItems.innerHTML = '<p class="empty-cart">Your cart is empty.</p>';
+        if (cartTotal) cartTotal.textContent = "UGX 0";
+        return;
+    }
+
+    cartItems.innerHTML = "";
+    let total = 0;
+
+    cart.forEach((item, index) => {
+        const subtotal = item.price * item.quantity;
+        total += subtotal;
+
+        const div = document.createElement("div");
+        div.className = "cart-item";
+
+        div.innerHTML = `
+            <div class="cart-item-info">
+                <div class="cart-item-name">${escapeHTML(item.name)}</div>
+                <div class="cart-item-price">UGX ${item.price.toLocaleString()}</div>
+            </div>
+            <div class="cart-quantity">
+                <button type="button" class="cart-qty-btn" data-index="${index}" data-change="-1">−</button>
+                <span>${item.quantity}</span>
+                <button type="button" class="cart-qty-btn" data-index="${index}" data-change="1">+</button>
+            </div>
+            <strong>UGX ${subtotal.toLocaleString()}</strong>
+            <button type="button" class="cart-remove-btn" data-index="${index}">×</button>
+        `;
+
+        cartItems.appendChild(div);
+    });
+
+    if (cartTotal) {
+        cartTotal.textContent = `UGX ${total.toLocaleString()}`;
+    }
+}
+
+function changeCartQuantity(index, change) {
+    if (!cart[index]) return;
+    cart[index].quantity += change;
+
+    if (cart[index].quantity <= 0) {
+        cart.splice(index, 1);
+    }
+
+    saveCart();
+    updateCart();
+}
+
+function removeFromCart(index) {
+    if (!cart[index]) return;
+    cart.splice(index, 1);
+    saveCart();
+    updateCart();
+}
+
+/* Expose functions to global window object for safety */
+window.addToCart = addToCart;
+window.changeCartQuantity = changeCartQuantity;
+window.removeFromCart = removeFromCart;
+window.chooseChipsSausage = chooseChipsSausage;
+window.chooseAccompaniment = chooseAccompaniment;
+window.chooseLiverAccompaniment = chooseLiverAccompaniment;
+
+/* Event Delegation for Dynamic Cart Buttons */
+document.addEventListener("click", function (event) {
+    const qtyBtn = event.target.closest(".cart-qty-btn");
+    if (qtyBtn) {
+        const index = Number(qtyBtn.dataset.index);
+        const change = Number(qtyBtn.dataset.change);
+        changeCartQuantity(index, change);
+        return;
+    }
+
+    const removeBtn = event.target.closest(".cart-remove-btn");
+    if (removeBtn) {
+        const index = Number(removeBtn.dataset.index);
+        removeFromCart(index);
+        return;
+    }
+});
+
 /* =========================================================
    LIGHTBOX
 ========================================================= */

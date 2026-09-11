@@ -1715,11 +1715,7 @@ function sendOrderToWhatsApp() {
     );
 }
 
-// CLEAR CART AFTER SENDING
-    cart = [];
-    localStorage.removeItem("cart");
-    updateCartDisplay();
-}
+m
 /* =========================================================
    LIGHTBOX
 ========================================================= */
@@ -2635,13 +2631,24 @@ function sendCartToWhatsApp() {
         `https://wa.me/${whatsappNumber}?text=${orderText}`;
 
 
+
     window.open(
         url,
         "_blank"
     );
 
-}
+    // Clear the cart after sending the order
+    cart = [];
 
+    // Remove the saved cart from localStorage
+    localStorage.removeItem("kiteeziCart");
+
+    // Refresh the cart display
+    updateCart();
+
+    // Close the cart drawer
+    closeCart();
+}
 
 /* WHATSAPP BUTTON */
 
